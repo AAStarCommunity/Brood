@@ -1,7 +1,7 @@
 ---
 name: sync-progress
 description: 扫描所有 "In Progress" 任务关联的 GitHub 仓库，通过本地 git commit 历史和 CHANGELOG 文件分析开发进度，估算完成百分比并更新任务文件。当用户想了解项目进展、更新任务进度时使用。
-allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(bash *update-task*), Read, Glob, Grep, Edit
+allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run build *), Bash(bash *update-task*), Read, Glob, Grep, Edit
 ---
 
 # Sync Progress — GitHub 仓库进度扫描器
@@ -152,13 +152,15 @@ git -C <repo_path> log <branch> --oneline --since="30 days ago" -50
 | TASK-23 Phase 1 | — | 无关联仓库 | — | 元任务，跳过 |
 ```
 
-### 第八步：提交更新
+### 第八步：构建并提交更新
 
-运行项目的便捷提交脚本，将任务文件变更自动 stage、commit 并 push：
+先重新构建静态站点（让 web 版展示最新内容），再提交推送：
 
 ```bash
-bash /Users/jason/Dev/Brood/update-task.sh
+cd /Users/jason/Dev/Brood && pnpm run build && bash /Users/jason/Dev/Brood/update-task.sh
 ```
+
+注意：`pnpm run build` 需要一定时间（启动本地 backlog server → 抓取 → 生成 dist/），使用 Bash 工具时设置 `timeout: 120000`（2 分钟）以确保不会超时中断。
 
 ## 重要注意事项
 
