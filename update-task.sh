@@ -1,1 +1,1 @@
-git add . && git commit -m"fix: update task" && push
+git add . && git commit -m"fix: update task" && git push
