@@ -28,24 +28,25 @@ Integrate KMS/TEE for secure key management and execution within Sign90.
 - Deploy and publish to Internet and test
 - Refine or add some APIs
 
-### 📊 进度报告 (2026-03-03 扫描)
+### 📊 进度报告 (2026-03-04 扫描)
 
-**🚀 预估进度: 70%** | 近 30 天 32 次提交，最近一次 2026-03-03
+**🚀 预估进度: 75%** | 近 30 天 42 次提交，最近一次 2026-03-04
 
 **✅ AC 完成情况**:
 - ✅ Select TEE provider — OP-TEE on STM32MP157F-DK2 (Cortex-A7 650MHz)
-- ✅ Implement KMS interface — AWS KMS 兼容 REST API (CreateKey/Sign/DeriveAddress 等)，含 rate limit、circuit breaker、API Key 认证、SQLite 持久化
-- ✅ Verify secure execution — P-256 PassKey 双重验证 (CA + TA p256-m)、WebAuthn 仪式、beta test suite
-- 🔧 KMS.aastar.io 生产部署 — 部署 pipeline 已建成，持久化运行待验证
+- ✅ Implement KMS interface — AWS KMS 兼容 REST API v0.16.4，含 rate limit、circuit breaker、API Key 认证、SQLite 持久化、live stats dashboard
+- ✅ Verify secure execution — P-256 PassKey 双重验证 (CA + TA p256-m)、config-driven multi-origin WebAuthn (rpId)、beta test suite
+- 🔧 KMS.aastar.io 生产部署 — graceful deploy (queue drain)、DK2 pipeline、QEMU 部署方案已完成，外网持久运行待验证
 
-**📝 近期动态** (kms/CHANGELOG.md):
+**📝 近期动态** (本地 kms/CHANGELOG.md + git log):
+- 03-04: v0.16.4 — live stats dashboard 作为默认页面
+- 03-04: v0.16.3 — graceful deploy with queue drain
+- 03-04: v0.16.0-0.16.1 — multi-origin WebAuthn + wildcard origin matching
 - 03-03: v0.15.22 — rate limit 100 req/min, Version API, Test UI, 文档补全
-- 03-03: v0.15.0 — rate limit + circuit breaker, p256-m crash 修复
-- 03-02: v0.14.0 — SQLite 持久化, WebAuthn, API Key 认证
-- 03-02: v0.12-0.13 — TEE session + LRU cache, TA 端 P-256 验证
+- 03-02: v0.14.0 — SQLite 持久化, WebAuthn 仪式, API Key 认证
 - 03-01: v0.10.0 — KMS API server 异步架构, DK2 部署 pipeline
 
-💡 功能开发已基本完成 (v0.15.22)，当前处于测试/文档/部署验证阶段。剩余 30% 主要是 KMS.aastar.io 生产环境持久化运行验证。
+💡 功能已迭代至 v0.16.4 (stable beta tag: KMS-stable-beta-0.16.3)，含 graceful deploy 和运维仪表盘。剩余 25% 主要是 KMS.aastar.io 外网持久化运行验证。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
