@@ -202,13 +202,14 @@ cd "$REPO_ROOT" && pnpm run build && bash "$REPO_ROOT/update-task.sh"
 
 ## 安装指南
 
-详见 `skills/sync-progress/README.md`。快速安装：
+如果你 clone 了本项目想使用此 skill：
 
-```bash
-# 在你自己的 backlog 项目中安装此 skill
-mkdir -p .claude/skills/sync-progress
-curl -o .claude/skills/sync-progress/SKILL.md \
-  https://raw.githubusercontent.com/jhfnetboy/Brood/main/skills/sync-progress/SKILL.md
-```
-
-可选配置：`export SYNC_SCAN_ROOT="$HOME/projects"` 指定仓库扫描范围。
+1. 确保已安装 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+2. skill 文件位于 `.claude/skills/sync-progress/SKILL.md`，Claude Code 会自动识别
+3. 在项目目录下运行 `claude` 后输入 `/sync-progress` 即可执行
+4. **可选配置**：如果你的项目仓库不在 Brood 的同级目录下，设置环境变量指定扫描范围：
+   ```bash
+   export SYNC_SCAN_ROOT="$HOME/projects"  # 你的开发目录根路径
+   ```
+   也可以写入 `~/.zshrc` / `~/.bashrc` 持久生效。
+5. 任务的 `references:` 字段需包含 GitHub 仓库 URL（通过 backlog web 界面的 Add References 添加）
