@@ -204,6 +204,81 @@ async function exportStaticBacklog() {
       }
     }
 
+    // Merge completed tasks into tasks.json (backlog CLI only serves active tasks)
+    try {
+      const completedDir = path.join(process.cwd(), 'backlog', 'completed');
+      const completedFiles = await fs.readdir(completedDir).catch(() => []);
+      const taskFiles = completedFiles.filter(f => f.startsWith('task-') && f.endsWith('.md'));
+
+      if (taskFiles.length > 0) {
+        const tasksJsonPath = path.join(apiDir, 'tasks.json');
+        const tasksData = JSON.parse(await fs.readFile(tasksJsonPath, 'utf-8'));
+
+        for (const file of taskFiles) {
+          const content = await fs.readFile(path.join(completedDir, file), 'utf-8');
+          // Parse YAML frontmatter
+          const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          if (!fmMatch) continue;
+
+          const fm = fmMatch[1];
+          const get = (key) => {
+            const m = fm.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+            return m ? m[1].replace(/^['"]|['"]$/g, '').trim() : '';
+          };
+          const getArray = (key) => {
+            const lines = fm.split('\n');
+            const idx = lines.findIndex(l => l.match(new RegExp(`^${key}:`)));
+            if (idx === -1) return [];
+            const arr = [];
+            for (let i = idx + 1; i < lines.length; i++) {
+              const item = lines[i].match(/^\s+-\s+(.+)/);
+              if (!item) break;
+              arr.push(item[1].replace(/^['"]|['"]$/g, '').trim());
+            }
+            return arr;
+          };
+
+          // Extract description from body
+          const bodyMatch = content.match(/---\n[\s\S]*?\n---\n([\s\S]*)/);
+          const body = bodyMatch ? bodyMatch[1].trim() : '';
+          const descMatch = body.match(/<!-- SECTION:DESCRIPTION:BEGIN -->\n([\s\S]*?)\n<!-- SECTION:DESCRIPTION:END -->/);
+          const description = descMatch ? descMatch[1].trim() : body.split('\n## ')[0].replace(/^## Description\n*/, '').trim();
+
+          const task = {
+            id: get('id'),
+            title: get('title'),
+            status: get('status') || 'Done',
+            assignee: getArray('assignee'),
+            createdDate: get('created_date'),
+            updatedDate: get('updated_date'),
+            labels: getArray('labels'),
+            milestone: get('milestone'),
+            dependencies: getArray('dependencies'),
+            references: getArray('references'),
+            documentation: [],
+            rawContent: body,
+            acceptanceCriteriaItems: [],
+            definitionOfDoneItems: [],
+            description: description,
+            priority: get('priority') || 'medium',
+            filePath: path.join(completedDir, file),
+            lastModified: new Date().toISOString(),
+            source: 'local'
+          };
+
+          // Avoid duplicates
+          if (!tasksData.find(t => t.id === task.id)) {
+            tasksData.push(task);
+            console.log(`  + Merged completed task: ${task.id} (${task.title})`);
+          }
+        }
+
+        await fs.writeFile(tasksJsonPath, JSON.stringify(tasksData));
+      }
+    } catch (err) {
+      console.warn('Warning: could not merge completed tasks:', err.message);
+    }
+
     // Wait a brief moment to ensure Backlog has fully indexed documents and decisions
     // The backlog CLI needs time to parse the markdown files from the filesystem
     console.log('Waiting 2 seconds for Backlog server to index documents...');
