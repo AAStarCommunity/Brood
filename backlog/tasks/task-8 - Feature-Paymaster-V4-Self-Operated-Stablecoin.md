@@ -1,7 +1,7 @@
 ---
 id: TASK-8
 title: '[Feature] Paymaster V4 - Self-Operated & Stablecoin'
-status: Done
+status: "Done"
 assignee: []
 created_date: '2026-02-28 11:15'
 updated_date: '2026-03-05 05:14'

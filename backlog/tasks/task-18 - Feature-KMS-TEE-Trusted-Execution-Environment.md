@@ -1,7 +1,7 @@
 ---
 id: TASK-18
 title: '[Feature] KMS/TEE - Trusted Execution Environment'
-status: Done
+status: "Done"
 assignee:
   - jhfntboy
 created_date: '2026-02-28 10:16'
