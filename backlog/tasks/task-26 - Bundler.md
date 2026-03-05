@@ -7,6 +7,7 @@ assignee:
 created_date: '2026-03-05 12:00'
 labels:
   - bundler
+milestone: 'Phase 1: Genesis Launch'
 dependencies: []
 priority: medium
 ---
