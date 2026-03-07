@@ -47,7 +47,43 @@ CLONE_DIR="${REPO_ROOT}/.claude/tmp"
 1. 用 Glob 读取 `backlog/tasks/*.md` 下所有任务文件
 2. 用 Grep 或 Read 筛选 `status: "In Progress"` 或 `status: In Progress` 的任务
 3. 对每个进行中的任务，检查 frontmatter 的 `references:` 字段是否包含 `github.com` URL
-4. 跳过没有 GitHub 链接的任务（在最终汇总中注明"无关联仓库"）
+4. **没有** frontmatter GitHub 链接的任务，进入第一步·五智能匹配；匹配后仍无链接的，在最终汇总中注明"无关联仓库"
+
+### 第一步·五：智能 GitHub 匹配（自动补全 references）
+
+对 **frontmatter 中没有 github.com references** 的 In Progress 任务，扫描全文提取 GitHub URL 并自动写入 frontmatter，扩大扫描覆盖范围。
+
+**执行步骤**：
+
+1. 用 Bash 从整个任务文件中提取所有 GitHub URL：
+   ```bash
+   grep -oE 'https://github\.com/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+(/[^[:space:]"'"'"'>)]*)?'  "<task_file>"
+   ```
+
+2. 标准化每个 URL，提取 repo 根地址或保留有价值的分支信息：
+   - `https://github.com/owner/repo/blob/branch/file.md` → `https://github.com/owner/repo`（去掉 blob 路径）
+   - `https://github.com/owner/repo/tree/branch` → 保留完整（含分支信息）
+   - `https://github.com/owner/repo/issues/...` → `https://github.com/owner/repo`（只保留 repo）
+   - `https://github.com/owner/repo` → 保留
+
+3. 去重，过滤掉 Brood 仓库自身的 URL（即 `Brood` repo）
+
+4. 如果提取到有效 URL，用 **Edit 工具**将其写入 frontmatter `references:` 字段：
+   - 如果 frontmatter 已有 `references:` 行但内容为 `[]` 或空，替换为列表格式
+   - 如果 frontmatter 完全没有 `references:` 行，在 `priority:` 或 `---` 结束行前插入
+
+5. 打印操作日志（带 🤖 标记区分自动行为）：
+   ```
+   🤖 智能匹配: TASK-32 ← https://github.com/jhfnetboy/DSR-Research-Flow（从 description body 提取）
+   🤖 智能匹配: TASK-34 ← https://github.com/jhfnetboy/AuraAI（从 description body 提取）
+   ```
+
+6. 对自动补全了 references 的任务，继续后续第二步～第六步的完整分析流程
+
+**注意事项**：
+- 只处理 frontmatter 中**完全没有** github.com URL 的任务，已有 references 的任务不触碰
+- 如果一个任务 body 里有多个不同 repo URL，全部加入 references（每个单独分析）
+- 自动写入后，在第七步汇总中用 🤖 标注该 reference 是智能匹配补全的
 
 ### 第二步：解析 GitHub URL
 
