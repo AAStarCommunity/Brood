@@ -5,11 +5,13 @@ status: In Progress
 assignee:
   - DavidXu
 created_date: '2026-03-05 12:00'
+updated_date: '2026-03-07 12:28'
 labels:
   - bundler
-milestone: 'Phase 1: Genesis Launch'
+milestone: m-2
 dependencies: []
 priority: medium
+ordinal: 2000
 ---
 
 ## Description

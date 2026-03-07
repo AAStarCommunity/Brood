@@ -4,12 +4,12 @@ title: '[Feature] Comet ENS - Free Subdomain Service'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-01 09:07'
+updated_date: '2026-03-07 12:34'
 labels:
   - feature
   - ens
   - frontend
-milestone: 'Phase 1: Genesis Launch'
+milestone: m-1
 dependencies:
   - TASK-6
 ---
@@ -18,6 +18,9 @@ dependencies:
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Provide users with free ENS subdomains (e.g., user.comet.eth) and internet domain mapping.
+
+1. ENS项目完成OP解析，完成自动授予某个地址一个ENS+开源的解析显示页面.
+2. mushroom.cv, forest.mushroom.cv: 自动授予二级域名给注册的社区，基于cloudflare，页面由sdk自动生成，缓存加刷新机制；来自于IPFS和链上配置等
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
