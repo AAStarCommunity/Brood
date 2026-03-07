@@ -4,7 +4,7 @@ title: '[Meta] Phase 1: Genesis Launch'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:18'
-updated_date: '2026-03-07 15:30'
+updated_date: '2026-03-07 15:55'
 labels:
   - milestone
   - phase-1
@@ -12,6 +12,8 @@ labels:
   - Phase-1
 milestone: m-1
 dependencies: []
+references:
+  - 'https://github.com/MushroomDAO/MyShop/tree/check-acceptance'
 priority: high
 ---
 
