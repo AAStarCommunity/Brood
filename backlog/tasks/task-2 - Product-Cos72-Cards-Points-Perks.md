@@ -4,7 +4,7 @@ title: '[Product] Cos72 - Cards, Points, Perks'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 12:10'
+updated_date: '2026-03-07 13:15'
 labels:
   - product
   - 'org:Mycelium'
@@ -22,6 +22,7 @@ A framework for user engagement and community incentives, featuring Cards, Point
 
 demo先设计和完成，给社区用户体验，给sdk和airaccount集成提供admin入口，🚧
   1. cos72.mushroom.dev，在线demo 0.1版本，演示demo+真实注册可用（可docker自部署）🚧
+5. sp提供社区面板，改进registry repo；🚧
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
