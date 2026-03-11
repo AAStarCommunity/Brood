@@ -4,7 +4,7 @@ title: '[Feature] Agent24 - Execution Loop'
 status: To Do
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 12:07'
+updated_date: '2026-03-08 13:18'
 labels:
   - feature
   - agent
@@ -12,6 +12,8 @@ labels:
 milestone: m-2
 dependencies:
   - TASK-7
+references:
+  - 'https://github.com/AuraAIHQ/Agent24'
 priority: medium
 ---
 

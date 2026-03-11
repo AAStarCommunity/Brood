@@ -4,14 +4,13 @@ title: '[Project] SuperPaymaster - Decentralized Gas Payment'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 12:51'
+updated_date: '2026-03-08 08:01'
 labels:
   - project
   - 'org:AAStar'
 milestone: m-1
 dependencies:
   - TASK-2
-  - TASK-3
 references:
   - >-
     https://github.com/AAStarCommunity/SuperPaymaster/tree/feature/uups-migration
