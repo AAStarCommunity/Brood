@@ -11,7 +11,7 @@ tags:
 ---
 # Protocol Launch
 
-[→ 中文版](/documentation/6/cold-launch#chinese)
+[→ 中文版](#中文版-chinese-translation)
 
 ## Three Questions
 
@@ -28,12 +28,6 @@ tags:
 
 > Organizations that foster the exploration of life's meaning are what I simply define as: **Community.**
 
-## Links
-
-1. [Roadmap](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
-2. [Realtime Progress on Tasks](https://www.mushroom.cv/) | [Milestones & Research](https://www.mushroom.cv/milestones)
-3. [Docs](https://www.mushroom.cv/documentation/1/broodbrain-readme)
-
 ## Launching
 
 We follow: **Problem → Academic Research → Digital Public Goods → Validation.**
@@ -43,11 +37,17 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 ### Cos72 & Sign90
 ### iDoris - Community Brain
 
+## Links
+
+1. [Roadmap](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
+2. [Realtime Progress on Tasks](https://www.mushroom.cv/) | [Milestones & Research](https://www.mushroom.cv/milestones)
+3. [Docs](https://www.mushroom.cv/documentation/1/broodbrain-readme)
+
 ---
 
-<a name="chinese"></a>
+## 中文版 (Chinese Translation)
 
-# 中文版 (Chinese Translation)
+[↑ English Version](#protocol-launch)
 
 ## 三个问题
 
@@ -64,12 +64,6 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 
 > 那些促进探索生命意义的组织，是我对**社区**的简单定义。
 
-## 链接
-
-1. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
-2. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
-3. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)
-
 ## 启动计划
 
 我们遵循：**问题 → 学术研究 → 数字公共物品 → 验证**。
@@ -78,3 +72,9 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 
 ### Cos72 & Sign90
 ### iDoris - 社区大脑
+
+## 链接
+
+1. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
+2. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
+3. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)
