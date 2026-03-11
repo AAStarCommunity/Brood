@@ -10,7 +10,8 @@ tags:
   - vision
 ---
 # Protocol Launch
-[Chinese version](#中文版-chinese-translation)
+
+[→ 中文版](#chinese)
 
 ## Three Questions
 
@@ -25,7 +26,7 @@ tags:
 
 ---
 
-Organizations that foster the exploration of life's meaning are what I simply define as: Community.
+> Organizations that foster the exploration of life's meaning are what I simply define as: **Community.**
 
 ## Links
 
@@ -44,15 +45,36 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 
 ---
 
-# 中文版-chinese-translation
+<a name="chinese"></a>
 
-三个问题：
+# 中文版 (Chinese Translation)
+
+## 三个问题
 
 **1. 你是谁？**
-- 简介：AAStar，一个以太坊开源建设小组，前身来自于 Plancker^ 的建设小组（AAStar），2024年11月继承普朗克精神，独立运营。
+- **简介：** AAStar，一个以太坊开源建设小组，前身来自于 Plancker^ 的建设小组（AAStar），2024年11月继承普朗克精神，独立运营。
 
 **2. 从哪来？**
-- 概述：23年4月 Zuzalu 与 Vitalik 沟通后，Plancker^ 建立的 AAStar（账户抽象）小组，专注 AA 和 infra。
+- **概述：** 23年4月 Zuzalu 与 Vitalik 沟通后，Plancker^ 建立的 AAStar（账户抽象）小组，专注 AA 和 infra。
 
 **3. 到哪去？**
-- 愿景：通过倡导和探索建立 Mycelium 开放协议，赋能社区，自由个体，聚焦区块链的动机问题，赋能社区从而激发更多创新和协作。
+- **愿景：** 通过倡导和探索建立 Mycelium 开放协议，赋能社区，自由个体，聚焦区块链的动机问题，赋能社区从而激发更多创新和协作。
+
+---
+
+> 那些促进探索生命意义的组织，是我对**社区**的简单定义。
+
+## 链接
+
+1. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
+2. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
+3. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)
+
+## 启动计划
+
+我们遵循：**问题 → 学术研究 → 数字公共物品 → 验证**。
+
+我们正在寻求资助、赞助和合作伙伴关系，以支持我们的工作。
+
+### Cos72 & Sign90
+### iDoris - 社区大脑
