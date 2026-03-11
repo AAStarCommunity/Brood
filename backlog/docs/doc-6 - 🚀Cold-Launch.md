@@ -11,7 +11,7 @@ tags:
 ---
 # Protocol Launch
 
-[→ 中文版](#chinese)
+[→ 中文版](/documentation/6/cold-launch#chinese)
 
 ## Three Questions
 
