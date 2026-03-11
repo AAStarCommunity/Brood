@@ -3,7 +3,7 @@ id: doc-3
 title: "\U0001F517Related links"
 type: other
 created_date: '2026-02-28 05:28'
-updated_date: '2026-03-01 04:04'
+updated_date: '2026-03-11 15:16'
 ---
 ## Speak slides collection
 - [Be Yourself YoungMan Speak Slides](https://docs.google.com/presentation/d/1LYWK1BETRRygChza3NCF7nVxRsjR_ymyagyrY9jL3gU/edit?usp=sharing)
@@ -15,4 +15,5 @@ updated_date: '2026-03-01 04:04'
 [Gas on Ethereum](https://docs.google.com/presentation/d/1nzTe40Img2E8iinYk-Fk3IXLqC_TXidMys5Mec0R2og/edit?usp=sharing)
 
 ## Tech research related
-[Research docs list](https://docs.google.com/spreadsheets/d/10ec6OyzmefxSMJUdjL-BF1TQtZ-ylZ-vGl4MF9PJ4jc/edit?usp=sharing)
+- [Research docs list](https://docs.google.com/spreadsheets/d/10ec6OyzmefxSMJUdjL-BF1TQtZ-ylZ-vGl4MF9PJ4jc/edit?usp=sharing)
+- [Slides](https://docs.google.com/spreadsheets/d/1SIL3_iLN61b3IwQGW91eY7hKfH4-16QQsTy3b-eBVJs/edit?usp=sharing)

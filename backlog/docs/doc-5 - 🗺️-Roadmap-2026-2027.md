@@ -3,7 +3,7 @@ id: doc-5
 title: "\U0001F5FA️ Roadmap 2026-2027"
 type: roadmap
 created_date: '2026-02-28 06:15'
-updated_date: '2026-03-01 04:05'
+updated_date: '2026-03-11 15:13'
 ---
 [Skip to Chinese Version / 跳转到中文版](#中文版-chinese-translation)
 
@@ -15,7 +15,7 @@ updated_date: '2026-03-01 04:05'
 We believe the future will be defined by a new organizational paradigm: the emergence of **Loose Communities** and **Extreme Individuals**.
 - **What does a community need most?** Onboarding + Positive Feedback + Check = **COS72** (Community OS).
 - **What do individuals need?** Time, space, economic sustainability, and the support to release their imagination, creativity, and emotions.
-
+![](https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202602081152628.png)
 ---
 
 ## 🌱 Phase 1: Genesis Launch (2026.03.30)
@@ -23,7 +23,7 @@ We believe the future will be defined by a new organizational paradigm: the emer
 - [ ] **Cos72 Chrome Extension**: User gateway integrating payments and accounts.
 - [ ] **SuperPaymaster**: Decentralized Gas Payment Protocol.
 - [ ] **AirAccount**: Solving crypto account friction (Social Login).
-- [ ] **MushroomDAO**: Launching GToken sale and initial governance vote.
+- [ ] **MushroomDAO**: Launching GToken launch and initial governance vote.
 
 ## 🍄 Phase 2: Community Expansion (2026 H2)
 **Focus: Collaborative Networks & Hardware Solutions**
@@ -56,7 +56,7 @@ We believe the future will be defined by a new organizational paradigm: the emer
 - [ ] **Cos72 Chrome Extension**: 用户入口，集成支付与账户。
 - [ ] **SuperPaymaster**: 去中心化 Gas 支付协议。
 - [ ] **AirAccount**: 解决加密账户门槛 (社交登录)。
-- [ ] **MushroomDAO**: 启动销售与首次投票。
+- [ ] **MushroomDAO**: 启动launch与首次投票。
 
 ## 🍄 Phase 2: Community Expansion (2026 H2)
 **重点：协作网络与软硬件方案**
