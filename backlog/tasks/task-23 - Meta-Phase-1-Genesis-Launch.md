@@ -26,20 +26,19 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-03-07 扫描)
+### 📊 进度报告 (2026-03-13 扫描)
 
-**🚀 预估进度: 50%** | 近 30 天 77 次提交，最近一次 2026-02-15
+**🚀 预估进度: 50%** | 近 30 天 19 次提交，最近一次 2026-02-15（4周前）
 
 **✅ AC 完成情况**:
-- 🔧 #1 Shop contract and web interface — MushroomDAO/MyShop (check-acceptance 分支) 活跃开发中：前端 NFT 模板、ERC721 合约、category API、购买风险评级、诊断面板等均已实现
-- ⬜ GToken launch contract — 未在提交中找到 GToken 相关记录
+- 🔧 #1 Shop contract and web interface — check-acceptance 分支活跃：MintERC721Action 合约、category API、购买风险评级、诊断面板、ACCEPTANCE.md 均已完成；check-acceptance 验收标准覆盖完整
+- ⬜ GToken launch contract — 未在任何提交中找到 GToken 相关实现
 
 **📝 近期动态** (MushroomDAO/MyShop check-acceptance branch):
-- 02-15: feat(frontend): add gateway reachability test button and multi-gateway links
-- 02-15: docs: add ACCEPTANCE.md (CN)；worker: categories + IPFS doc links
-- 02-15: worker: add /categories API + frontend category dropdown
-- 02-15: frontend: NFT+NFT template button + ERC721_ACTION_ADDRESS config
+- 02-15: feat(frontend): add gateway reachability test button
+- 02-15: docs: add ACCEPTANCE.md (CN) + /categories API
 - 02-15: contracts: MintERC721Action (URI|template)
+- 02-15: frontend: NFT+NFT template + risk badge + diagnostics panel
 
-💡 Shop 核心功能（前端、合约模板、购买流程）大量开发，GToken 合约尚未开始。
+💡 Shop 核心功能充分完成，但 GToken 合约未启动；仓库近 4 周无新提交，建议确认 GToken 开发计划。
 <!-- SECTION:DESCRIPTION:END -->

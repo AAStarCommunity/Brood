@@ -26,8 +26,8 @@ else
   SCAN_ROOT=$(dirname "$REPO_ROOT")
 fi
 
-# 3. Clone 缓存目录（未找到本地仓库时临时 clone）
-CLONE_DIR="${REPO_ROOT}/.claude/tmp"
+# 3. Clone 缓存目录（未找到本地仓库时临时 clone，放在 SCAN_ROOT 同级目录下）
+CLONE_DIR="${SCAN_ROOT}"
 ```
 
 **运行时**：先执行上述命令确定 `REPO_ROOT`、`SCAN_ROOT`、`CLONE_DIR`，后续所有步骤使用这些变量。把检测结果打印出来让用户确认：
@@ -35,7 +35,7 @@ CLONE_DIR="${REPO_ROOT}/.claude/tmp"
 ```
 📍 项目根目录: /Users/xxx/Dev/Brood
 🔍 仓库扫描范围: /Users/xxx/Dev
-📦 Clone 缓存: /Users/xxx/Dev/Brood/.claude/tmp
+📦 Clone 缓存: /Users/xxx/Dev（与 Brood 同级目录）
 ```
 
 ## 执行流程
