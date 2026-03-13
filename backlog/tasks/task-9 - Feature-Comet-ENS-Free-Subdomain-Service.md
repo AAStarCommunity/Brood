@@ -1,10 +1,10 @@
 ---
 id: TASK-9
 title: '[Feature] Comet ENS - Free Subdomain Service'
-status: In Progress
+status: To Do
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 12:34'
+updated_date: '2026-03-13 14:26'
 labels:
   - feature
   - ens
@@ -12,6 +12,7 @@ labels:
 milestone: m-1
 dependencies:
   - TASK-6
+ordinal: 6000
 ---
 
 ## Description

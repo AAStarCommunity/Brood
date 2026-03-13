@@ -1,10 +1,10 @@
 ---
 id: TASK-6
 title: '[Release] Cos72 - Chrome Extension v1.0'
-status: In Progress
+status: To Do
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-08 07:58'
+updated_date: '2026-03-13 14:26'
 labels:
   - release
   - cos72
@@ -15,6 +15,7 @@ dependencies: []
 references:
   - 'https://github.com/jhfnetboy/AirAccount-Plugin/tree/basic-register-box'
 priority: high
+ordinal: 5000
 ---
 
 ## Description
