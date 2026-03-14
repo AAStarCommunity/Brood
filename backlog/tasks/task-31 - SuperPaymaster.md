@@ -29,19 +29,21 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-03-13 扫描) 🤖 reference 由智能匹配自动补全
+### 📊 进度报告 (2026-03-14 扫描) 🤖 reference 由智能匹配自动补全
 
-**🚀 预估进度: 75%** | 近 30 天 30 次提交，最近一次 2026-03-12（昨天）
+**🚀 预估进度: 80%** | 近 30 天 30+ 次提交，最近一次 2026-03-12（2天前）
 
 **✅ AC 完成情况**:
 - ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，P7 Step 3 全部 P1/P2/P3 fixes 完成
-- ✅ v7.4 论文版本完成 — `SuperPaymaster_Thesis_v7.4.md` + PDF 已生成
+- ✅ v7.4 论文版本完成 — `SuperPaymaster_Thesis_v7.4.md` + PDF 最终版已生成（03-12）
+- ✅ Acknowledgements 更新 + Appendix F 删除 — 03-12 最后润色完成
 - 🔧 投稿准备 (P7 Step 4) — 尚未开始，目标期刊 Ledger (Primary) / IET Blockchain (Backup)
 
 **📝 近期动态** (DSR-Research-Flow):
-- 03-12: fix: polish 4337 + polish paper7 on reputation（连续 commit 润色）
-- 03-08: Paper3 v7.3 + v7.4 完成，Review Report 生成，所有 P1/P2/P3 审稿意见已修复
-- 03-08: 新增 paper8-SuperPaymasterV2/idea.md（下一篇论文雏形）
+- 03-12: fix: update pdf（最终 PDF 生成）
+- 03-12: fix: Acknowledgements（致谢更新）
+- 03-12: fix: remove appendix F（精简附录）
+- 03-12: fix: polish 4337（4337 相关段落最终润色）
 
-💡 Paper3 已到达投稿前最终状态（v7.4），Step 4 投稿准备（格式化、Cover Letter、期刊提交）是剩余 25%。
+💡 Paper3 内容已完稿（v7.4），所有审稿意见修复完成，PDF 已输出。剩余 20% 是 Step 4 投稿准备（双盲格式、Cover Letter、期刊提交）。
 <!-- SECTION:DESCRIPTION:END -->
