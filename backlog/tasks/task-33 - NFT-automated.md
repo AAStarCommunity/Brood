@@ -4,12 +4,12 @@ title: NFT automated
 status: To Do
 assignee: []
 created_date: '2026-03-07 15:03'
-updated_date: '2026-03-13 14:26'
+updated_date: '2026-03-14 05:11'
 labels: []
-milestone: m-1
+milestone: m-2
 dependencies: []
 priority: low
-ordinal: 4000
+ordinal: 6000
 ---
 
 ## Description

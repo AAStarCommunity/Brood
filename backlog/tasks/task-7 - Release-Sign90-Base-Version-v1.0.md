@@ -4,7 +4,7 @@ title: '[Release] Sign90 - Base Version v1.0'
 status: To Do
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-05 14:39'
+updated_date: '2026-03-14 05:11'
 labels:
   - release
   - sign90
@@ -13,6 +13,7 @@ labels:
 milestone: m-2
 dependencies: []
 priority: high
+ordinal: 2000
 ---
 
 ## Description

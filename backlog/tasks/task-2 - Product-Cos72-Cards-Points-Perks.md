@@ -2,9 +2,10 @@
 id: TASK-2
 title: '[Product] Cos72 - Cards, Points, Perks'
 status: In Progress
-assignee: []
+assignee:
+  - Davidxu
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 13:15'
+updated_date: '2026-03-14 05:10'
 labels:
   - product
   - 'org:Mycelium'

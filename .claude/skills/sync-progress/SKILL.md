@@ -217,6 +217,27 @@ git -C <repo_path> log <branch> -- --oneline --since="30 days ago" -50
 | TASK-9 Comet ENS | — | 无关联仓库 | — | 跳过 |
 ```
 
+### 第七步·五：更新 Progress Report 文档（doc-7）
+
+将本次扫描结果写入 `$REPO_ROOT/backlog/docs/doc-7 - 📊-Progress-Report.md`，使进度数据在 backlog 左侧文档栏中可见。
+
+**写入规则**：
+1. 更新 frontmatter 中的 `updated_date` 为今天的日期
+2. 替换 `## 总览 / Overview` 表格中所有行，使用本次扫描的最新数据
+3. 替换 `## 详细报告 / Detailed Reports` 各任务段落，使用本次各任务的进度报告摘要
+4. 在 `## 历史扫描记录 / Scan History` 表格**顶部**追加一行新记录（格式：`| YYYY-MM-DD | N | 本次关键变化摘要 |`）
+5. **不要删除**历史扫描记录中已有的历史行
+
+**doc-7 文件路径**：`$REPO_ROOT/backlog/docs/doc-7 - 📊-Progress-Report.md`
+
+**表格格式模板**（总览表，每次全量替换）：
+```markdown
+| 任务 | 标题 | 进度 | 仓库 | 最近提交 | 状态摘要 |
+|:---|:---|:---:|:---|:---:|:---|
+| TASK-XX | {标题} | **{N}%** | {仓库} | {日期} | {一句话} |
+| TASK-YY | {标题} | **—** | 无关联仓库 | — | {说明} |
+```
+
 ### 第八步：构建并提交更新
 
 先重新构建静态站点（让 web 版展示最新内容），再提交推送：
