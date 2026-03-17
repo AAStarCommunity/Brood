@@ -21,23 +21,23 @@ references:
 <!-- SECTION:DESCRIPTION:BEGIN -->
 A standalone abstract account project embedded in Chrome Plugin, solving basic crypto account hurdles.
 
-### 📊 进度报告 (2026-03-14 扫描) 🤖 reference 由本地仓库名匹配补全
+### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
 
-**🚀 预估进度: 65%** | 近 30 天 10 次提交，最近一次 2026-03-04
+**🚀 预估进度: 70%** | 近 30 天 16 次提交，最近一次 2026-03-13（v0.16.7 合并 main）
 
 **✅ AC 完成情况**:
-- ✅ Hide private key management from user — WebAuthn passkey 实现，用户无需管理私钥；v0.16.x 全面完善
-- 🔧 Support social login/recovery — WebAuthn multi-origin 支持（v0.16.0），rpId 配置化（v0.16.4）；guardian 恢复在合约层（TASK-10）完成，SDK 层集成待验证
-- 🔧 Seamless integration with Chrome Extension — 服务后端活跃（stats dashboard, graceful deploy），前端 plugin 集成状态未知
+- ✅ Hide private key management from user — WebAuthn passkey 实现，TX 描述隐私遮蔽（v0.16.6）
+- 🔧 Support social login/recovery — multi-origin WebAuthn（v0.16.0），rpId 配置化（v0.16.4）；guardian 恢复在合约层完成，服务层集成待验证
+- 🔧 Seamless integration with Chrome Extension — KMS 后端 v0.16.7 稳定，Chrome Plugin 侧集成状态未知
 
 **📝 近期动态** (AAStarCommunity/AirAccount):
-- 03-04: docs: add .env auto-load for test scripts + rpId/origin security docs
-- 03-04: feat: config-driven WebAuthn rpId (KMS_RP_ID=aastar.io,localhost)
-- 03-01: feat: v0.16.4 — live stats dashboard as default page
-- 03-01: feat: v0.16.3 — graceful deploy with queue drain + TA fmt
-- 02-28: feat: v0.16.0 — multi-origin WebAuthn support
+- 03-13: **merge: KMS v0.16.7 → main** — TX history stats 统计功能上线
+- 03-12: feat: v0.16.7 — TX history stats on stats page
+- 03-11: feat: v0.16.6 — tx tracing logs + Description privacy mask（隐私增强）
+- 03-11: feat: add tx tracing logs to all TEE handlers
+- 03-04: feat: v0.16.4 — live stats dashboard as default page
 
-💡 AirAccount 后端服务（KMS/TEE）高度活跃，v0.16.4 已上线。Chrome Plugin 集成和 guardian 社交恢复是剩余主要工作（35%）。
+💡 AirAccount KMS/TEE 后端持续迭代（v0.16.7），TX 追踪和隐私保护完善。Chrome Plugin 前端集成和社交恢复完整验证是剩余 30%。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
