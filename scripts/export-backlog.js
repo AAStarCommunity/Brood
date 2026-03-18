@@ -57,7 +57,10 @@ async function computeMilestoneProgress() {
 
   const result = {};
   for (const [key, list] of Object.entries(byMilestone)) {
-    result[key] = Math.round(list.reduce((a, b) => a + b, 0) / list.length);
+    const val = Math.round(list.reduce((a, b) => a + b, 0) / list.length);
+    result[key] = val;
+    // The task list right-panel uses "lane:milestone:<key>" as keys (from ra() function)
+    result[`lane:milestone:${key}`] = val;
   }
   return result;
 }
