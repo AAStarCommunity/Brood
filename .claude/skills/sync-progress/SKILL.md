@@ -217,20 +217,106 @@ git -C <repo_path> log <branch> -- --oneline --since="30 days ago" -50
 | TASK-9 Comet ENS | — | 无关联仓库 | — | 跳过 |
 ```
 
+### 第七步·四：计算各 Phase 加权进度
+
+在更新 doc-7 之前，先计算 Phase 1/2/3 的真实进度。**核心思想：Phase 进度 = 该 Phase 所有任务的完成度加权平均，而非简单的「已完成任务数 / 总任务数」**。
+
+**进度取值规则**（按优先级）：
+- `status: Done` → **100%**（已完成，不论进度报告里写多少）
+- `status: In Progress` + 有「预估进度: N%」→ **取 N%**
+- `status: In Progress` + 无进度估算 → **保守取 10%**（有开始但无数据）
+- `status: To Do` → **0%**（未开始）
+
+**Milestone → Phase 映射规则**：
+- `m-1` / `Phase 1: Genesis Launch` / `'Phase 1: Genesis Launch'` → **Phase 1**
+- `m-2` / `Phase 2: Community Expansion` → **Phase 2**
+- `m-3` / `Phase 3: Ecosystem Maturity` → **Phase 3**
+- `m-r` / 其他 → **Research/Other**（不计入 Phase）
+
+**计算方法**：用以下 Python 脚本（在 Bash 工具中运行）：
+
+```python
+import os, re, glob
+
+tasks_dir = f'{REPO_ROOT}/backlog/tasks'
+files = glob.glob(tasks_dir + '/*.md')
+
+tasks = []
+for f in sorted(files):
+    content = open(f).read()
+    fm_match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not fm_match: continue
+    fm = fm_match.group(1)
+
+    tid = re.search(r'^id:\s*(.+)', fm, re.M)
+    status = re.search(r'^status:\s*(.+)', fm, re.M)
+    milestone = re.search(r'^milestone:\s*(.+)', fm, re.M)
+    if not tid or not status or not milestone: continue
+
+    tid = tid.group(1).strip().strip("'\"")
+    status_raw = status.group(1).strip().strip("'\"")
+    milestone = milestone.group(1).strip().strip("'\"")
+
+    # Determine progress
+    prog_match = re.search(r'预估进度:\s*(\d+)%', content)
+    if 'done' in status_raw.lower():
+        progress = 100
+    elif 'in progress' in status_raw.lower():
+        progress = int(prog_match.group(1)) if prog_match else 10
+    else:  # To Do
+        progress = 0
+
+    # Map to phase
+    m = milestone.lower()
+    if 'm-1' in m or 'phase 1' in m or 'genesis' in m:
+        phase = 'Phase 1'
+    elif 'm-2' in m or 'phase 2' in m or 'community' in m:
+        phase = 'Phase 2'
+    elif 'm-3' in m or 'phase 3' in m or 'ecosystem' in m:
+        phase = 'Phase 3'
+    else:
+        phase = 'Research'
+
+    tasks.append({'id': tid, 'status': status_raw, 'phase': phase, 'progress': progress})
+
+# Calculate phase averages
+for phase in ['Phase 1', 'Phase 2', 'Phase 3']:
+    ptasks = [t for t in tasks if t['phase'] == phase]
+    if ptasks:
+        avg = sum(t['progress'] for t in ptasks) / len(ptasks)
+        print(f"{phase}: {avg:.1f}% ({len(ptasks)} tasks)")
+```
+
+将计算结果保存为变量，在下一步写入 doc-7。
+
 ### 第七步·五：更新 Progress Report 文档（doc-7）
 
 将本次扫描结果写入 `$REPO_ROOT/backlog/docs/doc-7 - 📊-Progress-Report.md`，使进度数据在 backlog 左侧文档栏中可见。
 
 **写入规则**：
 1. 更新 frontmatter 中的 `updated_date` 为今天的日期
-2. 替换 `## 总览 / Overview` 表格中所有行，使用本次扫描的最新数据
-3. 替换 `## 详细报告 / Detailed Reports` 各任务段落，使用本次各任务的进度报告摘要
-4. 在 `## 历史扫描记录 / Scan History` 表格**顶部**追加一行新记录（格式：`| YYYY-MM-DD | N | 本次关键变化摘要 |`）
-5. **不要删除**历史扫描记录中已有的历史行
+2. **替换 `## Phase 进度 / Phase Progress` 区块**（如不存在则在总览表之前新增），写入三个 Phase 的加权进度
+3. 替换 `## 总览 / Overview` 表格中所有行，使用本次扫描的最新数据
+4. 替换 `## 详细报告 / Detailed Reports` 各任务段落，使用本次各任务的进度报告摘要
+5. 在 `## 历史扫描记录 / Scan History` 表格**顶部**追加一行新记录（格式：`| YYYY-MM-DD | N | 本次关键变化摘要 |`）
+6. **不要删除**历史扫描记录中已有的历史行
 
 **doc-7 文件路径**：`$REPO_ROOT/backlog/docs/doc-7 - 📊-Progress-Report.md`
 
-**表格格式模板**（总览表，每次全量替换）：
+**Phase 进度区块格式模板**（每次全量替换该区块内容）：
+```markdown
+## Phase 进度 / Phase Progress
+
+| Phase | 加权进度 | 任务数 | 说明 |
+|:---|:---:|:---:|:---|
+| **Phase 1**: Genesis Launch | **{N}%** | {n}个任务 | Done={d}, In Progress={ip}, To Do={td} |
+| **Phase 2**: Community Expansion | **{N}%** | {n}个任务 | Done={d}, In Progress={ip}, To Do={td} |
+| **Phase 3**: Ecosystem Maturity | **{N}%** | {n}个任务 | Done={d}, In Progress={ip}, To Do={td} |
+
+> 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
+```
+
+**总览表格式模板**（每次全量替换）：
 ```markdown
 | 任务 | 标题 | 进度 | 仓库 | 最近提交 | 状态摘要 |
 |:---|:---|:---:|:---|:---:|:---|
