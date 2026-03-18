@@ -1,11 +1,11 @@
 ---
 id: TASK-27
 title: Update mushroom.box
-status: In Progress
+status: Done
 assignee:
   - jhfnetboy
 created_date: '2026-03-07 03:38'
-updated_date: '2026-03-18 12:39'
+updated_date: '2026-03-18 13:03'
 labels: []
 milestone: m-1
 dependencies: []
