@@ -450,7 +450,7 @@ async function exportStaticBacklog() {
     } catch(err) {}
 
     // Write _headers for Cloudflare Pages (ensures API files return JSON content-type)
-    const headersContent = "/api/*\\n  Content-Type: application/json\\n";
+    const headersContent = "/api/*\n  Content-Type: application/json\n";
     await fs.writeFile(path.join(distDir, '_headers'), headersContent.trim());
 
     // Write vercel.json for Vercel deployment (ensures API files return JSON content-type and handles SPA routing)

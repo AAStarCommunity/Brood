@@ -1,1 +1,2 @@
-/api/*\n  Content-Type: application/json\n
+/api/*
+  Content-Type: application/json
