@@ -7,6 +7,61 @@ const distDir = path.join(process.cwd(), 'dist');
 const apiDir = path.join(distDir, 'api');
 const PORT = 8422;
 
+// Compute weighted milestone progress from task markdown files.
+// Rules: Done=100%, In Progress=use 预估进度 (default 10%), To Do=0%.
+// Returns { 'm-1': N, 'm-2': N, 'm-3': N, 'm-r': N }
+async function computeMilestoneProgress() {
+  const tasksDir = path.join(process.cwd(), 'backlog', 'tasks');
+  const files = await fs.readdir(tasksDir).catch(() => []);
+  const byMilestone = {};
+
+  for (const file of files) {
+    if (!file.endsWith('.md')) continue;
+    const content = await fs.readFile(path.join(tasksDir, file), 'utf-8');
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    if (!fmMatch) continue;
+    const fm = fmMatch[1];
+
+    const getField = (key) => {
+      const m = fm.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+      return m ? m[1].replace(/^['"]|['"]$/g, '').trim() : '';
+    };
+
+    const status = getField('status').replace(/^["']|["']$/g, '').trim().toLowerCase();
+    const milestone = getField('milestone').replace(/^["']|["']$/g, '').trim();
+    if (!milestone) continue;
+
+    // Normalize milestone to canonical key
+    const ml = milestone.toLowerCase();
+    let key;
+    if (ml === 'm-1' || ml.includes('phase 1') || ml.includes('genesis')) key = 'm-1';
+    else if (ml === 'm-2' || ml.includes('phase 2') || ml.includes('community')) key = 'm-2';
+    else if (ml === 'm-3' || ml.includes('phase 3') || ml.includes('ecosystem')) key = 'm-3';
+    else if (ml === 'm-r' || ml.includes('research')) key = 'm-r';
+    else key = milestone; // keep as-is for unknown milestones
+
+    // Compute task progress
+    let progress;
+    if (status === 'done') {
+      progress = 100;
+    } else if (status === 'in progress') {
+      const m = content.match(/预估进度:\s*(\d+)%/);
+      progress = m ? parseInt(m[1]) : 10;
+    } else {
+      progress = 0;
+    }
+
+    if (!byMilestone[key]) byMilestone[key] = [];
+    byMilestone[key].push(progress);
+  }
+
+  const result = {};
+  for (const [key, list] of Object.entries(byMilestone)) {
+    result[key] = Math.round(list.reduce((a, b) => a + b, 0) / list.length);
+  }
+  return result;
+}
+
 async function fetchFromLocal(endpoint, retries = 5) {
   let lastStatus = 0;
   for (let i = 0; i < retries; i++) {
@@ -61,6 +116,10 @@ async function exportStaticBacklog() {
       }
     }
 
+    // Compute weighted milestone progress before downloading assets
+    const milestoneProgress = await computeMilestoneProgress();
+    console.log('Milestone weighted progress:', milestoneProgress);
+
     console.log('Downloading assets:', assets);
     for (const asset of assets) {
       const assetData = await fetchFromLocal(`/${asset}`);
@@ -69,9 +128,27 @@ async function exportStaticBacklog() {
       await fs.writeFile(targetPath, assetData);
     }
 
+    // Patch JS bundle: replace doneCount/total formula with weighted progress lookup
+    for (const asset of assets.filter(a => a.endsWith('.js'))) {
+      const jsPath = path.join(distDir, asset);
+      let js = await fs.readFile(jsPath, 'utf-8');
+      const OLD = 'let s0=m0.total>0?Math.round(m0.doneCount/m0.total*100):0,';
+      const NEW = 'let s0=window.__milestoneProgress&&window.__milestoneProgress[m0.key]!==undefined?window.__milestoneProgress[m0.key]:(m0.total>0?Math.round(m0.doneCount/m0.total*100):0),';
+      if (js.includes(OLD)) {
+        js = js.replace(OLD, NEW);
+        await fs.writeFile(jsPath, js);
+        console.log(`✅ Patched milestone progress formula in ${asset}`);
+      } else {
+        console.warn(`⚠️  Could not find milestone progress formula in ${asset} — bundle may have changed`);
+      }
+    }
+
     // Rewrite index.html to inject Read-Only interception logic
     const injectedScript = `
     <script>
+      // Weighted milestone progress: Done=100%, InProgress=estimate, ToDo=0%
+      window.__milestoneProgress = ${JSON.stringify(milestoneProgress)};
+
       window.originalFetch = window.fetch;
       window.fetch = async function(resource, init) {
         let method = 'GET';
