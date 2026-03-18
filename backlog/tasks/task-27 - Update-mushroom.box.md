@@ -1,13 +1,17 @@
 ---
 id: TASK-27
 title: Update mushroom.box
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - jhfnetboy
 created_date: '2026-03-07 03:38'
-updated_date: '2026-03-13 14:26'
+updated_date: '2026-03-18 12:39'
 labels: []
 milestone: m-1
 dependencies: []
+references:
+  - 'https://github.com/MushroomDAO/mushroomdao.github.io'
+  - 'https://github.com/MushroomDAO/docs'
 priority: medium
 ordinal: 3000
 ---
