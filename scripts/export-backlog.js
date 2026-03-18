@@ -132,14 +132,32 @@ async function exportStaticBacklog() {
     for (const asset of assets.filter(a => a.endsWith('.js'))) {
       const jsPath = path.join(distDir, asset);
       let js = await fs.readFile(jsPath, 'utf-8');
-      const OLD = 'let s0=m0.total>0?Math.round(m0.doneCount/m0.total*100):0,';
-      const NEW = 'let s0=window.__milestoneProgress&&window.__milestoneProgress[m0.key]!==undefined?window.__milestoneProgress[m0.key]:(m0.total>0?Math.round(m0.doneCount/m0.total*100):0),';
-      if (js.includes(OLD)) {
-        js = js.replace(OLD, NEW);
-        await fs.writeFile(jsPath, js);
-        console.log(`✅ Patched milestone progress formula in ${asset}`);
+      let patched = false;
+
+      // Patch 1: Kanban column progress bar (J0 component)
+      const OLD1 = 'let s0=m0.total>0?Math.round(m0.doneCount/m0.total*100):0,';
+      const NEW1 = 'let s0=window.__milestoneProgress&&window.__milestoneProgress[m0.key]!==undefined?window.__milestoneProgress[m0.key]:(m0.total>0?Math.round(m0.doneCount/m0.total*100):0),';
+      if (js.includes(OLD1)) {
+        js = js.replace(OLD1, NEW1);
+        patched = true;
+        console.log(`✅ Patched Kanban column progress formula in ${asset}`);
       } else {
-        console.warn(`⚠️  Could not find milestone progress formula in ${asset} — bundle may have changed`);
+        console.warn(`⚠️  Could not find Kanban column progress formula in ${asset}`);
+      }
+
+      // Patch 2: Right-side milestone panel (a function in task list view)
+      const OLD2 = 'a=(H0)=>{let B0=p(H0);if(B0===0)return 0;let U0=n(H0);return Math.round(U0/B0*100)},G0=N5.useMemo';
+      const NEW2 = 'a=(H0)=>{if(window.__milestoneProgress&&window.__milestoneProgress[H0]!==undefined)return window.__milestoneProgress[H0];let B0=p(H0);if(B0===0)return 0;let U0=n(H0);return Math.round(U0/B0*100)},G0=N5.useMemo';
+      if (js.includes(OLD2)) {
+        js = js.replace(OLD2, NEW2);
+        patched = true;
+        console.log(`✅ Patched right-panel milestone progress formula in ${asset}`);
+      } else {
+        console.warn(`⚠️  Could not find right-panel milestone progress formula in ${asset}`);
+      }
+
+      if (patched) {
+        await fs.writeFile(jsPath, js);
       }
     }
 
