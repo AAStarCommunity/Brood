@@ -58,3 +58,30 @@ pnpm run deploy:cf
 2. 设置 **Build command** 留空或者填入 `echo "No build"` (因为已经本地 build 过了)。
 3. 设置 **Build output directory** 为 `dist`。
 这样以后你每次 `git push` 给 Github，Cloudflare 也一样会自动拉取 `dist/` 并秒速部署到它的全球 CDN 上。
+
+---
+Local plist
+-   # 查看状态（PID 和退出码）
+  launchctl list | grep backlog
+
+  # 停止
+  launchctl stop com.jason.backlog-browser
+
+  # 启动
+  launchctl start com.jason.backlog-browser
+
+  # 重启（stop + start）
+  launchctl stop com.jason.backlog-browser && launchctl start com.jason.backlog-browser
+
+  # 完全卸载（停止并移除）
+  launchctl unload ~/Library/LaunchAgents/com.jason.backlog-browser.plist
+
+  # 重新加载 plist（修改 plist 后用这个）
+  launchctl unload ~/Library/LaunchAgents/com.jason.backlog-browser.plist
+  launchctl load ~/Library/LaunchAgents/com.jason.backlog-browser.plist
+
+  # 查看日志
+  tail -f /tmp/backlog-browser.out.log
+  tail -f /tmp/backlog-browser.err.log
+
+
