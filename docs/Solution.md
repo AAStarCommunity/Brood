@@ -407,7 +407,7 @@ scripts/sync-all-repos.js
    ├── CHANGELOG.md 最新 section → 最近变更
    ├── git log --since="7 days ago" → 近期 commit 摘要
    └── 导出的 API 类型文件（.d.ts / abi.json） → 接口契约
-3. 聚合写入 orgs/aastar/REPO_REGISTRY.md
+3. 聚合写入 protocol/REPO_REGISTRY.md（协议层全局视图，按组织分区）
 4. 更新 protocol/ECOSYSTEM_MAP.md 中的接口契约部分
 5. 触发 build → 静态站更新
 ```
