@@ -3,7 +3,7 @@ id: doc-6
 title: "\U0001F680 Cold Launch"
 type: guide
 created_date: '2026-03-11 20:00'
-updated_date: '2026-03-19 11:37'
+updated_date: '2026-03-19 11:47'
 tags:
   - launch
   - protocol
@@ -37,6 +37,7 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 ### Cos72 & Sign90
 - Mycelium Protocol will create real applications based on the infrastruction building by AAStar and AuraAI.
 - Cos72 & Sign90, are the OS for Community and Individuals.
+- - [Chinese version description](https://docs.google.com/presentation/d/1dc6Rygjw0qQUAohB7pUq-FNsiXox6P0cUhm28qELEBs/edit?usp=sharing)
 ### iDoris - Community Brain
 - All the OS backend intellegence is iDoris
 - It is a framework inlude open source AI model, edge comuping network, multi-end apps and privacy concerned policy.
@@ -76,6 +77,7 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 ### Cos72 & Sign90
 - Mycelium Protocol will create real applications based on the infrastruction building by AAStar and AuraAI.
 - Cos72 & Sign90, are the OS for Community and Individuals.
+- [Chinese version description](https://docs.google.com/presentation/d/1dc6Rygjw0qQUAohB7pUq-FNsiXox6P0cUhm28qELEBs/edit?usp=sharing)
 ### iDoris - Community Brain
 - All the OS backend intellegence is iDoris
 - It is a framework inlude open source AI model, edge comuping network, multi-end apps and privacy concerned policy.
