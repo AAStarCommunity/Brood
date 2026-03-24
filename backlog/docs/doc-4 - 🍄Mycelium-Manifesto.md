@@ -17,7 +17,7 @@ First, we believe the future belongs to **Loose Communities and Extreme Individu
 
 Second, the rapid advance of AI forces us to confront a fundamental question: **what is irreducibly human?** Our answer: **imagination, creativity, and emotion**. These are not features to be automated away—they are the singular core of every individual, the things no model can replace.
 
-Together, these two forces are triggering a societal shift we call the **Meaning Economy**: a new paradigm in which individuals and communities use economic activity not as an end in itself, but as a medium for exploring who they are and what truly matters to them. The search for meaning—once a private philosophical question—is becoming the defining force of our era.
+Together, these two forces are triggering a societal shift we call the **Meaning Economy**: a new paradigm in which individuals and communities use economic activity not as an end in itself, but as a medium for exploring who they are and what truly matters to them. This shift may be forced upon us, or consciously chosen—but it is all but inevitable. The search for meaning—once a private philosophical question—is becoming the defining force of our era. (See [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing))
 
 ---
 
@@ -27,7 +27,7 @@ Together, these two forces are triggering a societal shift we call the **Meaning
 
 其二，AI 的快速发展迫使我们重新追问：**人类个体不可替代的内核是什么？** 我们的答案是：**想象力、创造力与情感**。这不是可以被自动化的特征，而是每一个人独一无二的存在本质，是任何模型都无法替代的东西。
 
-这两股力量的汇聚，正在催生一场影响全社会的范式转变——我们称之为**意义经济**：个人与社区把经济活动不作为目的本身，而作为探索"我是谁""什么对我真正重要"的媒介。对意义的寻找与定位，这个曾经属于私人哲学领域的问题，正在成为我们这个时代最重要的驱动力。
+这两股力量的汇聚，正在催生一场影响全社会的范式转变——我们称之为**意义经济**：个人与社区把经济活动不作为目的本身，而作为探索"我是谁""什么对我真正重要"的媒介。这场转变或许是被迫，或许是主动，但几乎不可避免。对意义的寻找与定位，这个曾经属于私人哲学领域的问题，正在成为我们这个时代最重要的驱动力。（参见 [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing)）
 
 ---
 
