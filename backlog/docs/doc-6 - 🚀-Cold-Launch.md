@@ -3,7 +3,7 @@ id: doc-6
 title: "\U0001F680 Cold Launch"
 type: guide
 created_date: '2026-03-11 20:00'
-updated_date: '2026-03-19 11:47'
+updated_date: '2026-03-24 10:20'
 tags:
   - launch
   - protocol
@@ -22,7 +22,7 @@ tags:
 * **Overview:** Following a discussion with Vitalik at Zuzalu in April 2023, the AAStar (Account Abstraction) group was established by Plancker^, focusing primarily on AA and infrastructure.
 
 **3. Where are you going?**
-* **Vision:** By advocating and exploring the establishment of the Mycelium open protocol, we aim to empower communities and free individuals. We focus on addressing motivational challenges in the blockchain space, empowering the community to inspire greater innovation and collaboration.
+* **Vision:** By advocating and setup the establishment of the Mycelium open protocol, we aim to empower communities and free individuals. We focus on addressing motivational challenges in the blockchain space, empowering the community to inspire greater innovation and collaboration.
 
 ---
 
@@ -62,7 +62,7 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 - **概述：** 23年4月 Zuzalu 与 Vitalik 沟通后，Plancker^ 建立的 AAStar（账户抽象）小组，专注 AA 和 infra。
 
 **3. 到哪去？**
-- **愿景：** 通过倡导和探索建立 Mycelium 开放协议，赋能社区，自由个体，聚焦区块链的动机问题，赋能社区从而激发更多创新和协作。
+- **愿景：** 倡导和发起，建立 Mycelium 开放协议，赋能社区，自由个体，聚焦区块链的动机问题，赋能社区从而激发更多创新和协作。
 
 ---
 
