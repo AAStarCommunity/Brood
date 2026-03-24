@@ -1,9 +1,9 @@
 ---
 id: doc-4
-title: "🍄Mycelium Manifesto"
+title: "\U0001F344Mycelium Manifesto"
 type: manifesto
 created_date: '2026-02-28 05:45'
-updated_date: '2026-03-24 10:16'
+updated_date: '2026-03-24 11:24'
 tags:
   - vision
   - mission
@@ -66,12 +66,13 @@ Communities are the natural home of the Meaning Economy. Unlike capital-driven o
 ---
 
 ## Architecture / 架构
+![image](https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202603241823789.png)
 
-[🔍 查看完整架构图 / View Full Architecture](/docs/architecture.html)
+[🔍 查看完整架构图 / View Full Architecture](https://www.mushroom.cv/docs/architecture.html)
+
 
 ## Core Products / 核心产品
-
-<img src="https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202602081152628.png" width="45%" alt="Cos72 + Sin90 — Mycelium Core Products" />
+![image](https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202602081152628.png)
 
 **Cos72 + Sin90** — Mycelium Protocol 的核心产品，为松散社区与极致个体提供基础工具。
 
