@@ -26,8 +26,7 @@
 | 产品 | 组织 | 十词定位 |
 |-----|------|---------|
 | **SuperPaymaster** | AAstar | Gasless transactions and micropayments for Web3 agents |
-| **AirAccount (KMS)** | AAstar | TEE 私钥托管·WebAuthn 无密码·AWS KMS 兼容服务 |
-| **airaccount-contract** | AAstar | 指纹认证·分级安全·社交恢复·无 ETH·ERC-4337 智能钱包合约 |
+| **AirAccount** | AAstar | Your daily Web3 account: fingerprint login, no ETH needed |
 | **SuperRelay** | AAstar | ERC-4337 企业级 bundler 网关·双签名 TEE 零入侵架构 |
 | **Cos72** | MushroomDAO | 社区操作系统：Onboarding + 正反馈激励 + 治理 |
 | **Sin90** | AuraAI | 个人操作系统：表达者·创作者·建设者的数字自我 |

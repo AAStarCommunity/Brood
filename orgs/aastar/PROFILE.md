@@ -7,8 +7,8 @@ status: active
 protocols:
   - mycelium
 provides:
-  - capability: key-management
-    interface: TEE/KMS + WebAuthn (AWS KMS compatible API)
+  - capability: daily-crypto-account
+    interface: Your daily Web3 account: fingerprint login, no ETH needed
     repo: github.com/AAStarCommunity/AirAccount
     version: v0.16.7
   - capability: gas-abstraction
