@@ -299,15 +299,250 @@ graph TB
 
 ---
 
-## 十、下一步行动
+## 十、渐进式上下文交付（Progressive Context Delivery）
+
+### 核心原则
+
+不把所有上下文一次性倒出去——而是**按需交付**：任务需要什么，AI 就看到什么。
+
+### 设计方案
+
+```
+任务上下文匹配流程：
+
+TASK-42（labels: superpaymaster, gas-abstraction; milestone: m-1）
+  ↓
+BroodBrain 上下文解析
+  ↓
+┌─────────────────────────────────────────────┐
+│  L0 上下文（始终注入）                        │
+│  • 协议使命（protocol/MISSION.md 摘要）        │
+│  • 你的角色（AAstar 在生态中的位置）            │
+├─────────────────────────────────────────────┤
+│  L1 上下文（任务所属组织）                     │
+│  • AAstar 当前阶段目标                        │
+│  • 本里程碑（m-1）进展概要                     │
+│  • 任务依赖（block/blocked-by 关联任务摘要）    │
+├─────────────────────────────────────────────┤
+│  L2 上下文（任务关联仓库）                     │
+│  • SuperPaymaster repo 最近 10 条 commit      │
+│  • 相关 CHANGELOG 片段                        │
+│  • 关联 PR/issue 摘要                         │
+└─────────────────────────────────────────────┘
+  ↓
+生成任务专属 CLAUDE.md 片段（拷贝到 clipboard 或写入 /tmp/task-context.md）
+```
+
+### 实现方式
+
+```bash
+# 新 skill：/task-context TASK-42
+# 输出：该任务的最小化上下文包，直接可 paste 给 Claude Code
+
+输出格式：
+---
+## 当前任务上下文
+
+**任务**: TASK-42 - SuperPaymaster 集成测试
+**里程碑**: Phase 1 - 基础设施
+**状态**: In Progress（预估 60%）
+
+**协议背景**: AAstar 是 Mycelium Protocol 的 Web3 基础设施层，
+             SuperPaymaster 负责 Gas 抽象支付，是 SDK 的核心依赖。
+
+**本里程碑上下文**:
+- 当前 m-1 整体进度：43%（加权）
+- block 本任务的：TASK-38（AirAccount 接口 - Done）
+- 本任务 block：TASK-45（SDK 集成）
+
+**仓库快照** (github.com/aastar-inc/SuperPaymaster):
+- 最近变更：feat: add bundler relay endpoint (2d ago)
+- CHANGELOG: v0.3.0 - 新增 multichain 支持
+---
+```
+
+### 钻取机制（Drill-down）
+
+用户在对话中说 "更多关于 AirAccount 依赖" → `/task-context TASK-42 --expand dependencies`
+
+分层钻取：
+- `--expand protocol` → 完整协议文档
+- `--expand milestone` → 里程碑下所有任务
+- `--expand repo` → 完整 git log + CHANGELOG
+- `--expand cross-org` → OralAI 等相关组织上下文
+
+---
+
+## 十一、全仓库同步（All-Repos Sync）
+
+### 目标
+
+不只追踪有 `references:` 字段的任务——而是**主动扫描本地所有仓库**，提取能力、接口、最近变更，构建全局能力注册表。
+
+### 本地仓库清单
+
+```
+/Users/jason/Dev/
+├── aastar/          # AAstar 核心业务
+├── aastar-sdk/      # SDK 层
+├── mycelium/        # Mycelium Protocol
+├── AI/              # AI 能力层（推测为 OralAI 相关）
+├── AuraAI/          # AI 产品层
+├── Community/       # 社区/文档
+├── Demos/           # 演示项目
+├── Brood/           # BroodBrain（本仓库）
+└── ...（其余仓库）
+```
+
+### 全仓库同步架构
+
+```
+scripts/sync-all-repos.js
+
+流程：
+1. 扫描 /Users/jason/Dev/ 下所有 git 仓库
+2. 对每个仓库提取：
+   ├── package.json / Cargo.toml → 项目名、依赖、对外接口
+   ├── README.md 首段 → 项目用途摘要
+   ├── CHANGELOG.md 最新 section → 最近变更
+   ├── git log --since="7 days ago" → 近期 commit 摘要
+   └── 导出的 API 类型文件（.d.ts / abi.json） → 接口契约
+3. 聚合写入 orgs/aastar/REPO_REGISTRY.md
+4. 更新 protocol/ECOSYSTEM_MAP.md 中的接口契约部分
+5. 触发 build → 静态站更新
+```
+
+### REPO_REGISTRY.md 格式
+
+```markdown
+# AAstar 仓库能力注册表
+_最后同步: 2026-03-24_
+
+## SuperPaymaster
+- **位置**: /Users/jason/Dev/aastar/SuperPaymaster
+- **用途**: ERC-4337 Paymaster，Gas 费用抽象
+- **当前版本**: v0.3.0
+- **对外接口**: `validatePaymasterUserOp`, `postOp`, `deposit`
+- **最近变更** (7天): feat: multichain relay, fix: nonce overflow
+- **依赖**: AirAccount (账户验证), bundler-api
+
+## AirAccount
+- **位置**: /Users/jason/Dev/aastar/AirAccount
+- **用途**: ERC-4337 Account Abstraction
+- **当前版本**: v0.2.1
+- ...
+
+## aastar-sdk
+- **位置**: /Users/jason/Dev/aastar-sdk
+- **用途**: 开发者集成 SDK，封装 SuperPaymaster + AirAccount
+- ...
+```
+
+### 定时同步
+
+```bash
+# 每日自动触发（可通过 launchd 或手动运行）
+node scripts/sync-all-repos.js
+
+# 也可集成到 update-task.sh 之前：
+# sync → build → commit → push
+```
+
+---
+
+## 十二、未来兼容性设计（Future Compatibility）
+
+### 设计原则：插拔式架构
+
+```
+上下文系统 = 摄入层 + 存储层 + 交付层
+
+每层可独立升级，不影响其他层。
+```
+
+### 三层可替换设计
+
+```
+┌─────────────────────────────────────────────────────┐
+│  摄入层（Ingestion）                                  │
+│                                                     │
+│  当前: 本地 git + markdown 文件扫描                   │
+│  Phase 2: GitHub API（跨机器、CI 触发）               │
+│  Phase 3: Webhook（push 事件实时更新）                │
+│  Phase 4: 组织自助提交（PR → 自动集成）               │
+└──────────────────────┬──────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────┐
+│  存储层（Context Store）                              │
+│                                                     │
+│  当前: markdown 文件 + JSON（dist/api/）              │
+│  Phase 2: 结构化 YAML schema（可验证、可查询）         │
+│  Phase 3: 向量索引（当文档 > 100 篇时，可选 RAG）      │
+│  Phase 4: 分布式（各组织自托管，协议层聚合）            │
+└──────────────────────┬──────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────┐
+│  交付层（Delivery）                                   │
+│                                                     │
+│  当前: CLAUDE.md 静态文件（手动 paste）               │
+│  Phase 2: /task-context skill（自动生成上下文包）      │
+│  Phase 3: MCP Server（Claude Code 直接查询）          │
+│  Phase 4: RAG API（任意 AI 工具订阅上下文流）          │
+└─────────────────────────────────────────────────────┘
+```
+
+### 统一 Schema（现在就定义，未来不破坏）
+
+每个组织的 `PROFILE.md` 遵循固定 frontmatter，未来工具可自动解析：
+
+```yaml
+---
+schema_version: "1.0"
+org_id: aastar
+org_name: AAstar
+layer: infrastructure          # infrastructure | ai | application | protocol
+status: active                 # active | stealth | archived
+protocols:
+  - mycelium
+provides:
+  - capability: gas-abstraction
+    interface: ERC-4337 Paymaster
+    repo: github.com/aastar-inc/SuperPaymaster
+  - capability: account-abstraction
+    interface: ERC-4337 Account
+    repo: github.com/aastar-inc/AirAccount
+depends_on:
+  - org: oralai
+    capability: ai-inference
+    optional: true
+contact:
+  builder: jason
+  github: github.com/AAStarCommunity
+---
+```
+
+### 兼容性保证
+
+| 升级路径 | 向后兼容 | 说明 |
+|---------|---------|------|
+| 添加新字段到 PROFILE.md | ✅ | 旧工具忽略未知字段 |
+| 迁移 markdown → 向量索引 | ✅ | markdown 始终保留，向量是附加层 |
+| 添加 MCP server | ✅ | CLAUDE.md 方式同时保留 |
+| 新组织加入 | ✅ | 只需提交 PROFILE.md，其余渐进补充 |
+| 跨组织依赖新增 | ✅ | `depends_on` 是可选字段 |
+
+---
+
+## 十三、下一步行动
 
 ```bash
 # 当前分支：context
 # 接下来可以执行：
 
 1. 在此分支完成 protocol/ 和 orgs/aastar/ 目录结构
-2. 写 MISSION.md、PROFILE.md、ECOSYSTEM_MAP.md 初稿
-3. 更新 CLAUDE.md 引用新结构
-4. build → 验证静态导出包含新文档
-5. merge 到 main → 部署到 mushroom.cv
+2. 写 MISSION.md、PROFILE.md（含 schema v1.0 frontmatter）、ECOSYSTEM_MAP.md 初稿
+3. 写 scripts/sync-all-repos.js（全仓库扫描）
+4. 更新 CLAUDE.md 引用新结构
+5. build → 验证静态导出包含新文档
+6. merge 到 main → 部署到 mushroom.cv
 ```
