@@ -67,7 +67,13 @@ Communities are the natural home of the Meaning Economy. Unlike capital-driven o
 
 ## Architecture / 架构
 
-![](https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202602281140824.png)
+[🔍 查看完整架构图 / View Full Architecture](/docs/architecture.html)
+
+## Core Products / 核心产品
+
+<img src="https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202602081152628.png" width="45%" alt="Cos72 + Sin90 — Mycelium Core Products" />
+
+**Cos72 + Sin90** — Mycelium Protocol 的核心产品，为松散社区与极致个体提供基础工具。
 
 ## References / 参考资料
 

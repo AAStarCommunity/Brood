@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技感架构可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #020617;
+            --primary-cyan: #22d3ee;
+            --secondary-blue: #3b82f6;
+            --accent-orange: #fb923c;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --border-color: rgba(34, 211, 238, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 科技感背景网格 */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 1000px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at 50% 50%, black, transparent 80%);
+            opacity: 0.2;
+        }
+
+        /* 连线流光效果 */
+        .flow-line {
+            position: absolute;
+            background: linear-gradient(to bottom, transparent, var(--primary-cyan), transparent);
+            width: 2px;
+            height: 100px;
+            z-index: 0;
+            animation: flow 3s infinite linear;
+        }
+
+        @keyframes flow {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        .layer-container {
+            border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .layer-container:hover {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .node-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .node-card:hover {
+            background: var(--secondary-blue);
+            color: white;
+            box-shadow: 0 0 15px var(--secondary-blue);
+            transform: scale(1.05);
+        }
+
+        .title-gradient {
+            background: linear-gradient(90deg, var(--primary-cyan), var(--secondary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .connector-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-cyan);
+            position: absolute;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="bg-grid"></div>
+
+    <div class="max-w-6xl mx-auto space-y-12 relative">
+        
+        <!-- 第一层：CoS72 赋能社区 -->
+        <section class="layer-container p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl title-gradient">CoS72: Empower Community</h2>
+                <span class="text-xs text-cyan-400 font-mono tracking-widest uppercase">Governance Layer</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="node-card border-l-4 border-l-cyan-400">
+                    <i class="fas fa-tasks mb-2 text-cyan-400"></i>
+                    <div class="font-bold">任务 (MyTasks)</div>
+                    <div class="text-[10px] opacity-60">协调、任务和点数管理</div>
+                </div>
+                <div class="node-card border-l-4 border-l-blue-400">
+                    <i class="fas fa-users-rays mb-2 text-blue-400"></i>
+                    <div class="font-bold">共识 (MyVote)</div>
+                    <div class="text-[10px] opacity-60">共识、投票和快照</div>
+                </div>
+                <div class="node-card border-l-4 border-l-purple-400">
+                    <i class="fas fa-exchange-alt mb-2 text-purple-400"></i>
+                    <div class="font-bold">兑换 (MyShop)</div>
+                    <div class="text-[10px] opacity-60">交换和道具</div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 p-4 rounded-lg border border-dashed border-cyan-500/30 text-center">
+                <div class="text-sm font-semibold text-cyan-300"><i class="fas fa-brain mr-2"></i>iDoris: Community Brain</div>
+                <div class="text-[10px] opacity-60">Onboard Flow and more...</div>
+            </div>
+        </section>
+
+        <!-- 连接线区域 -->
+        <div class="flex justify-around h-12 relative">
+            <div class="flow-line" style="left: 30%"></div>
+            <div class="flow-line" style="left: 70%; animation-delay: 1s;"></div>
+        </div>
+
+        <!-- 第二层：双子核心层 (AAStar & AuraAI) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- AAStar -->
+            <section class="layer-container p-6">
+                <h3 class="text-xl font-bold mb-4 text-orange-400"><i class="fas fa-star mr-2"></i>AAStar</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="node-card text-xs">SuperPaymaster</div>
+                    <div class="node-card text-xs">AirAccount</div>
+                    <div class="node-card text-xs">CometENS</div>
+                    <div class="node-card text-xs">AAStar SDK</div>
+                    <div class="node-card text-xs">Chrome Plugin</div>
+                    <div class="node-card text-xs">Mobile Template</div>
+                </div>
+            </section>
+            <!-- AuraAI -->
+            <section class="layer-container p-6 border-cyan-500/50">
+                <h3 class="text-xl font-bold mb-4 text-cyan-400"><i class="fas fa-robot mr-2"></i>AuraAI</h3>
+                <div class="space-y-3">
+                    <div class="bg-cyan-500/20 p-2 rounded text-center text-xs font-bold border border-cyan-500/30">
+                        iDoris: Multi-layer Model
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="node-card text-[10px] p-1">信息流</div>
+                        <div class="node-card text-[10px] p-1">决策流</div>
+                        <div class="node-card text-[10px] p-1">执行流</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1 bg-slate-800 p-2 rounded text-[10px] text-center border border-white/5">Fashu: 自我进化</div>
+                        <div class="flex-1 bg-slate-800 p-2 rounded text-[10px] text-center border border-white/5">LianDan: 蒸馏</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 第三层：Sin90 释放人性 -->
+        <section class="layer-container p-6 bg-gradient-to-r from-slate-900 to-blue-900/40">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-black italic tracking-tighter text-white">Sin90: Unleash Humanity</h2>
+                <div class="h-1 w-24 bg-orange-500 mx-auto mt-2 shadow-[0_0_10px_#fb923c]"></div>
+            </div>
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-full max-w-md bg-blue-500/20 py-2 rounded-full border border-blue-400/30 text-center text-sm">
+                    BBSwarm: Your Agents Team
+                </div>
+                <div class="w-full max-w-sm bg-blue-500/10 py-2 rounded-full border border-blue-400/20 text-center text-sm">
+                    KnowKnow: Your Team Headquarters
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-6 mt-8">
+                <div class="text-center group">
+                    <div class="w-12 h-12 bg-cyan-500/20 rounded-lg mx-auto mb-2 flex items-center justify-center group-hover:bg-cyan-500 transition-colors">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="font-bold">创作者</div>
+                    <div class="text-[10px] opacity-50">Imagination</div>
+                </div>
+                <div class="text-center group">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-lg mx-auto mb-2 flex items-center justify-center group-hover:bg-blue-500 transition-colors">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="font-bold">建设者</div>
+                    <div class="text-[10px] opacity-50">Innovation</div>
+                </div>
+                <div class="text-center group">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg mx-auto mb-2 flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="font-bold">表达者</div>
+                    <div class="text-[10px] opacity-50">Emotion</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第四层：Mycelium 底部支撑 -->
+        <section class="layer-container p-4 bg-black/40 border-slate-700">
+            <div class="flex justify-around text-[10px] font-mono text-slate-500 mb-4 overflow-hidden whitespace-nowrap">
+                <span>DIVERSITY SOIL</span> <i class="fas fa-chevron-right self-center"></i>
+                <span>MYCELIUM NETWORK</span> <i class="fas fa-chevron-right self-center"></i>
+                <span>EMERGENCE INNOVATION</span> <i class="fas fa-chevron-right self-center"></i>
+                <span class="text-yellow-500">HUMANITY LIGHT</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <div class="bg-slate-800 p-2 rounded border border-white/5 text-[10px] text-center">Park Protocol</div>
+                <div class="bg-slate-800 p-2 rounded border border-white/5 text-[10px] text-center">Spores Protocol</div>
+                <div class="bg-slate-800 p-2 rounded border border-white/5 text-[10px] text-center">OpenNest Protocol</div>
+                <div class="bg-orange-900/30 p-2 rounded border border-orange-500/30 text-[10px] text-center text-orange-200 font-bold">AAStar Infra</div>
+                <div class="bg-cyan-900/30 p-2 rounded border border-cyan-500/30 text-[10px] text-center text-cyan-200 font-bold">AuraAI Infra</div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // 增加简单的鼠标跟随装饰效果
+        document.addEventListener('mousemove', (e) => {
+            const grid = document.querySelector('.bg-grid');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            grid.style.transform = `perspective(1000px) rotateX(${(y - 0.5) * 5}deg) rotateY(${(x - 0.5) * -5}deg)`;
+        });
+    </script>
+</body>
+</html>

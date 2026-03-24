@@ -483,6 +483,18 @@ async function exportStaticBacklog() {
     }));
     await fs.writeFile(path.join(distDir, '_redirects'), '/api/* /api/:splat 200\n/* /index.html 200');
 
+    // Copy static HTML pages from docs/ to dist/docs/
+    const staticDocsDir = path.join(process.cwd(), 'docs');
+    const distDocsDir = path.join(distDir, 'docs');
+    await fs.mkdir(distDocsDir, { recursive: true });
+    const staticDocFiles = await fs.readdir(staticDocsDir);
+    for (const file of staticDocFiles) {
+      if (file.endsWith('.html')) {
+        await fs.copyFile(path.join(staticDocsDir, file), path.join(distDocsDir, file));
+        console.log(`  Copied docs/${file} → dist/docs/${file}`);
+      }
+    }
+
     console.log('✨ Static export complete! Saved to dist/');
     console.log('🚀 You can preview it locally by running: npx serve dist');
   } finally {
