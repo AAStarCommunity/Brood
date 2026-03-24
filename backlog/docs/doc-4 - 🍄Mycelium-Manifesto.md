@@ -49,6 +49,28 @@ Communities are the natural home of the Meaning Economy. Unlike capital-driven o
 
 ---
 
+## Who We Serve / 我们服务谁
+
+**EN:** In an age of AI-automated roles, people are not disappearing—they are finding new roles. We see three emerging identities in the Meaning Economy:
+
+- **Expressers** — individuals whose basic need is authentic emotional expression
+- **Creators** — individuals driven by the impulse of imagination, making things into existence
+- **Builders** — individuals who find dopamine in the act of creation itself
+
+Cos72 + Sin90 provides the digital public goods infrastructure for these three roles to thrive within communities and sustain themselves economically.
+
+---
+
+**CN:** 在岗位 AI 化的时代，人并没有消失——他们在找到新的角色。我们看到意义经济中涌现出三种身份：
+
+- **表达者** — 拥有真实情感的个体的基本诉求
+- **创作者** — 丰富想象力的个体的创作冲动
+- **建设者** — 创造力作为多巴胺来源的角色定位
+
+Cos72 + Sin90 为这三种角色提供数字公共物品基础设施，帮助他们在社区中存在，并找到可持续的经济循环。
+
+---
+
 ## Vision / 愿景
 
 **EN:** Empowering **Extreme Individuals** to thrive within diverse **Loose Communities** connected by the **Mycelium Protocol**—reclaiming their imagination, creativity, and emotions to transcend alienation, find meaning, and truly "become themselves."
@@ -59,9 +81,27 @@ Communities are the natural home of the Meaning Economy. Unlike capital-driven o
 
 ## Mission / 使命
 
-**EN:** To realize our vision by consistently building **Digital Public Goods**, fostering a **Sustainable Mycelial Network** for collaboration, and exploring innovation through **Prediction Markets**—providing the infrastructure for the Meaning Economy to flourish.
+**EN:** Mycelium Protocol is built on three foundational protocols—each inspired by how fungi sustain ecosystems over billions of years:
 
-**CN:** 通过持续构建数字公共物品，形成可持续协作的菌丝网络，以预测市场的方式探索创新——为意义经济的繁荣提供基础设施，从而达成愿景。
+| Protocol | Focus | Inspiration |
+|---------|-------|------------|
+| **Park** | Digital Public Goods | Cycling — fungi decompose and nourish |
+| **Spores** | Sustainable Collaboration | Transmission — mycelial networks carry nutrients |
+| **OpenNest** | Prediction-based Incubation | Exponential — spores propagate and multiply |
+
+Together they provide the infrastructure for the Meaning Economy to flourish.
+
+---
+
+**CN:** Mycelium Protocol 由三个基础协议构成——每一个都借鉴了真菌在数十亿年间维系生态系统的方式：
+
+| 协议 | 聚焦 | 灵感来源 |
+|-----|------|---------|
+| **Park** | 数字公共物品 | 循环——真菌分解有机物，为环境提供养分 |
+| **Spores** | 可持续协作 | 传输——菌丝网络传递养分，连接万物 |
+| **OpenNest** | 预测市场孵化 | 指数——孢子大规模传播，让网络指数增长 |
+
+三者共同为意义经济的繁荣提供基础设施，从而达成愿景。
 
 ---
 
