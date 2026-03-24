@@ -11,23 +11,19 @@ tags:
 ---
 ## Background / 背景
 
-**EN:** Two forces are converging to reshape how humans organize and find meaning.
+**EN:** The rapid advance of AI is disrupting every traditional organization built around capital accumulation—and forcing us to ask a fundamental question: **what is irreducibly human?** Our answer: **imagination, creativity, and emotion**. These are not features to be automated away—they are the singular core of every individual, the things no model can replace.
 
-First, we believe the future belongs to **Loose Communities and Extreme Individuals**. These are not traditional commercial entities driven by capital accumulation—they are fan guilds, clubs, and collaborative hubs where people "figure it out together," bound by shared consensus rather than financial obligation or institutional hierarchy.
+At the same time, we observe a direction: people are leaving large organizations for communities, moving from passive employment toward self-directed exploration. We believe **Loose Communities and Extreme Individuals**—not corporations—will become the defining organizational form of the future.
 
-Second, the rapid advance of AI forces us to confront a fundamental question: **what is irreducibly human?** Our answer: **imagination, creativity, and emotion**. These are not features to be automated away—they are the singular core of every individual, the things no model can replace.
-
-Together, these two forces are triggering a societal shift we call the **Meaning Economy**: a new paradigm in which individuals and communities use economic activity not as an end in itself, but as a medium for exploring who they are and what truly matters to them. This shift may be forced upon us, or consciously chosen—but it is all but inevitable. The search for meaning—once a private philosophical question—is becoming the defining force of our era. (See [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing))
+This disruption and this direction together are giving rise to a societal shift we call the **Meaning Economy**: using economic activity not as an end in itself, but as a medium for exploring who we are and what truly matters to us. This shift may be forced upon us, or consciously chosen—but it is all but inevitable. (See [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing))
 
 ---
 
-**CN:** 两股力量正在汇聚，重塑人类的组织方式与意义寻找。
+**CN:** AI 的快速发展，正在冲击一切以资本增殖为核心的传统组织形态，也迫使我们重新追问：**人类个体不可替代的内核是什么？** 我们的答案是：**想象力、创造力与情感**——这是任何模型都无法替代的东西。
 
-其一，我们认为未来是**松散社区与极致个体**的时代。这些社区不是以资本增殖为唯一驱动的传统商业实体，而是以共识与协作为核心——爱好者社区、俱乐部、目标驱动的协作组织，大家"一起探索出来"，靠共识而非利益关系凝聚。
+与此同时，我们观察到一个方向：人们正在从大组织流向社区，从被动雇佣走向自主探索。我们认为，**松散社区与极致个体**将成为未来最重要的组织形态——而非公司。
 
-其二，AI 的快速发展迫使我们重新追问：**人类个体不可替代的内核是什么？** 我们的答案是：**想象力、创造力与情感**。这不是可以被自动化的特征，而是每一个人独一无二的存在本质，是任何模型都无法替代的东西。
-
-这两股力量的汇聚，正在催生一场影响全社会的范式转变——我们称之为**意义经济**：个人与社区把经济活动不作为目的本身，而作为探索"我是谁""什么对我真正重要"的媒介。这场转变或许是被迫，或许是主动，但几乎不可避免。对意义的寻找与定位，这个曾经属于私人哲学领域的问题，正在成为我们这个时代最重要的驱动力。（参见 [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing)）
+这股冲击与这个方向的汇聚，正在催生一场影响全社会的范式转变——我们称之为**意义经济**：把经济活动不作为目的本身，而作为探索"我是谁""什么对我真正重要"的媒介。这场转变或许是被迫，或许是主动，但几乎不可避免。（参见 [Course 0](https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing)）
 
 ---
 
