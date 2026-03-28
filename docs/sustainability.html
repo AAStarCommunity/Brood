@@ -174,38 +174,83 @@
       <div class="px-5 py-4 border-b" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
           <span class="tag" style="background:rgba(34,211,238,0.1);color:var(--cyan);border:1px solid rgba(34,211,238,0.3)">S1</span>
-          <h3 class="font-bold">基础设施免费使用 + 协议费</h3>
-          <span class="ml-auto text-xs text-slate-500">Free Base + Protocol Fee</span>
+          <h3 class="font-bold">SuperPaymaster 协议费</h3>
+          <span class="ml-auto text-xs text-slate-500">Protocol Fee · 与行业对齐</span>
         </div>
       </div>
       <div class="p-5">
-        <div class="glass p-3 mb-4 flex items-start gap-2" style="border-color:rgba(74,222,128,0.3)">
-          <i class="fas fa-info-circle mt-0.5 flex-shrink-0" style="color:var(--green)"></i>
-          <p class="text-sm text-slate-300"><strong class="text-white">社区版永久免费使用</strong>——AirAccount、SuperPaymaster 核心功能无门槛使用。协议只在每次服务中收取极小手续费。</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">SuperPaymaster 协议费</div>
-            <div class="stream-num" style="color:var(--cyan)">min($0.001, 10%)</div>
-            <div class="text-xs text-slate-400 mt-2">每笔 Gas 代付，取两者中较小值。<br>用户无感知，嵌入 Gas 费中收取。</div>
+
+        <!-- Pricing tiers -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+          <div class="sub p-4" style="border-color:rgba(74,222,128,0.2)">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tag" style="background:rgba(74,222,128,0.1);color:var(--green)">体验包</span>
+              <span class="font-semibold text-sm">aPNTs 积分包</span>
+            </div>
+            <div class="text-xs text-slate-400 space-y-1">
+              <div>· 购买 aPNTs 积分，按积分消耗 Gas 代付额度</div>
+              <div>· 适合个人用户和新社区体验入门</div>
+              <div>· 贡献（提 Issue、分享、推广）也可换取积分</div>
+              <div class="mt-2 text-slate-500">注：不免费，但门槛极低</div>
+            </div>
           </div>
-          <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">AirAccount 服务费</div>
-            <div class="stream-num" style="color:var(--cyan)">积分 / Points</div>
-            <div class="text-xs text-slate-400 mt-2">账户操作消耗积分。积分可用社区贡献换取——提 Issue、写使用体验、分享推广均可。</div>
-          </div>
-          <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">为什么这样设计</div>
-            <div class="text-sm text-slate-300 mt-2 leading-relaxed">
-              · 门槛为零，最大化用户覆盖<br>
-              · 规模化后手续费形成稳定现金流<br>
-              · 积分激励贡献，形成社区正反馈<br>
-              · 不付钱 = 贡献，贡献 = 价值
+          <div class="sub p-4" style="border-color:rgba(34,211,238,0.2)">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tag" style="background:rgba(34,211,238,0.1);color:var(--cyan)">默认模式</span>
+              <span class="font-semibold text-sm">按量计费</span>
+            </div>
+            <div class="text-2xl font-mono font-bold mb-1" style="color:var(--cyan)">max(Gas × 10%, $0.001)</div>
+            <div class="text-xs text-slate-400 space-y-1">
+              <div>· 与 Pimlico / Alchemy 行业标准对齐（7–10%）</div>
+              <div>· $0.001 下限确保微交易也有最低收益</div>
+              <div>· 当前 L2 Gas 环境下绝大多数 tx 按下限收取</div>
+              <div>· Gas 暴涨时百分比自动保护利润</div>
             </div>
           </div>
         </div>
-        <div class="text-xs text-slate-600 border-t border-white/5 pt-3 mt-2">
-          参考：Uniswap 协议费（0.05–1%）、Gelato 自动化服务费（0.001 ETH/task）
+
+        <!-- Revenue calculator -->
+        <div class="sub p-4 mb-4">
+          <div class="text-xs text-slate-500 uppercase tracking-widest mb-3">月入 $1,000 需要多少规模？</div>
+          <div class="text-xs text-slate-400 mb-3">
+            当前 L2（Base）UserOp Gas 成本 ≈ $0.002–$0.005，10% = $0.0002–$0.0005，均低于下限。<br>
+            → <strong class="text-white">实际有效费率 ≈ $0.001/tx</strong>（正常 Gas 环境下下限主导）
+          </div>
+          <table>
+            <thead>
+              <tr><th>日交易量</th><th>月收入</th><th>对应用户规模</th><th>达成时间（估）</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono text-slate-300">5,000 tx/day</td>
+                <td class="font-mono" style="color:var(--yellow)">$150</td>
+                <td class="text-slate-400 text-xs">500 DAU × 10 tx/人</td>
+                <td class="text-slate-500 text-xs">Beta 上线后</td>
+              </tr>
+              <tr>
+                <td class="font-mono text-slate-300">30,000 tx/day</td>
+                <td class="font-mono" style="color:var(--yellow)">$900</td>
+                <td class="text-slate-400 text-xs">3,000 DAU × 10 tx/人</td>
+                <td class="text-slate-500 text-xs">~6 个月</td>
+              </tr>
+              <tr style="background:rgba(34,211,238,0.04)">
+                <td class="font-mono font-bold text-white">~35,000 tx/day</td>
+                <td class="font-mono font-bold" style="color:var(--cyan)">$1,050 ✓</td>
+                <td class="text-slate-300 text-xs">3,500 DAU × 10 tx/人<br><span class="text-slate-500">≈ 10个社区 × 350 日活</span></td>
+                <td class="text-slate-400 text-xs font-semibold">Phase B 目标</td>
+              </tr>
+              <tr>
+                <td class="font-mono text-slate-300">100,000 tx/day</td>
+                <td class="font-mono" style="color:var(--green)">$3,000</td>
+                <td class="text-slate-400 text-xs">10,000 DAU × 10 tx/人</td>
+                <td class="text-slate-500 text-xs">Phase C</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-xs text-slate-600 border-t border-white/5 pt-3">
+          行业参考：Pimlico +10%、Alchemy +8%、Coinbase CDP +7%、Circle +10%（均为 Gas 成本百分比，无下限）
         </div>
       </div>
     </div>
