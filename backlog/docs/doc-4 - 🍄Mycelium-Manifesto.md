@@ -57,7 +57,14 @@ Communities are the natural home of the Meaning Economy. Unlike capital-driven o
 - **Creators** — individuals driven by the impulse of imagination, making things into existence
 - **Builders** — individuals who find dopamine in the act of creation itself
 
-Cos72 + Sin90 provides the digital public goods infrastructure for these three roles to thrive within communities and sustain themselves economically.
+We serve these individuals first. But individuals do not thrive in isolation—they need soil. So we also serve the **communities** they live in, because the quality of the community determines the quality of the individual's environment. And communities do not exist in a vacuum—they are embedded in **cities**, which shape the conditions for all of this.
+
+This is why we build:
+- **Sin90** — a personal OS for the individual (expression, creation, building)
+- **Cos72** — a community OS for the groups they belong to (coordination, governance, incentives)
+- **CityOS** *(future)* — an urban OS for the cities that hold these communities
+
+Each layer serves the one below it. The city creates conditions for communities. Communities create conditions for individuals. Individuals are the point.
 
 ---
 
@@ -67,7 +74,14 @@ Cos72 + Sin90 provides the digital public goods infrastructure for these three r
 - **创作者** — 丰富想象力的个体的创作冲动
 - **建设者** — 创造力作为多巴胺来源的角色定位
 
-Cos72 + Sin90 为这三种角色提供数字公共物品基础设施，帮助他们在社区中存在，并找到可持续的经济循环。
+我们首先服务的是这些**个体**。但个体不能在真空中繁荣——他们需要土壤。所以我们也服务于他们所在的**社区**，因为社区的质量决定了个体能生长的环境。而社区也不是孤立的——它们扎根于**城市**，城市塑造了一切的底层条件。
+
+这就是我们构建三层产品的原因：
+- **Sin90** — 个人操作系统（表达、创作、建设）
+- **Cos72** — 社区操作系统（协调、治理、激励）
+- **CityOS** *(未来)* — 城市操作系统，为承载这些社区的城市服务
+
+每一层都在为它之下的那层服务。城市为社区创造条件，社区为个体创造土壤，而个体——才是真正的目的。
 
 ---
 
