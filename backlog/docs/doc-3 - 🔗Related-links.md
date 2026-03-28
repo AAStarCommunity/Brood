@@ -12,6 +12,10 @@ updated_date: '2026-03-28 00:00'
 
 产品全景 · 关键指标 · 赞助者墙 · 相关资料汇总
 
+**[→ 商业规划 / Business Plan](https://www.mushroom.cv/docs/business.html)**
+
+收入模式 · 可持续路径 · 开源案例分析
+
 ---
 
 ## Speak slides collection

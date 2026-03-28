@@ -103,33 +103,38 @@
       <div class="px-5 py-4 border-b" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
           <span class="tag" style="background:rgba(34,211,238,0.1);color:var(--cyan);border:1px solid rgba(34,211,238,0.3)">S1</span>
-          <h3 class="font-bold">基础设施协议费</h3>
-          <span class="ml-auto text-xs text-slate-500">Infrastructure Protocol Fee</span>
+          <h3 class="font-bold">基础设施免费使用 + 协议费</h3>
+          <span class="ml-auto text-xs text-slate-500">Free Base + Protocol Fee</span>
         </div>
       </div>
       <div class="p-5">
+        <div class="glass p-3 mb-4 flex items-start gap-2" style="border-color:rgba(74,222,128,0.3)">
+          <i class="fas fa-info-circle mt-0.5 flex-shrink-0" style="color:var(--green)"></i>
+          <p class="text-sm text-slate-300"><strong class="text-white">社区版永久免费使用</strong>——AirAccount、SuperPaymaster 核心功能无门槛使用。协议只在每次服务中收取极小手续费。</p>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">SuperPaymaster</div>
-            <div class="stream-num" style="color:var(--cyan)">min(0.001 ETH, 10%)</div>
-            <div class="text-xs text-slate-400 mt-1">每笔 Gas 代付，取两者中较小值</div>
+            <div class="text-xs text-slate-500 mb-1">SuperPaymaster 协议费</div>
+            <div class="stream-num" style="color:var(--cyan)">min($0.001, 10%)</div>
+            <div class="text-xs text-slate-400 mt-2">每笔 Gas 代付，取两者中较小值。<br>用户无感知，嵌入 Gas 费中收取。</div>
           </div>
           <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">AirAccount 服务</div>
+            <div class="text-xs text-slate-500 mb-1">AirAccount 服务费</div>
             <div class="stream-num" style="color:var(--cyan)">积分 / Points</div>
-            <div class="text-xs text-slate-400 mt-1">账户操作消耗积分，积分可贡献换取</div>
+            <div class="text-xs text-slate-400 mt-2">账户操作消耗积分。积分可用社区贡献换取——提 Issue、写使用体验、分享推广均可。</div>
           </div>
           <div class="sub p-4">
-            <div class="text-xs text-slate-500 mb-1">特性</div>
+            <div class="text-xs text-slate-500 mb-1">为什么这样设计</div>
             <div class="text-sm text-slate-300 mt-2 leading-relaxed">
-              · 微小但规模化后稳定<br>
-              · 用户无感知（嵌入 Gas 费）<br>
-              · 不付钱可贡献换取
+              · 门槛为零，最大化用户覆盖<br>
+              · 规模化后手续费形成稳定现金流<br>
+              · 积分激励贡献，形成社区正反馈<br>
+              · 不付钱 = 贡献，贡献 = 价值
             </div>
           </div>
         </div>
         <div class="text-xs text-slate-600 border-t border-white/5 pt-3 mt-2">
-          参考：Uniswap 协议费（0.05%–1%）、Gelato 自动化服务费（0.001 ETH/task）
+          参考：Uniswap 协议费（0.05–1%）、Gelato 自动化服务费（0.001 ETH/task）
         </div>
       </div>
     </div>
@@ -139,39 +144,100 @@
       <div class="px-5 py-4 border-b" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
           <span class="tag" style="background:rgba(251,191,36,0.1);color:var(--yellow);border:1px solid rgba(251,191,36,0.3)">S2</span>
-          <h3 class="font-bold">社区 OS 增值服务</h3>
-          <span class="ml-auto text-xs text-slate-500">Open Core / SaaS</span>
+          <h3 class="font-bold">社区托管 + 部署 + 运营服务</h3>
+          <span class="ml-auto text-xs text-slate-500">Managed Services / Open Core</span>
         </div>
       </div>
       <div class="p-5">
-        <p class="text-slate-400 text-sm mb-4">Cos72 + Sin90 核心功能永久开源免费。收费的是：</p>
-        <table>
-          <thead>
-            <tr><th>层级</th><th>对象</th><th>收费内容</th><th>定价思路</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">免费</span></td>
-              <td class="text-slate-300">所有用户</td>
-              <td class="text-slate-400">自托管部署，核心功能，社区支持</td>
-              <td class="text-slate-500">—</td>
-            </tr>
-            <tr>
-              <td><span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">社区版</span></td>
-              <td class="text-slate-300">中小社区 (&lt;500人)</td>
-              <td class="text-slate-400">托管运维 + 增值模块（高级治理/自动积分）</td>
-              <td class="text-slate-500">$20–50/月</td>
-            </tr>
-            <tr>
-              <td><span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">企业版</span></td>
-              <td class="text-slate-300">大型组织 / DAO</td>
-              <td class="text-slate-400">SLA 保障 + 定制开发 + 专属顾问</td>
-              <td class="text-slate-500">$200+/月</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="text-xs text-slate-600 border-t border-white/5 pt-3 mt-2">
-          参考：Discourse（开源论坛，托管版 $100/月）、Gitea（开源 Git，企业版订阅）、Mattermost（开源 Slack，企业版）
+        <p class="text-slate-400 text-sm mb-4">Cos72 + Sin90 核心代码永久开源，自托管免费。收费的是让你<strong class="text-white">省心省力</strong>的部分：</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+
+          <!-- Hosting -->
+          <div class="sub p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-server text-xs" style="color:var(--yellow)"></i>
+              <span class="font-semibold text-sm">社区托管</span>
+              <span class="tag ml-auto" style="background:rgba(251,191,36,0.08);color:var(--yellow)">按量</span>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td class="text-slate-400 text-xs">基础服务费</td>
+                  <td class="text-xs font-mono" style="color:var(--yellow)">按账户数</td>
+                  <td class="text-xs text-slate-500">月活账户阶梯计费</td>
+                </tr>
+                <tr>
+                  <td class="text-slate-400 text-xs">存储 / 带宽</td>
+                  <td class="text-xs font-mono" style="color:var(--yellow)">按量付费</td>
+                  <td class="text-xs text-slate-500">超出免费配额后计费</td>
+                </tr>
+                <tr>
+                  <td class="text-slate-400 text-xs">AI 推理调用</td>
+                  <td class="text-xs font-mono" style="color:var(--yellow)">按调用次数</td>
+                  <td class="text-xs text-slate-500">iDoris API 按量</td>
+                </tr>
+                <tr>
+                  <td class="text-slate-400 text-xs">SLA 保障</td>
+                  <td class="text-xs font-mono" style="color:var(--yellow)">附加订阅</td>
+                  <td class="text-xs text-slate-500">99.9% 可用性承诺</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Deployment -->
+          <div class="sub p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-cube text-xs" style="color:var(--purple)"></i>
+              <span class="font-semibold text-sm">定制部署</span>
+              <span class="tag ml-auto" style="background:rgba(167,139,250,0.08);color:var(--purple)">项目制</span>
+            </div>
+            <div class="space-y-2 text-xs text-slate-400">
+              <div class="flex items-start gap-2"><i class="fas fa-check mt-0.5 flex-shrink-0" style="color:var(--purple)"></i>数据本地化部署（私有化）</div>
+              <div class="flex items-start gap-2"><i class="fas fa-check mt-0.5 flex-shrink-0" style="color:var(--purple)"></i>品牌定制（白标部署）</div>
+              <div class="flex items-start gap-2"><i class="fas fa-check mt-0.5 flex-shrink-0" style="color:var(--purple)"></i>集成已有系统（SSO / ERP / CRM）</div>
+              <div class="flex items-start gap-2"><i class="fas fa-check mt-0.5 flex-shrink-0" style="color:var(--purple)"></i>监管合规模块（数据主权、GDPR）</div>
+              <div class="flex items-start gap-2"><i class="fas fa-check mt-0.5 flex-shrink-0" style="color:var(--purple)"></i>链上账户 + 国库定制集成</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Consulting + Skills/Agents -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="sub p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-users-cog text-xs" style="color:var(--green)"></i>
+              <span class="font-semibold text-sm">社区运营咨询</span>
+              <span class="tag ml-auto" style="background:rgba(74,222,128,0.08);color:var(--green)">按期</span>
+            </div>
+            <div class="space-y-1 text-xs text-slate-400">
+              <div>· 社区冷启动策略 + 激励设计</div>
+              <div>· 治理结构设计（提案 / 投票流程）</div>
+              <div>· 积分经济模型定制</div>
+              <div>· DAO 转型路径规划</div>
+              <div class="mt-2 font-mono" style="color:var(--green)">按项目/月度 retainer 计费</div>
+            </div>
+          </div>
+          <div class="sub p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-robot text-xs" style="color:var(--cyan)"></i>
+              <span class="font-semibold text-sm">定制 Skill & Agent</span>
+              <span class="tag ml-auto" style="background:rgba(34,211,238,0.08);color:var(--cyan)">按需</span>
+            </div>
+            <div class="space-y-1 text-xs text-slate-400">
+              <div>· 社区专属 Claude Skill 开发</div>
+              <div>· 自动化 Agent（进度追踪 / 内容生成）</div>
+              <div>· iDoris 知识库定制训练</div>
+              <div>· BroodBrain 私有化部署 + 定制</div>
+              <div class="mt-2 font-mono" style="color:var(--cyan)">按功能点 / 维护订阅计费</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-600 border-t border-white/5 pt-3">
+          参考：Discourse（托管版 $100/月）、Mattermost（企业私有化部署）、Red Hat（顾问服务年均 $50k+）
         </div>
       </div>
     </div>
