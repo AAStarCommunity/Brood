@@ -130,6 +130,15 @@ Together they provide the infrastructure for the Meaning Economy to flourish.
 
 **Cos72 + Sin90** — Mycelium Protocol 的核心产品，为松散社区与极致个体提供基础工具。
 
+## Supporters / 支持者
+
+感谢所有认可愿景、与我们共同建设的人：
+
+- [🏆 赞助者 & 共建者墙](https://www.mushroom.cv/docs/dashboard.html#supporters)
+- [🚀 参与 Cold Launch](https://www.mushroom.cv/docs/cold-launch.html#supporters)
+
+---
+
 ## References / 参考资料
 
 - **Presentation:** [Mycelium Protocol Deck](https://docs.google.com/presentation/d/1XLEl4sd5Qe9kKMrUwSby7Dk-9G-fw3pqJWhXmDosv4k/edit?usp=sharing)

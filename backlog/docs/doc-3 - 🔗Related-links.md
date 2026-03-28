@@ -3,8 +3,17 @@ id: doc-3
 title: "\U0001F517Related links"
 type: other
 created_date: '2026-02-28 05:28'
-updated_date: '2026-03-11 15:16'
+updated_date: '2026-03-28 00:00'
 ---
+
+## 📊 Community Dashboard
+
+**[→ 社区监控看板 / Community Monitor](https://www.mushroom.cv/docs/dashboard.html)**
+
+产品全景 · 关键指标 · 赞助者墙 · 相关资料汇总
+
+---
+
 ## Speak slides collection
 - [Be Yourself YoungMan Speak Slides](https://docs.google.com/presentation/d/1LYWK1BETRRygChza3NCF7nVxRsjR_ymyagyrY9jL3gU/edit?usp=sharing)
 - [Open Source Empower Individuals](https://docs.google.com/presentation/d/1T2pAuX2ZRakLq0JI6HT5Kn_NW31DVGGP9p-SrlOzqLs/edit?usp=sharing)

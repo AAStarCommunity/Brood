@@ -703,6 +703,67 @@
 
     <div class="divider mb-16"></div>
 
+    <!-- SUPPORTERS WALL -->
+    <section id="supporters" class="mb-16">
+      <h2 class="text-2xl mb-2 cyan-text">支持者 <span class="text-slate-400 text-lg font-normal">/ Supporters</span></h2>
+      <p class="text-slate-400 text-sm mb-8">感谢所有与我们共同愿景的人</p>
+
+      <div class="mb-8">
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fas fa-heart text-red-400"></i> 赞助者 Sponsors · $500+
+        </div>
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="sponsors-grid">
+          <div style="border:1px dashed rgba(255,255,255,0.12);border-radius:8px;padding:1rem;text-align:center;color:#475569;font-size:0.8rem">
+            成为第一位赞助者
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fas fa-hammer" style="color:var(--accent-green)"></i> 共建者 Co-builders · $1,000+
+        </div>
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="cobuilders-grid">
+          <div style="border:1px dashed rgba(255,255,255,0.12);border-radius:8px;padding:1rem;text-align:center;color:#475569;font-size:0.8rem">
+            指定模块共建
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fas fa-seedling" style="color:var(--accent-yellow)"></i> Cold Launch 早期参与者
+        </div>
+        <div class="glass-card p-4 text-center text-slate-600 text-sm" id="early-grid">
+          冷启动进行中 · 参与记录即将更新
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="dashboard.html#supporters" class="text-xs" style="color:var(--primary-cyan)">
+          <i class="fas fa-chart-bar mr-1"></i>查看完整支持者墙 →
+        </a>
+      </div>
+    </section>
+
+    <script>
+    async function loadSupporters() {
+      try {
+        const res = await fetch('dashboard-data.json?t=' + Date.now());
+        const data = await res.json();
+        const sponsors = (data.sponsors||[]).filter(s=>!s._template);
+        const builders = (data.cobuilders||[]).filter(s=>!s._template);
+        const early = (data.early_participants||[]).filter(s=>!s._template);
+        if(sponsors.length) document.getElementById('sponsors-grid').innerHTML = sponsors.map(s=>`<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`).join('');
+        if(builders.length) document.getElementById('cobuilders-grid').innerHTML = builders.map(s=>`<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`).join('');
+        if(early.length) document.getElementById('early-grid').innerHTML = early.map(p=>`<a href="${p.link}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 m-1 text-xs rounded-full" style="background:rgba(251,191,36,0.06);border:1px solid rgba(255,255,255,0.08)">${p.name}</a>`).join('');
+      } catch(e){}
+    }
+    loadSupporters();
+    </script>
+
+    <div class="divider mb-16"></div>
+
     <!-- LINKS / CTA -->
     <section class="mb-8 text-center">
       <h2 class="text-2xl mb-4 cyan-text">实时进展 <span class="text-slate-400 text-lg font-normal">/ Live Progress</span></h2>
@@ -716,6 +777,10 @@
         <a href="https://www.mushroom.cv/milestones" class="glass-card px-6 py-3 flex items-center gap-2">
           <i class="fas fa-flag yellow-text"></i>
           <span class="text-sm">里程碑 & 研究</span>
+        </a>
+        <a href="dashboard.html" class="glass-card px-6 py-3 flex items-center gap-2">
+          <i class="fas fa-chart-bar cyan-text"></i>
+          <span class="text-sm">社区 Dashboard</span>
         </a>
         <a href="architecture.html" class="glass-card px-6 py-3 flex items-center gap-2">
           <i class="fas fa-sitemap" style="color:var(--accent-purple)"></i>
