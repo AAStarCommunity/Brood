@@ -1,12 +1,12 @@
 ---
 id: doc-3
-title: "\U0001F4CA Community Dashboard"
+title: "\U0001F5A5 Community Monitor"
 type: other
 created_date: '2026-02-28 05:28'
 updated_date: '2026-03-28 00:00'
 ---
 
-## 📊 Community Dashboard
+## 🖥️ Community Monitor
 
 **[→ 社区监控看板 / Community Monitor](https://www.mushroom.cv/docs/dashboard.html)**
 
