@@ -23,7 +23,7 @@ cp skills/sync-progress/SKILL.md .claude/skills/sync-progress/SKILL.md
 ```bash
 mkdir -p .claude/skills/sync-progress
 curl -o .claude/skills/sync-progress/SKILL.md \
-  https://raw.githubusercontent.com/jhfnetboy/Brood/main/skills/sync-progress/SKILL.md
+  https://raw.githubusercontent.com/AAStarCommunity/Brood/main/skills/sync-progress/SKILL.md
 ```
 
 ## 使用
