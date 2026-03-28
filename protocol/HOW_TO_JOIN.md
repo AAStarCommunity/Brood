@@ -6,7 +6,7 @@
 你有一个组织或产品，希望作为生态参与者加入协议网络。
 
 **流程**:
-1. Fork `github.com/jhfnetboy/Brood`
+1. Fork `github.com/AAStarCommunity/Brood`
 2. 复制 `orgs/template/PROFILE.md` → `orgs/your-org-id/PROFILE.md`
 3. 填写组织名片（至少填写 `org_id`, `org_name`, `layer`, `provides`）
 4. 提 PR，标题：`chore: add [org-name] to Mycelium Protocol`

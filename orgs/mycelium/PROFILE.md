@@ -10,9 +10,12 @@ provides:
   - capability: protocol-governance
     interface: 协议规格 + 治理框架
     repo: github.com/HyperCapitalHQ/mycelium-protocol
-  - capability: community-platform
-    interface: MushroomDAO 文档 & 官网
-    repo: github.com/MushroomDAO/docs
+  - capability: community-os
+    interface: 社区操作系统（Onboarding + 正反馈激励 + 治理）
+    repo: github.com/AAStarCommunity/Cos72
+  - capability: personal-os
+    interface: 个人操作系统（表达者·创作者·建设者的数字自我）
+    repo: github.com/MushroomDAO/Sin90
 depends_on: []
 contact:
   builder: jason

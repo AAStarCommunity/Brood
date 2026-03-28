@@ -7,8 +7,14 @@ status: active
 protocols:
   - mycelium
 provides:
+  - capability: ai-inference
+    interface: AI 能力层（推理/知识库/个人代理）
+    repo: github.com/AuraAIHQ/AuraAI
+  - capability: community-brain
+    interface: 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型
+    repo: github.com/AuraAIHQ/iDoris
   - capability: ai-education
-    interface: 编程/AI 教育课程内容
+    interface: 编程/AI 教育课程内容（面向儿童，5门）
     repo: github.com/AuraAIHQ/courses
 depends_on:
   - org: aastar

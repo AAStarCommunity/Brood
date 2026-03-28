@@ -29,8 +29,9 @@
 | **AirAccount** | AAstar | Your daily Web3 account: fingerprint login, no ETH needed |
 | **SuperRelay** | AAstar | ERC-4337 企业级 bundler 网关·双签名 TEE 零入侵架构 |
 | **Cos72** | MushroomDAO | 社区操作系统：Onboarding + 正反馈激励 + 治理 |
-| **Sin90** | AuraAI | 个人操作系统：表达者·创作者·建设者的数字自我 |
-| **iDoris** | MushroomDAO | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 |
+| **Sin90** | MushroomDAO | 个人操作系统：表达者·创作者·建设者的数字自我 |
+| **iDoris** | AuraAI | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 |
+| **CityOS** | MushroomDAO | AI + Blockchain 城市操作系统 |
 
 ---
 
@@ -44,7 +45,7 @@
 | 产品 | 十词定位 | 相对路径 | GitHub | 本地状态 |
 |-----|---------|---------|--------|---------|
 | **SuperPaymaster** | Gasless transactions and micropayments for Web3 agents | `../aastar/SuperPaymaster` | [AAStarCommunity/SuperPaymaster](https://github.com/AAStarCommunity/SuperPaymaster) | ✓ 已克隆 |
-| **AirAccount** | TEE私钥管理·WebAuthn无密码认证·AWS KMS兼容API | `../aastar/AirAccount` | [AAStarCommunity/AirAccount](https://github.com/AAStarCommunity/AirAccount) | ✓ 已克隆 |
+| **AirAccount** | Your daily Web3 account: fingerprint login, no ETH needed | `../aastar/AirAccount` | [AAStarCommunity/AirAccount](https://github.com/AAStarCommunity/AirAccount) | ✓ 已克隆 |
 | **airaccount-contract** | AirAccount 核心智能合约·M5完成·M6进行中 | `../aastar/airaccount-contract` | [AAStarCommunity/airaccount-contract](https://github.com/AAStarCommunity/airaccount-contract) | ✗ 未克隆 |
 | **SuperRelay** | ERC-4337 企业级 bundler 网关·双签名 TEE 架构 | `../aastar/super-relay` | [AAStarCommunity/SuperRelay](https://github.com/AAStarCommunity/SuperRelay) | ✓ 已克隆 |
 | **AAStar SDK** | 封装 AirAccount+SuperPaymaster+CometENS 的开发者 SDK | `../aastar-sdk/AAStar_SDK` | [AAStarCommunity/AAStar_SDK](https://github.com/AAStarCommunity/aastar-sdk) | ✓ 已克隆 |
@@ -86,7 +87,7 @@ git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/
 
 | 产品 | 定位 | 相对路径 | GitHub | 本地状态 |
 |-----|------|---------|--------|---------|
-| **Sin90** | 个人操作系统（OS for Individual） | `../AuraAI/Sin90` | [AuraAIHQ/Sin90](https://github.com/AuraAIHQ/Sin90) | ✗ 未克隆 |
+| **iDoris** | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 | `../AuraAI/iDoris` | [AuraAIHQ/iDoris](https://github.com/AuraAIHQ/iDoris) | ✗ 未克隆 |
 | **OpenCrab** | A Crab work for community（社区信息爬虫/代理） | `../AuraAI/OpenCrab` | [AuraAIHQ/OpenCrab](https://github.com/AuraAIHQ/OpenCrab) | ✗ 未克隆 |
 | **Agent24** | Personal Agent for me and all（个人 AI 代理） | `../AuraAI/Agent24` | [AuraAIHQ/Agent24](https://github.com/AuraAIHQ/Agent24) | ✗ 未克隆 |
 | **AuraAI** | AI assistant for community and individuals（知识库+能力基础） | `../AuraAI/AuraAI` | [AuraAIHQ/AuraAI](https://github.com/AuraAIHQ/AuraAI) | ✗ 未克隆 |
@@ -100,12 +101,12 @@ git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/
 | Agent24 | 2026-03-08 |
 | courses | 2026-03-08 |
 | AuraAI | 2026-03-04 |
-| Sin90 | 2026-02-20 |
+| iDoris | 2026-03-13 |
 
 ### 克隆命令
 
 ```bash
-git clone git@github.com:AuraAIHQ/Sin90.git       ../AuraAI/Sin90
+git clone git@github.com:AuraAIHQ/iDoris.git      ../AuraAI/iDoris
 git clone git@github.com:AuraAIHQ/OpenCrab.git    ../AuraAI/OpenCrab
 git clone git@github.com:AuraAIHQ/Agent24.git     ../AuraAI/Agent24
 git clone git@github.com:AuraAIHQ/AuraAI.git      ../AuraAI/AuraAI
@@ -123,9 +124,9 @@ git clone git@github.com:AuraAIHQ/courses.git     ../AuraAI/courses
 
 | 产品 | 定位 | 相对路径 | GitHub | 本地状态 |
 |-----|------|---------|--------|---------|
-| **iDoris** | Community Brain·多端自进化模型·边缘计算·隐私·Token Free | `../mycelium/iDoris` | [MushroomDAO/iDoris](https://github.com/MushroomDAO/iDoris) | ✗ 未克隆 |
+| **Sin90** | 个人操作系统（OS for Individual） | `../mycelium/Sin90` | [MushroomDAO/Sin90](https://github.com/MushroomDAO/Sin90) | ✗ 未克隆 |
 | **Cos72** | 社区操作系统（MyTask+MyVote+MyShop） | `../Community/Cos72` | [AAStarCommunity/Cos72](https://github.com/AAStarCommunity/Cos72) | ✓ 已克隆 |
-| **SmartCity2** | AI + Blockchain 城市操作系统 | `../mycelium/SmartCity2` | [MushroomDAO/SmartCity2](https://github.com/MushroomDAO/SmartCity2) | ✗ 未克隆 |
+| **CityOS** | AI + Blockchain 城市操作系统 | `../mycelium/CityOS` | [MushroomDAO/CityOS](https://github.com/MushroomDAO/CityOS) | ✗ 未克隆 |
 | **MyTask** | 社区任务协调模块 | `../mycelium/MyTask` | [MushroomDAO/MyTask](https://github.com/MushroomDAO/MyTask) | ✗ 未克隆 |
 | **MyVote** | 社区治理投票模块 | `../mycelium/MyVote` | [MushroomDAO/MyVote](https://github.com/MushroomDAO/MyVote) | ✗ 未克隆 |
 | **MyShop** | 社区商店/积分兑换模块 | `../mycelium/MyShop` | [MushroomDAO/MyShop](https://github.com/MushroomDAO/MyShop) | ✗ 未克隆 |
@@ -143,8 +144,8 @@ git clone git@github.com:AuraAIHQ/courses.git     ../AuraAI/courses
 
 | repo | 最近推送 |
 |-----|---------|
-| iDoris | 2026-03-13 |
-| SmartCity2 | 2026-03-11 |
+| Sin90 | 2026-02-20 |
+| CityOS | 2026-03-11 |
 | MyTask | 2026-02-26 |
 | MyVote | 2026-02-19 |
 | MyShop | 2026-02-15 |
@@ -153,8 +154,8 @@ git clone git@github.com:AuraAIHQ/courses.git     ../AuraAI/courses
 ### 克隆命令
 
 ```bash
-git clone git@github.com:MushroomDAO/iDoris.git           ../mycelium/iDoris
-git clone git@github.com:MushroomDAO/SmartCity2.git       ../mycelium/SmartCity2
+git clone git@github.com:MushroomDAO/Sin90.git               ../mycelium/Sin90
+git clone git@github.com:MushroomDAO/CityOS.git       ../mycelium/CityOS
 git clone git@github.com:MushroomDAO/MyTask.git           ../mycelium/MyTask
 git clone git@github.com:MushroomDAO/MyVote.git           ../mycelium/MyVote
 git clone git@github.com:MushroomDAO/MyShop.git           ../mycelium/MyShop
@@ -176,7 +177,7 @@ Cos72 ──使用──► AAStar_SDK (Gasless + 账户 + 积分)
 Sin90 ──使用──► AAStar_SDK + Agent24 + iDoris
 iDoris ──结算──► SuperPaymaster (AI 服务激励)
 iDoris ──身份──► AirAccount (隐私保护)
-SmartCity2 ──依赖──► Cos72 + Sin90 + iDoris
+CityOS ──依赖──► Cos72 + Sin90 + iDoris
 ```
 
 ---
@@ -184,5 +185,5 @@ SmartCity2 ──依赖──► Cos72 + Sin90 + iDoris
 ## 本仓库（BroodBrain）
 
 **相对路径**: `.`（即当前仓库）
-**GitHub**: https://github.com/jhfnetboy/Brood
+**GitHub**: https://github.com/AAStarCommunity/Brood
 **定位**: 协议神经系统，任务管理 + 上下文发布 + 生态透明化
