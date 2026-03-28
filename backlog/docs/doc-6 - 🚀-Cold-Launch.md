@@ -3,7 +3,7 @@ id: doc-6
 title: "\U0001F680 Cold Launch"
 type: guide
 created_date: '2026-03-11 20:00'
-updated_date: '2026-03-24 10:20'
+updated_date: '2026-03-28 04:57'
 tags:
   - launch
   - protocol
@@ -41,11 +41,16 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 ### iDoris - Community Brain
 - All the OS backend intellegence is iDoris
 - It is a framework inlude open source AI model, edge comuping network, multi-end apps and privacy concerned policy.
+### Future 
+- City OS
+- Small Business OS(for Coorperation Innovation) on iDoris
+
 ## Links
 
-1. [Roadmap](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
-2. [Realtime Progress on Tasks](https://www.mushroom.cv/) | [Milestones & Research](https://www.mushroom.cv/milestones)
-3. [Docs](https://www.mushroom.cv/documentation/1/broodbrain-readme)
+1. [📋 Cold Launch Detail Page — Origin · Phases · Funding · How to Support](https://www.mushroom.cv/docs/cold-launch.html)
+2. [Roadmap](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
+3. [Realtime Progress on Tasks](https://www.mushroom.cv/) | [Milestones & Research](https://www.mushroom.cv/milestones)
+4. [Docs](https://www.mushroom.cv/documentation/1/broodbrain-readme)
 
 ---
 
@@ -75,16 +80,19 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 我们正在寻求资助、赞助和合作伙伴关系，以支持我们的工作。
 
 ### Cos72 & Sign90
-- Mycelium Protocol will create real applications based on the infrastruction building by AAStar and AuraAI.
-- Cos72 & Sign90, are the OS for Community and Individuals.
+- Mycelium Protocol 将基于 AAStar 和 AuraAI 构建的基础设施，创建真正的应用。
+- Cos72 和 Sign90 是面向社区和个人用户的操作系统。
 - [Chinese version description](https://docs.google.com/presentation/d/1dc6Rygjw0qQUAohB7pUq-FNsiXox6P0cUhm28qELEBs/edit?usp=sharing)
 ### iDoris - Community Brain
-- All the OS backend intellegence is iDoris
-- It is a framework inlude open source AI model, edge comuping network, multi-end apps and privacy concerned policy.
-
+- 所有操作系统后端人工智能均由 iDoris 提供。
+- 它是一个框架，包含开源人工智能模型、边缘计算网络、多端应用和隐私保护策略。
+### Future 
+- City OS
+- Small Business OS(for Coorperation Innovation) on iDoris
 
 ## 链接
 
-1. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
-2. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
-3. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)
+1. [📋 Cold Launch 详情页 — 起源·阶段·资金用途·参与方式](https://www.mushroom.cv/docs/cold-launch.html)
+2. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
+3. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
+4. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)
