@@ -1,6 +1,6 @@
 ---
 id: doc-3
-title: "\U0001F517Related links"
+title: "\U0001F4CA Community Dashboard"
 type: other
 created_date: '2026-02-28 05:28'
 updated_date: '2026-03-28 00:00'
@@ -12,9 +12,9 @@ updated_date: '2026-03-28 00:00'
 
 产品全景 · 关键指标 · 赞助者墙 · 相关资料汇总
 
-**[→ 商业规划 / Business Plan](https://www.mushroom.cv/docs/business.html)**
+**[→ 可持续规划 / Sustainability Plan](https://www.mushroom.cv/docs/sustainability.html)**
 
-收入模式 · 可持续路径 · 开源案例分析
+Grant · Gitcoin · 协议费 · 增值服务 · 开源可持续路径
 
 ---
 
