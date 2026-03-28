@@ -160,7 +160,8 @@
       <span class="cyan-text font-mono font-bold text-sm tracking-widest">MYCELIUM PROTOCOL</span>
       <div class="flex gap-6">
         <a href="https://www.mushroom.cv" class="nav-link">看板</a>
-        <a href="https://www.mushroom.cv/milestones" class="nav-link">里程碑</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="business.html" class="nav-link">商业规划</a>
         <a href="architecture.html" class="nav-link">架构图</a>
         <a href="https://github.com/AAStarCommunity/Brood" class="nav-link"><i class="fab fa-github mr-1"></i>GitHub</a>
       </div>
@@ -792,6 +793,161 @@
         </a>
       </div>
     </section>
+
+    <div class="divider mb-16"></div>
+
+    <!-- FAQ -->
+    <section class="mb-16">
+      <h2 class="text-2xl mb-2 cyan-text">常见问题 <span class="text-slate-400 text-lg font-normal">/ FAQ</span></h2>
+      <p class="text-slate-400 text-sm mb-8">点击问题展开回答</p>
+
+      <div class="space-y-3" id="faq-list">
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">Mycelium Protocol 是什么？和 AAStar 是什么关系？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            Mycelium Protocol 是一个开放协议——它定义了去中心化协作网络的规格和治理框架，由 MushroomDAO 负责维护。<br><br>
+            AAStar 是协议生态中的 <strong class="text-white">基础设施建设组</strong>，提供 Web3 账户（AirAccount）、无 Gas 支付（SuperPaymaster）等核心能力。就像 Linux 是操作系统协议，AAStar 则是在这个协议上建设关键基础设施的团队。<br><br>
+            AAStar 前身是 Plancker^ 建设小组，2023年4月 Zuzalu 与 Vitalik 沟通后正式聚焦 AA（账户抽象），2024年11月独立运营。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">什么是"意义经济"？你们不是又一个 DeFi 项目吗？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            不是。我们不做收益农场、不做 Token 炒作、不做 TVL 竞赛。<br><br>
+            意义经济的核心是：把经济活动用作探索"我是谁、什么对我真正重要"的媒介，而不是目的本身。具体体现是：我们建设的产品（Cos72、Sin90）是为表达者、创作者、建设者提供基础设施——让有想象力和情感的个体在社区中找到可持续的经济循环，而不是把他们变成资本增殖的工具。<br><br>
+            我们用区块链技术，但目的是数字主权和协作，而不是金融投机。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">AirAccount 的"无需 ETH 就能使用"是怎么实现的？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            通过 <strong class="text-white">ERC-4337 账户抽象 + SuperPaymaster</strong> 实现。用户发起的交易 Gas 费用由 SuperPaymaster 代为支付——费用来源可以是社区积分、赞助商补贴，或其他 ERC-20 代币。<br><br>
+            用户只需要用设备指纹（WebAuthn）登录，无需助记词、无需 ETH，就像普通 App 一样。背后的密钥由 TEE（可信执行环境）保管，连我们自己都无法访问。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">代码都是开源的吗？你们怎么保证不会"跑路"？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            所有代码均在 <a href="https://github.com/AAStarCommunity" target="_blank" class="cyan-text hover:underline">github.com/AAStarCommunity</a> 和 <a href="https://github.com/MushroomDAO" target="_blank" class="cyan-text hover:underline">github.com/MushroomDAO</a> 公开，MIT/Apache 协议开源。任何人都可以 fork、自己部署、自己运营。<br><br>
+            "跑路"在这里没有意义——因为没有闭源代码、没有托管资金、没有需要信任我们的核心环节。智能合约在链上，代码在 GitHub，任务进度在 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a> 实时可查。我们消失了，代码还在。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">Cold Launch 筹到的钱怎么用？有透明度保证吗？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            每一笔资金对应明确的阶段和用途，写在本页面的"三个阶段"中。具体包括：<br><br>
+            · <strong class="text-white">A 阶段</strong>：Claude Code 订阅费 + 服务器 + 科研论文<br>
+            · <strong class="text-white">B 阶段</strong>：兼职社区团队（3人）+ 运营基础<br>
+            · <strong class="text-white">C 阶段</strong>：核心开发者 part-time 稳定化（2人，1.5年）<br><br>
+            所有任务和里程碑在 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a> 实时可查。后续会在链上建立多签国库，进一步保障透明度。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">Governance Token 是什么？会不会是割韭菜？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            Governance Token 的核心功能是<strong class="text-white">社区投票权和参与权</strong>，不是投机资产。持有者可以对协议方向、资金使用、产品优先级提出建议和投票。<br><br>
+            我们明确拒绝：没有 IDO、没有预售白名单炒作、没有庄家控盘。冷启动阶段的 Token 定价透明、用途明确。如果你只想炒作，我们不是合适的项目。如果你认可愿景并希望参与治理，欢迎。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">Beta 什么时候上线？现在可以用什么？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            Beta 版本（Cos72 + Sin90）计划 <strong class="text-white">2026年4月15日</strong> 发布。<br><br>
+            现在可用的：<br>
+            · <strong class="text-white">AirAccount</strong>：指纹登录 Web3 账户（v0.16.7，Sepolia 测试网）<br>
+            · <strong class="text-white">SuperPaymaster</strong>：Gasless 交易（集成测试中）<br>
+            · <strong class="text-white">BroodBrain</strong>：任务看板 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a>（你现在就在用）<br>
+            · 所有智能合约代码在 GitHub 可下载部署
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">我是一个普通用户，不懂区块链，我能用你们的产品吗？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            可以，这正是我们的目标。<br><br>
+            AirAccount 的设计原则就是"让 Web3 像 App 一样简单"：指纹登录、不需要 ETH、不需要助记词、不需要理解 Gas。<br><br>
+            Cos72 是社区工具，就像一个集成了任务、投票、积分的开源论坛。Sin90 是你的个人数字空间。两者都不要求你有区块链背景，只需要你有想表达和创作的欲望。
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">这个项目如何自我维持？你们靠什么活下去？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            我们有三条可持续路径：<br><br>
+            1. <strong class="text-white">协议费用</strong>：每笔 Gas 代付收取极小比例手续费（取 0.001 ETH 或 10% 中较小值），微小但稳定<br>
+            2. <strong class="text-white">社区增值服务</strong>：开源产品免费，部署运维、定制功能、企业版收费——类似 Red Hat 模式<br>
+            3. <strong class="text-white">iDoris 社区 AI 订阅</strong>：隐私保护 + Token Free + 低价推理，收月订阅费<br><br>
+            详见 <a href="business.html" class="cyan-text hover:underline">商业规划页面 →</a>
+          </div>
+        </div>
+
+        <div class="faq-item glass-card overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+            <span class="font-semibold text-sm">我想贡献代码 / 时间，怎么参与？</span>
+            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+            欢迎。几个入口：<br><br>
+            · <strong class="text-white">代码贡献</strong>：直接在各 repo 提 Issue 或 PR<br>
+            · <strong class="text-white">加入协议</strong>：Fork Brood，提交 <code class="bg-slate-800 px-1 rounded">orgs/your-org/PROFILE.md</code>（见 <a href="https://github.com/AAStarCommunity/Brood/blob/main/protocol/HOW_TO_JOIN.md" class="cyan-text hover:underline">HOW_TO_JOIN.md</a>）<br>
+            · <strong class="text-white">社区建设</strong>：分享使用体验、翻译文档、组织本地活动<br>
+            · <strong class="text-white">科研合作</strong>：我们每年发布2篇论文，欢迎学术合作<br><br>
+            贡献可以兑换社区积分，积分可换产品服务使用权。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <script>
+    function toggleFaq(btn) {
+      const answer = btn.nextElementSibling;
+      const icon = btn.querySelector('i');
+      const isOpen = !answer.classList.contains('hidden');
+      // close all
+      document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+      document.querySelectorAll('.faq-item button i').forEach(i => i.style.transform = '');
+      // open if was closed
+      if (!isOpen) {
+        answer.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+      }
+    }
+    </script>
 
     <div class="text-center text-slate-600 text-xs mt-12 font-mono">
       Mycelium Protocol · Cold Launch · 2026 · <a href="https://github.com/AAStarCommunity/Brood" class="hover:text-slate-400 transition-colors">AAStarCommunity/Brood</a>
