@@ -60,9 +60,10 @@
   <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
     <span style="color:var(--cyan)" class="font-mono font-bold text-sm tracking-widest">MYCELIUM PROTOCOL</span>
     <div class="flex gap-5">
-      <a href="https://www.mushroom.cv" class="nav-link">看板</a>
+      <a href="https://www.mushroom.cv" class="nav-link">Kanban</a>
       <a href="cold-launch.html" class="nav-link">Cold Launch</a>
-      <a href="architecture.html" class="nav-link">架构</a>
+      <a href="sustainability.html" class="nav-link">Sustainability</a>
+      <a href="architecture.html" class="nav-link">Architecture</a>
       <a href="https://github.com/AAStarCommunity" class="nav-link"><i class="fab fa-github mr-1"></i>GitHub</a>
     </div>
   </div>
@@ -423,6 +424,237 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <div class="divider mb-12"></div>
+
+  <!-- UNIQUE FEATURES -->
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-4">
+      <h2 class="section-title" style="color:var(--cyan)">独创特性</h2>
+      <span class="tag" style="background:rgba(34,211,238,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)">Unique Features</span>
+      <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green);border:1px solid rgba(74,222,128,0.2)">21 items</span>
+    </div>
+    <p class="text-slate-400 text-sm mb-6">我们不只是在构建产品——每一项都包含独创性的技术创新，解决数字公共物品领域真实存在的问题。</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="features-grid">
+
+      <!-- F1: Anti-Censorship -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F1</span>
+          <h3 class="text-sm font-bold">Anti-Censorship Paymaster</h3>
+          <span class="ml-auto tag" style="background:rgba(34,211,238,0.08);color:var(--cyan);border:1px solid rgba(34,211,238,0.2);font-size:10px">论文已发布</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>传统 Paymaster 依赖链下 API 签名服务器，存在审查风险——服务商可以拒绝为你签名。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>移除链下签名服务器，所有 Gas Sponsorship 完全在链上完成。链上不可停止，因此在签名环节实现了抗审查。</p>
+        <div class="text-xs text-slate-500 mt-2"><i class="fas fa-file-alt mr-1"></i>论文已发布于 arXiv（Journal 审核中）</div>
+      </div>
+
+      <!-- F2: AirAccount -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--green)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono green-text">F2</span>
+          <h3 class="text-sm font-bold">AirAccount — Email + 指纹注册</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>MetaMask 安装、助记词备份、Gas 获取——Web3 入门存在无数障碍，大多数人习惯 Web2 的 Email 注册。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>基于 Email 注册 + 指纹认证，无需助记词、无需安装插件，即可生成 Web3 账户。与 ERC-4337 AA 深度整合。</p>
+      </div>
+
+      <!-- F3: Daily Limit Hard Cap -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--yellow)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono yellow-text">F3</span>
+          <h3 class="text-sm font-bold">日限额硬顶 — Daily Limit Hard Cap</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>传统钱包私钥被盗后，所有资产可被一次性转走。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>合约层面设置日限额硬顶。即使私钥被盗，每天最多损失限额内的金额，给你留出反应时间。</p>
+      </div>
+
+      <!-- F4: Intent-Security Separation -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--purple)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono purple-text">F4</span>
+          <h3 class="text-sm font-bold">意图与安全分离 — T1/T2/T3 分级签名</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>所有交易使用同一签名权限，无法区分日常小额和大额转账的安全等级。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>日限额拆分为三层：<strong class="text-white">T1</strong>（指纹即可）→ <strong class="text-white">T2</strong>（需 Guardian 1 签名）→ <strong class="text-white">T3</strong>（需 Guardian 1 + 2 签名）。额度由用户自定义，合约强制执行安全策略。</p>
+      </div>
+
+      <!-- F5: Hardware KMS -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F5</span>
+          <h3 class="text-sm font-bold">TEE 硬件 KMS — 私钥永不泄露</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>软件存储私钥容易被恶意软件提取。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>基于 TEE 安全芯片（ARM）实现在线 KMS。私钥只能签名、不能导出，即使物理获取设备也无法攻破硬件安全芯片的保护。</p>
+      </div>
+
+      <!-- F6: Social Recovery -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--green)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono green-text">F6</span>
+          <h3 class="text-sm font-bold">社交恢复 + 社区多签 Safeguard</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>私钥丢失意味着永久失去资产，传统助记词备份既不安全也不易用。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>创建账户时绑定两部手机（PassKey）作为 Guardian。私钥丢失时，两个 Guardian 可恢复账户（重新生成私钥，地址和资产不变）。万一 Guardian 也丢失，社区多签 Safeguard 作为最终备份——收取少量费用，通过人工审核协助恢复。Safeguard 无法主动发起恢复，只能响应你的请求。</p>
+      </div>
+
+      <!-- F7: OAPD -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--yellow)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono yellow-text">F7</span>
+          <h3 class="text-sm font-bold">OAPD — One Address Per DApp</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>所有 DApp 共用一个地址，链上行为可被归集追踪，隐私无保障。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>每次使用 DApp 时自动派生独立钱包地址。外部观察者只能看到一个新地址与应用交互，无法追溯到你的 ENS 或主钱包。基于加密派生，阻止数据归集和跟踪。</p>
+      </div>
+
+      <!-- F8: Session Key -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--purple)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono purple-text">F8</span>
+          <h3 class="text-sm font-bold">Session Key — 限时限域授权</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>每次链上操作都需签名，游戏、订阅等高频场景体验极差。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>签名一次，在特定合约 + 特定额度 + 特定时间范围内持续有效。适用于：链游（无需反复按指纹）、订阅自动付费、<strong class="text-white">AI Agent 授权</strong>（经安全授权后，Agent 可代你采购、订阅、支付）。</p>
+      </div>
+
+      <!-- F9: Non-Upgradeable -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F9</span>
+          <h3 class="text-sm font-bold">不可升级合约 — Non-Upgradeable</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>可升级合约给了运营方后门——操纵价格、Rug Pull 都通过升级实现。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>账户合约部署后永久锁定，任何人（包括社区）都无法修改。封死攻击面，消除信任依赖。</p>
+      </div>
+
+      <!-- F10: Built-in Gasless -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--green)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono green-text">F10</span>
+          <h3 class="text-sm font-bold">内置无感 Gasless</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>传统支付 Gas 需要 Approve + Swap，手续费高、耗时长，且 Gas Token 不一定被供应商支持。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>跨社区无感支持——任何社区发行的 Gas Token 都可直接支付 Gas，无需 Approve、无需 Swap。用户完全无感。</p>
+      </div>
+
+      <!-- F11: Community Points as Gas Token -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--yellow)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono yellow-text">F11</span>
+          <h3 class="text-sm font-bold">社区积分即 Gas Token</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>社区积分缺乏实际用途，成员对积分无感知。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>社区贡献积分直接作为 Gas Token。社区通过 SuperPaymaster 一键部署自己的 Paymaster，积分立即拥有最基础的实用价值。</p>
+      </div>
+
+      <!-- F12: Four-Role Community Task -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--purple)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono purple-text">F12</span>
+          <h3 class="text-sm font-bold">四角色社区任务 — 先于 EIP-8131</h3>
+          <span class="ml-auto tag" style="background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.2);font-size:10px">独创</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>去中心化任务协作缺乏标准化的角色分工和纠纷处理机制。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>四角色模型：<strong class="text-white">任务发布者</strong> · <strong class="text-white">执行者</strong> · <strong class="text-white">资源提供者</strong> · <strong class="text-white">仲裁者</strong>。EIP-8131 提出三角色，我们更早提出四角色（可查 GitHub 提交记录）。完成任务获得积分，积分可用于 Gas 支付。</p>
+      </div>
+
+      <!-- F13: Redeem Counter -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F13</span>
+          <h3 class="text-sm font-bold">积分兑换柜台 — Redeem Counter</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>社区积分需要流动性才能让成员有感知，光能当 Gas Token 还不够。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>Loyalty Points Redeem Counter——社区可上架礼品、服务、特权，成员用积分兑换。为积分提供流动性和价值感知，赋能社区自主运营。</p>
+      </div>
+
+      <!-- F14: CTOS -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--green)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono green-text">F14</span>
+          <h3 class="text-sm font-bold">CityOS — 跨社区积分合规服务</h3>
+          <span class="ml-auto tag" style="background:rgba(251,191,36,0.08);color:var(--yellow);border:1px solid rgba(251,191,36,0.2);font-size:10px">规划中</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>跨社区、跨行业使用积分需要合规合法，自行管理成本极高。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>社区的双生商业公司提供合规忠诚度积分服务：跨社区联合积分活动、创作有奖激励、社区开店。不仅提升老用户忠诚度，还能吸引新客户、获得社区志愿贡献。</p>
+      </div>
+
+      <!-- F15: Self-hosted Paymaster -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--yellow)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono yellow-text">F15</span>
+          <h3 class="text-sm font-bold">SuperPaymaster — AAStar 社区运维</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>谁来运营公共的 Paymaster 服务？</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>由 AAStar 社区运维的公共 SuperPaymaster 服务，去中心化、无链下签名服务器。作为整个生态的默认 Gas Sponsorship 基础设施。</p>
+      </div>
+
+      <!-- F16: Payment Master -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--purple)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono purple-text">F16</span>
+          <h3 class="text-sm font-bold">SuperPaymaster = Payment Master</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>Web3 支付协议碎片化，MPP、MCP、ACP、x402、EIP-8004 各自为政。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>SuperPaymaster 不仅是 Gas Sponsorship，更是统一的 Payment Master——集成 MPP（Google）、MCP（Coinbase / Cloudflare）、ACP、x402、EIP-8004，几乎覆盖市面所有支付协议。</p>
+      </div>
+
+      <!-- F17: Soulbound Token DID -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F17</span>
+          <h3 class="text-sm font-bold">Soulbound Token DID — 链上身份</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>缺乏统一的链上身份和声誉聚合机制。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>注册协议成员时获得不可转让的 Soulbound Token，如同白板——记录你加入的社区、社区内 Reputation（由社区共识规则计算）和 General Reputation（由所有社区共同制定规则）。NFT 凭证加持，跨社区声誉可见。</p>
+      </div>
+
+      <!-- F18: Agent Identity -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--green)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono green-text">F18</span>
+          <h3 class="text-sm font-bold">Agent 身份与支付 — AI Agent DID</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>AI Agent 缺乏链上身份、支付能力和声誉积累机制。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>基于 EIP-8004 自动注册三合约 Agent，赋予独立身份。接通所有支付通道（x402、MPP、ACP、社区积分、Gasless），同时积累 Reputation。</p>
+      </div>
+
+      <!-- F19: Community NFT -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--yellow)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono yellow-text">F19</span>
+          <h3 class="text-sm font-bold">社区 NFT — 一键发放凭证</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>发行 NFT 门槛高——合约部署、Metadata 托管、跨平台兼容等障碍重重。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>兼容 POAP、OpenSea 等协议，支持多种用途：见证、凭证、荣誉、参与证明、服务、礼物、商品 Item。更简单的发放与查看方式。</p>
+      </div>
+
+      <!-- F20: AOA -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--purple)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono purple-text">F20</span>
+          <h3 class="text-sm font-bold">自托管 Paymaster — Clone & 自运营</h3>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>不想依赖 AAStar 社区运营的 SuperPaymaster，希望完全自主掌控。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>完全开源，Clone 代码后自行部署运营。同样去中心化、无链下签名服务器，与 AAStar 零关联。真正的无许可公共物品。</p>
+      </div>
+
+      <!-- F21: Open Shop -->
+      <div class="glass p-4 border-l-2" style="border-left-color:var(--cyan)">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-mono cyan-text">F21</span>
+          <h3 class="text-sm font-bold">跨社区开放商店 — Open Shop</h3>
+          <span class="ml-auto tag" style="background:rgba(251,191,36,0.08);color:var(--yellow);border:1px solid rgba(251,191,36,0.2);font-size:10px">规划中</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-2"><strong class="text-slate-300">问题：</strong>社区内的兑换局限于社区内部，缺乏跨社区的开放市场。</p>
+        <p class="text-xs text-slate-400"><strong class="text-slate-300">方案：</strong>面向全网开放的跨社区商店，打通社区间的价值流通。（设计规划中）</p>
+      </div>
+
     </div>
   </section>
 

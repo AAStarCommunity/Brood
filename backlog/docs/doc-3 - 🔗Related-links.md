@@ -8,11 +8,11 @@ updated_date: '2026-03-28 00:00'
 
 ## 🖥️ Community Monitor
 
-**[→ 社区监控看板 / Community Monitor](https://www.mushroom.cv/docs/dashboard.html)**
+**[→ 社区监控看板 / Community Monitor](/docs/dashboard.html)**
 
 产品全景 · 关键指标 · 赞助者墙 · 相关资料汇总
 
-**[→ 可持续规划 / Sustainability Plan](https://www.mushroom.cv/docs/sustainability.html)**
+**[→ 可持续规划 / Sustainability Plan](/docs/sustainability.html)**
 
 Grant · Gitcoin · 协议费 · 增值服务 · 开源可持续路径
 

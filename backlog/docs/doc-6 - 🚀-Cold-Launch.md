@@ -47,7 +47,7 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 
 ## Links
 
-1. [📋 Cold Launch Detail Page — Origin · Phases · Funding · How to Support](https://www.mushroom.cv/docs/cold-launch.html)
+1. [📋 Cold Launch Detail Page — Origin · Phases · Funding · How to Support](/docs/cold-launch.html)
 2. [Roadmap](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
 3. [Realtime Progress on Tasks](https://www.mushroom.cv/) | [Milestones & Research](https://www.mushroom.cv/milestones)
 4. [Docs](https://www.mushroom.cv/documentation/1/broodbrain-readme)
@@ -92,7 +92,7 @@ We are seeking grants, sponsorship, and partnerships to support our work.
 
 ## 链接
 
-1. [📋 Cold Launch 详情页 — 起源·阶段·资金用途·参与方式](https://www.mushroom.cv/docs/cold-launch.html)
+1. [📋 Cold Launch 详情页 — 起源·阶段·资金用途·参与方式](/docs/cold-launch.html)
 2. [路线图](https://www.mushroom.cv/documentation/5/roadmap-2026-2027)
 3. [实时任务进展](https://www.mushroom.cv/) | [里程碑 & 研究](https://www.mushroom.cv/milestones)
 4. [文档中心](https://www.mushroom.cv/documentation/1/broodbrain-readme)

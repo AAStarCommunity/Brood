@@ -122,7 +122,7 @@ Together they provide the infrastructure for the Meaning Economy to flourish.
 ## Architecture / 架构
 ![image](https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202603241823789.png)
 
-[🔍 查看完整架构图 / View Full Architecture](https://www.mushroom.cv/docs/architecture.html)
+[🔍 查看完整架构图 / View Full Architecture](/docs/architecture.html)
 
 
 ## Core Products / 核心产品
@@ -134,8 +134,8 @@ Together they provide the infrastructure for the Meaning Economy to flourish.
 
 感谢所有认可愿景、与我们共同建设的人：
 
-- [🏆 赞助者 & 共建者墙](https://www.mushroom.cv/docs/dashboard.html#supporters)
-- [🚀 参与 Cold Launch](https://www.mushroom.cv/docs/cold-launch.html#supporters)
+- [🏆 赞助者 & 共建者墙](/docs/dashboard.html#supporters)
+- [🚀 参与 Cold Launch](/docs/cold-launch.html#supporters)
 
 ---
 
