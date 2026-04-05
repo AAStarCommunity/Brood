@@ -1,958 +1,1882 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cold Launch — Mycelium Protocol</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --bg-color: #020617;
-      --primary-cyan: #22d3ee;
-      --secondary-blue: #3b82f6;
-      --accent-green: #4ade80;
-      --accent-yellow: #fbbf24;
-      --accent-orange: #fb923c;
-      --accent-purple: #a78bfa;
-      --glass-bg: rgba(15, 23, 42, 0.8);
-      --border-color: rgba(34, 211, 238, 0.3);
-    }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cold Launch — Mycelium Protocol</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --bg-color: #020617;
+                --primary-cyan: #22d3ee;
+                --secondary-blue: #3b82f6;
+                --accent-green: #4ade80;
+                --accent-yellow: #fbbf24;
+                --accent-orange: #fb923c;
+                --accent-purple: #a78bfa;
+                --glass-bg: rgba(15, 23, 42, 0.8);
+                --border-color: rgba(34, 211, 238, 0.3);
+            }
 
-    body {
-      background-color: var(--bg-color);
-      color: #f8fafc;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      overflow-x: hidden;
-    }
+            body {
+                background-color: var(--bg-color);
+                color: #f8fafc;
+                font-family: "Segoe UI", system-ui, sans-serif;
+                overflow-x: hidden;
+            }
 
-    .bg-grid {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image:
-        linear-gradient(var(--border-color) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-      background-size: 50px 50px;
-      z-index: -1;
-      mask-image: radial-gradient(circle at 50% 50%, black, transparent 80%);
-      opacity: 0.15;
-    }
+            .bg-grid {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image:
+                    linear-gradient(var(--border-color) 1px, transparent 1px),
+                    linear-gradient(
+                        90deg,
+                        var(--border-color) 1px,
+                        transparent 1px
+                    );
+                background-size: 50px 50px;
+                z-index: -1;
+                mask-image: radial-gradient(
+                    circle at 50% 50%,
+                    black,
+                    transparent 80%
+                );
+                opacity: 0.15;
+            }
 
-    .glass-card {
-      border: 1px solid var(--border-color);
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
+            .glass-card {
+                border: 1px solid var(--border-color);
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                border-radius: 12px;
+                transition: all 0.3s ease;
+            }
 
-    .glass-card:hover {
-      border-color: var(--primary-cyan);
-      box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
-      transform: translateY(-2px);
-    }
+            .glass-card:hover {
+                border-color: var(--primary-cyan);
+                box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+                transform: translateY(-2px);
+            }
 
-    .cyan-text { color: var(--primary-cyan); }
-    .green-text { color: var(--accent-green); }
-    .yellow-text { color: var(--accent-yellow); }
-    .orange-text { color: var(--accent-orange); }
-    .purple-text { color: var(--accent-purple); }
+            .cyan-text {
+                color: var(--primary-cyan);
+            }
+            .green-text {
+                color: var(--accent-green);
+            }
+            .yellow-text {
+                color: var(--accent-yellow);
+            }
+            .orange-text {
+                color: var(--accent-orange);
+            }
+            .purple-text {
+                color: var(--accent-purple);
+            }
 
-    .phase-a { border-color: rgba(74, 222, 128, 0.4); }
-    .phase-a:hover { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(74, 222, 128, 0.15); }
-    .phase-b { border-color: rgba(251, 191, 36, 0.4); }
-    .phase-b:hover { border-color: var(--accent-yellow); box-shadow: 0 0 20px rgba(251, 191, 36, 0.15); }
-    .phase-c { border-color: rgba(167, 139, 250, 0.4); }
-    .phase-c:hover { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(167, 139, 250, 0.15); }
+            .phase-a {
+                border-color: rgba(74, 222, 128, 0.4);
+            }
+            .phase-a:hover {
+                border-color: var(--accent-green);
+                box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
+            }
+            .phase-b {
+                border-color: rgba(251, 191, 36, 0.4);
+            }
+            .phase-b:hover {
+                border-color: var(--accent-yellow);
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+            }
+            .phase-c {
+                border-color: rgba(167, 139, 250, 0.4);
+            }
+            .phase-c:hover {
+                border-color: var(--accent-purple);
+                box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
+            }
 
-    .timeline-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--primary-cyan);
-      box-shadow: 0 0 8px var(--primary-cyan);
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
+            .timeline-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: var(--primary-cyan);
+                box-shadow: 0 0 8px var(--primary-cyan);
+                flex-shrink: 0;
+                margin-top: 4px;
+            }
 
-    .timeline-line {
-      width: 2px;
-      background: linear-gradient(to bottom, var(--primary-cyan), rgba(34, 211, 238, 0.1));
-      margin-left: 5px;
-    }
+            .timeline-line {
+                width: 2px;
+                background: linear-gradient(
+                    to bottom,
+                    var(--primary-cyan),
+                    rgba(34, 211, 238, 0.1)
+                );
+                margin-left: 5px;
+            }
 
-    .amount-badge {
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
+            .amount-badge {
+                font-family: "Courier New", monospace;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+            }
 
-    .support-card {
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(30, 41, 59, 0.6);
-      border-radius: 10px;
-      transition: all 0.3s;
-    }
+            .support-card {
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(30, 41, 59, 0.6);
+                border-radius: 10px;
+                transition: all 0.3s;
+            }
 
-    .support-card:hover {
-      border-color: var(--primary-cyan);
-      box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
-    }
+            .support-card:hover {
+                border-color: var(--primary-cyan);
+                box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
+            }
 
-    .tag {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+            .tag {
+                display: inline-block;
+                padding: 2px 10px;
+                border-radius: 20px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
 
-    .divider {
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--border-color), transparent);
-    }
+            .divider {
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    transparent,
+                    var(--border-color),
+                    transparent
+                );
+            }
 
-    h1, h2, h3 { font-weight: 700; }
+            h1,
+            h2,
+            h3 {
+                font-weight: 700;
+            }
 
-    .glow-cyan { text-shadow: 0 0 20px rgba(34, 211, 238, 0.5); }
-    .glow-green { text-shadow: 0 0 20px rgba(74, 222, 128, 0.5); }
+            .glow-cyan {
+                text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+            }
+            .glow-green {
+                text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+            }
 
-    .sub-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-    }
+            .sub-card {
+                background: rgba(15, 23, 42, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                border-radius: 8px;
+            }
 
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      text-align: left;
-      padding: 10px 14px;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #94a3b8;
-      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-    }
-    td {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 0.875rem;
-      vertical-align: top;
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(34, 211, 238, 0.03); }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th {
+                text-align: left;
+                padding: 10px 14px;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: #94a3b8;
+                border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+            }
+            td {
+                padding: 10px 14px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                font-size: 0.875rem;
+                vertical-align: top;
+            }
+            tr:last-child td {
+                border-bottom: none;
+            }
+            tr:hover td {
+                background: rgba(34, 211, 238, 0.03);
+            }
 
-    .nav-link {
-      color: #94a3b8;
-      font-size: 0.85rem;
-      transition: color 0.2s;
-    }
-    .nav-link:hover { color: var(--primary-cyan); }
-  </style>
-</head>
-<body>
-  <div class="bg-grid"></div>
+            .nav-link {
+                color: #94a3b8;
+                font-size: 0.85rem;
+                transition: color 0.2s;
+            }
+            .nav-link:hover {
+                color: var(--primary-cyan);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="bg-grid"></div>
 
-  <!-- NAV -->
-  <nav class="fixed top-0 left-0 right-0 z-50" style="background: rgba(2,6,23,0.9); border-bottom: 1px solid var(--border-color); backdrop-filter: blur(12px);">
-    <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-      <span class="cyan-text font-mono font-bold text-sm tracking-widest">MYCELIUM PROTOCOL</span>
-      <div class="flex gap-6">
-        <a href="https://www.mushroom.cv" class="nav-link">看板</a>
-        <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="sustainability.html" class="nav-link">可持续规划</a>
-        <a href="architecture.html" class="nav-link">架构图</a>
-        <a href="https://github.com/AAStarCommunity/Brood" class="nav-link"><i class="fab fa-github mr-1"></i>GitHub</a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="max-w-5xl mx-auto px-6 pt-24 pb-20">
-
-    <!-- HERO -->
-    <div class="text-center mb-16">
-      <div class="inline-block mb-4">
-        <span class="tag" style="background: rgba(34,211,238,0.1); color: var(--primary-cyan); border: 1px solid rgba(34,211,238,0.3);">Cold Launch</span>
-      </div>
-      <h1 class="text-5xl mb-4 glow-cyan cyan-text">我们在建什么<br><span class="text-white">以及为什么需要你</span></h1>
-      <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
-        这不是一份路演 PPT。这是一份给所有共同愿景者的清账：<br>
-        我们做过什么、现在要做什么、钱用在哪、产出是什么。
-      </p>
-    </div>
-
-    <div class="divider mb-16"></div>
-
-    <!-- TIMELINE: ORIGIN STORY -->
-    <section class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">起源 <span class="text-slate-400 text-lg font-normal">/ Origin Story</span></h2>
-      <p class="text-slate-400 text-sm mb-8">从一个开源贡献者到协议创建者的路径</p>
-
-      <div class="space-y-0">
-
-        <!-- 2016-2019 -->
-        <div class="flex gap-4">
-          <div class="flex flex-col items-center">
-            <div class="timeline-dot"></div>
-            <div class="timeline-line flex-1"></div>
-          </div>
-          <div class="pb-8">
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-mono cyan-text">2016 — 2019</span>
-              <span class="tag" style="background:rgba(34,211,238,0.08); color:#94a3b8;">开源入门</span>
-            </div>
-            <p class="text-slate-300 text-sm">加入 GitHub，持续三年做学习性的开源贡献。从代码贡献者开始，建立基础。</p>
-          </div>
-        </div>
-
-        <!-- 2021-2022 -->
-        <div class="flex gap-4">
-          <div class="flex flex-col items-center">
-            <div class="timeline-dot" style="background: var(--secondary-blue); box-shadow: 0 0 8px var(--secondary-blue);"></div>
-            <div class="timeline-line flex-1"></div>
-          </div>
-          <div class="pb-8">
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-mono" style="color:var(--secondary-blue);">2021 — 2022</span>
-              <span class="tag" style="background:rgba(59,130,246,0.08); color:#94a3b8;">深度开源 + 社区</span>
-            </div>
-            <p class="text-slate-300 text-sm">
-              陆续深度参与 <strong class="text-white">DappLearning</strong>、<strong class="text-white">Rebase</strong>（开源工作）；<br>
-              接触并加入 <strong class="text-white">CDAO</strong>、<strong class="text-white">Plancker^</strong>、<strong class="text-white">GreenPill</strong>——从开源贡献者扩展到社区建设者。
-            </p>
-          </div>
-        </div>
-
-        <!-- 2022-2023 -->
-        <div class="flex gap-4">
-          <div class="flex flex-col items-center">
-            <div class="timeline-dot" style="background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow);"></div>
-            <div class="timeline-line flex-1"></div>
-          </div>
-          <div class="pb-8">
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-mono yellow-text">2022 — 2023</span>
-              <span class="tag" style="background:rgba(251,191,36,0.08); color:#94a3b8;">以太坊建设</span>
-            </div>
-            <p class="text-slate-300 text-sm">
-              参与 <strong class="text-white">SoulWallet</strong> 项目；前往 <strong class="text-white">Zuzalu</strong>（2023年4月）与 Vitalik 沟通后，<br>
-              Plancker^ 建立 <strong class="text-white">AAStar（账户抽象）小组</strong>，专注 AA + 基础设施。
-              同期深度参与 Plancker 社区协作工作。
-            </p>
-          </div>
-        </div>
-
-        <!-- 2023 Sep -->
-        <div class="flex gap-4">
-          <div class="flex flex-col items-center">
-            <div class="timeline-dot" style="background: var(--accent-orange); box-shadow: 0 0 8px var(--accent-orange);"></div>
-            <div class="timeline-line flex-1"></div>
-          </div>
-          <div class="pb-8">
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-mono orange-text">2023 Sep</span>
-              <span class="tag" style="background:rgba(251,146,60,0.08); color:#94a3b8;">CMU + 独立</span>
-            </div>
-            <p class="text-slate-300 text-sm">
-              进入 <strong class="text-white">清迈大学（CMU）</strong>，开始持续的以太坊研究与建设工作。<br>
-              AAStar 同期从 Plancker^ 独立，继承精神，自主运营（正式独立：2024年11月）。
-            </p>
-          </div>
-        </div>
-
-        <!-- Now -->
-        <div class="flex gap-4">
-          <div class="flex flex-col items-center">
-            <div class="timeline-dot" style="background: var(--accent-green); box-shadow: 0 0 12px var(--accent-green); width:14px; height:14px;"></div>
-          </div>
-          <div class="pb-2">
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-mono green-text">2026 — NOW</span>
-              <span class="tag" style="background:rgba(74,222,128,0.1); color:var(--accent-green); border: 1px solid rgba(74,222,128,0.3);">Beta 即将发布</span>
-            </div>
-            <p class="text-slate-300 text-sm">
-              Beta 版本原计划 3月30日，现调整至 <strong class="text-white">4月15日发布</strong>。<br>
-              Mycelium Protocol 生态已初具规模。这份 Cold Launch，是我们对所有支持者的清账。
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <div class="divider mb-16"></div>
-
-    <!-- ALREADY BUILT -->
-    <section class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">已有产出 <span class="text-slate-400 text-lg font-normal">/ What We've Built</span></h2>
-      <p class="text-slate-400 text-sm mb-8">Beta 之前，这些都已经存在</p>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div class="sub-card p-4">
-          <div class="text-xs cyan-text font-mono mb-1">AAstar</div>
-          <div class="font-semibold mb-1">AirAccount</div>
-          <div class="text-xs text-slate-400">指纹登录·无 ETH·TEE 私钥管理</div>
-        </div>
-        <div class="sub-card p-4">
-          <div class="text-xs cyan-text font-mono mb-1">AAstar</div>
-          <div class="font-semibold mb-1">SuperPaymaster</div>
-          <div class="text-xs text-slate-400">Gasless 交易·Web3 代理微支付</div>
-        </div>
-        <div class="sub-card p-4">
-          <div class="text-xs cyan-text font-mono mb-1">AAstar</div>
-          <div class="font-semibold mb-1">airaccount-contract</div>
-          <div class="text-xs text-slate-400">446/446 测试通过·Session Keys·M6 进行中</div>
-        </div>
-        <div class="sub-card p-4">
-          <div class="text-xs cyan-text font-mono mb-1">AAstar</div>
-          <div class="font-semibold mb-1">SuperRelay</div>
-          <div class="text-xs text-slate-400">ERC-4337 企业级 bundler·双签名 TEE</div>
-        </div>
-        <div class="sub-card p-4">
-          <div class="text-xs yellow-text font-mono mb-1">MushroomDAO</div>
-          <div class="font-semibold mb-1">BroodBrain</div>
-          <div class="text-xs text-slate-400">协议神经系统·实时任务看板</div>
-        </div>
-        <div class="sub-card p-4">
-          <div class="text-xs yellow-text font-mono mb-1">MushroomDAO</div>
-          <div class="font-semibold mb-1">Cos72 + Sin90</div>
-          <div class="text-xs text-slate-400 mb-1">社区 OS + 个人 OS·开发中</div>
-          <div class="text-xs" style="color:var(--accent-green);">← Beta 目标</div>
-        </div>
-      </div>
-
-      <div class="mt-4 flex gap-3 flex-wrap">
-        <a href="https://www.mushroom.cv" class="text-xs nav-link"><i class="fas fa-tasks mr-1"></i>实时看板</a>
-        <a href="https://www.mushroom.cv/milestones" class="text-xs nav-link"><i class="fas fa-flag mr-1"></i>里程碑</a>
-        <a href="architecture.html" class="text-xs nav-link"><i class="fas fa-sitemap mr-1"></i>架构图</a>
-        <a href="https://github.com/AAStarCommunity" class="text-xs nav-link"><i class="fab fa-github mr-1"></i>AAStarCommunity</a>
-      </div>
-    </section>
-
-    <div class="divider mb-16"></div>
-
-    <!-- PHASES -->
-    <section class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">三个阶段 <span class="text-slate-400 text-lg font-normal">/ Three Phases</span></h2>
-      <p class="text-slate-400 text-sm mb-3">各阶段资金独立筹集，相互叠加，不互相覆盖</p>
-
-      <!-- Phase flow diagram -->
-      <div class="flex items-center gap-2 mb-10 overflow-x-auto pb-2">
-        <div class="glass-card phase-a px-5 py-3 text-center flex-shrink-0">
-          <div class="green-text font-mono text-xs mb-1">PHASE A</div>
-          <div class="font-bold text-sm">用爱发电</div>
-          <div class="text-xs text-slate-400">缓慢前行</div>
-        </div>
-        <div class="text-slate-500 text-2xl flex-shrink-0">→</div>
-        <div class="glass-card phase-b px-5 py-3 text-center flex-shrink-0">
-          <div class="yellow-text font-mono text-xs mb-1">PHASE B</div>
-          <div class="font-bold text-sm">严谨科研</div>
-          <div class="text-xs text-slate-400">稳定闭环</div>
-        </div>
-        <div class="text-slate-500 text-2xl flex-shrink-0">→</div>
-        <div class="glass-card phase-c px-5 py-3 text-center flex-shrink-0">
-          <div class="purple-text font-mono text-xs mb-1">PHASE C</div>
-          <div class="font-bold text-sm">社区启动</div>
-          <div class="text-xs text-slate-400">产品交付加速</div>
-        </div>
-      </div>
-
-      <!-- Phase A -->
-      <div class="glass-card phase-a p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="tag" style="background:rgba(74,222,128,0.1); color:var(--accent-green); border:1px solid rgba(74,222,128,0.3);">Phase A</span>
-          <h3 class="text-xl green-text">用爱发电·缓慢前行</h3>
-        </div>
-        <p class="text-slate-400 text-sm mb-5">三个独立子阶段，每一个都是独立的筹集目标，全部叠加生效。</p>
-
-        <div class="space-y-4">
-
-          <!-- A1 -->
-          <div class="sub-card p-4">
-            <div class="flex items-start justify-between mb-2">
-              <div>
-                <span class="text-xs font-mono text-slate-500 mr-2">A1</span>
-                <span class="font-semibold text-sm">Claude Code Max 共享席位</span>
-              </div>
-              <span class="amount-badge green-text text-lg">$1,200</span>
-            </div>
-            <div class="grid grid-cols-3 gap-3 text-xs">
-              <div>
-                <div class="text-slate-500 mb-1">时长</div>
-                <div class="text-slate-300">1 年</div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">用途</div>
-                <div class="text-slate-300">$100/月 × 2人共享 Claude Max</div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">产出</div>
-                <div class="text-slate-300">Beta 后持续迭代，开发不中断</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- A2 -->
-          <div class="sub-card p-4">
-            <div class="flex items-start justify-between mb-2">
-              <div>
-                <span class="text-xs font-mono text-slate-500 mr-2">A2</span>
-                <span class="font-semibold text-sm">双席位 + 服务器基础设施</span>
-              </div>
-              <span class="amount-badge green-text text-lg">$3,600</span>
-            </div>
-            <div class="grid grid-cols-3 gap-3 text-xs">
-              <div>
-                <div class="text-slate-500 mb-1">时长</div>
-                <div class="text-slate-300">1 年</div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">用途分解</div>
-                <div class="text-slate-300">2× Claude Max ($200) + 服务器节点 ($100) = $300/月</div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">产出</div>
-                <div class="text-slate-300">加速协作效率，支撑 Beta 阶段测试基础设施</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- A3 -->
-          <div class="sub-card p-4">
-            <div class="flex items-start justify-between mb-2">
-              <div>
-                <span class="text-xs font-mono text-slate-500 mr-2">A3</span>
-                <span class="font-semibold text-sm">科研基础设施（论文 + 设备）</span>
-              </div>
-              <span class="amount-badge green-text text-lg">$8,000</span>
-            </div>
-            <div class="grid grid-cols-3 gap-3 text-xs">
-              <div>
-                <div class="text-slate-500 mb-1">时长</div>
-                <div class="text-slate-300">1 年</div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">用途分解</div>
-                <div class="text-slate-300">
-                  论文发表：$2,000–3,000<br>
-                  LoRa 设备 + 实验装置：余下预算
+        <!-- NAV -->
+        <nav
+            class="fixed top-0 left-0 right-0 z-50"
+            style="
+                background: rgba(2, 6, 23, 0.9);
+                border-bottom: 1px solid var(--border-color);
+                backdrop-filter: blur(12px);
+            "
+        >
+            <div
+                class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between"
+            >
+                <span
+                    class="cyan-text font-mono font-bold text-sm tracking-widest"
+                    >MYCELIUM PROTOCOL</span
+                >
+                <div class="flex gap-6">
+                    <a href="https://www.mushroom.cv" class="nav-link">看板</a>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="sustainability.html" class="nav-link"
+                        >可持续规划</a
+                    >
+                    <a href="architecture.html" class="nav-link">架构图</a>
+                    <a
+                        href="https://github.com/AAStarCommunity/Brood"
+                        class="nav-link"
+                        ><i class="fab fa-github mr-1"></i>GitHub</a
+                    >
                 </div>
-              </div>
-              <div>
-                <div class="text-slate-500 mb-1">产出</div>
-                <div class="text-slate-300">每年 2 篇学术论文，为协议提供严谨科研支撑</div>
-              </div>
             </div>
-          </div>
-        </div>
+        </nav>
 
-        <div class="mt-4 pt-4 border-t border-slate-700 flex items-center justify-between">
-          <div class="text-xs text-slate-500">Phase A 合计（叠加）</div>
-          <span class="amount-badge green-text text-xl">$12,800 / yr</span>
-        </div>
-      </div>
-
-      <!-- Phase B -->
-      <div class="glass-card phase-b p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="tag" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow); border:1px solid rgba(251,191,36,0.3);">Phase B</span>
-          <h3 class="text-xl yellow-text">严谨科研·稳定闭环</h3>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">月度预算</div>
-            <div class="amount-badge yellow-text text-lg">$2,800</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">时长</div>
-            <div class="font-bold text-lg">12 个月</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">年度合计</div>
-            <div class="amount-badge yellow-text text-lg">$33,600</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">团队规模</div>
-            <div class="font-bold text-lg">3 兼职 + 基础</div>
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>项目</th>
-              <th>月度费用</th>
-              <th>说明</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>兼职贡献者 × 3</td>
-              <td class="yellow-text font-mono">$2,400</td>
-              <td class="text-slate-400">每人约 $800/月，包括社区拓展、用户维护、产品迭代反馈</td>
-            </tr>
-            <tr>
-              <td>基础运营</td>
-              <td class="yellow-text font-mono">$400</td>
-              <td class="text-slate-400">工具、通讯、域名等基础开支</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="mt-4 sub-card p-4">
-          <div class="text-xs text-slate-500 mb-2">预期产出</div>
-          <div class="flex flex-wrap gap-2">
-            <span class="tag" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow);">Cos72 社区OS 雏形</span>
-            <span class="tag" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow);">Sin90 个人OS 雏形</span>
-            <span class="tag" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow);">稳定产品反馈闭环</span>
-            <span class="tag" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow);">组织化协作机制</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Phase C -->
-      <div class="glass-card phase-c p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple); border:1px solid rgba(167,139,250,0.3);">Phase C</span>
-          <h3 class="text-xl purple-text">社区启动·产品交付加速</h3>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">月度预算</div>
-            <div class="amount-badge purple-text text-lg">$4,800</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">时长</div>
-            <div class="font-bold text-lg">18 个月</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">合计</div>
-            <div class="amount-badge purple-text text-lg">$86,400</div>
-          </div>
-          <div class="sub-card p-3 text-center">
-            <div class="text-xs text-slate-500 mb-1">核心开发</div>
-            <div class="font-bold text-lg">2 人 Part-time</div>
-          </div>
-        </div>
-
-        <table class="mb-5">
-          <thead>
-            <tr>
-              <th>项目</th>
-              <th>月度费用</th>
-              <th>说明</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>核心开发者 × 2</td>
-              <td class="purple-text font-mono">$4,800</td>
-              <td class="text-slate-400">每人 $2,400/月，相对稳定的 part-time 投入保障</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="sub-card p-4 mb-4">
-          <div class="text-xs text-slate-500 mb-2">为什么这很重要</div>
-          <p class="text-slate-300 text-sm">$2,400/月能为开发者提供基本的时间投入保障——不是全职薪资，但足以让专注度、交付稳定性、用户服务质量得到实质提升。这是从"散兵游勇"到"稳定核心团队"的关键跨越。</p>
-        </div>
-
-        <div class="sub-card p-4">
-          <div class="text-xs text-slate-500 mb-2">预期产出</div>
-          <div class="flex flex-wrap gap-2">
-            <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple);">社区基础小组建立</span>
-            <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple);">DAO 治理组织启动</span>
-            <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple);">稳定用户群服务</span>
-            <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple);">完整产品交付</span>
-            <span class="tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple);">1.5年内社区初步成型</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary table -->
-      <div class="glass-card p-5 mt-6">
-        <div class="text-xs text-slate-500 uppercase tracking-widest mb-4">资金汇总 / Funding Summary</div>
-        <table>
-          <thead>
-            <tr>
-              <th>阶段</th>
-              <th>目标</th>
-              <th>金额</th>
-              <th>时长</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="green-text font-mono text-xs">A1</span></td>
-              <td>Claude Max 共享席位</td>
-              <td class="green-text font-mono">$1,200</td>
-              <td class="text-slate-400">1 年</td>
-            </tr>
-            <tr>
-              <td><span class="green-text font-mono text-xs">A2</span></td>
-              <td>双席位 + 服务器</td>
-              <td class="green-text font-mono">$3,600</td>
-              <td class="text-slate-400">1 年</td>
-            </tr>
-            <tr>
-              <td><span class="green-text font-mono text-xs">A3</span></td>
-              <td>科研论文 + 设备</td>
-              <td class="green-text font-mono">$8,000</td>
-              <td class="text-slate-400">1 年</td>
-            </tr>
-            <tr>
-              <td><span class="yellow-text font-mono text-xs">B</span></td>
-              <td>兼职团队 + 运营</td>
-              <td class="yellow-text font-mono">$33,600</td>
-              <td class="text-slate-400">1 年</td>
-            </tr>
-            <tr>
-              <td><span class="purple-text font-mono text-xs">C</span></td>
-              <td>核心开发 part-time</td>
-              <td class="purple-text font-mono">$86,400</td>
-              <td class="text-slate-400">1.5 年</td>
-            </tr>
-            <tr style="border-top: 1px solid rgba(34,211,238,0.3);">
-              <td colspan="2" class="font-bold">全部叠加合计</td>
-              <td class="cyan-text font-mono font-bold text-lg">$132,800</td>
-              <td class="text-slate-400">独立筹集</td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="text-xs text-slate-500 mt-3">* 各阶段资金独立筹集、独立生效，不互相覆盖。筹集到哪个阶段，就启动哪个阶段。</p>
-      </div>
-    </section>
-
-    <div class="divider mb-16"></div>
-
-    <!-- HOW TO SUPPORT -->
-    <section class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">如何支持 <span class="text-slate-400 text-lg font-normal">/ Ways to Support</span></h2>
-      <p class="text-slate-400 text-sm mb-8">四种无许可的参与方式，任何人都可以选择其中一种或多种</p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-        <!-- Grant -->
-        <div class="support-card p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:rgba(34,211,238,0.1); color:var(--primary-cyan); border:1px solid rgba(34,211,238,0.3);">1</div>
-            <div>
-              <h3 class="font-bold">Grant <span class="text-slate-400 font-normal text-sm">/ 无条件赞助</span></h3>
+        <div class="max-w-5xl mx-auto px-6 pt-24 pb-20">
+            <!-- HERO -->
+            <div class="text-center mb-16">
+                <div class="inline-block mb-4">
+                    <span
+                        class="tag"
+                        style="
+                            background: rgba(34, 211, 238, 0.1);
+                            color: var(--primary-cyan);
+                            border: 1px solid rgba(34, 211, 238, 0.3);
+                        "
+                        >Cold Launch</span
+                    >
+                </div>
+                <h1 class="text-5xl mb-4 glow-cyan cyan-text">
+                    我们在建什么<br /><span class="text-white"
+                        >以及为什么需要你</span
+                    >
+                </h1>
+                <p
+                    class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed"
+                >
+                    这不是一份路演 PPT。这是一份给所有共同愿景者的清单：<br />
+                    我们做过什么、现在要做什么、钱用在哪、产出是什么。
+                </p>
             </div>
-            <span class="ml-auto amount-badge cyan-text">$500+</span>
-          </div>
-          <p class="text-slate-400 text-sm mb-3">认可愿景，不附加任何条件。你的赞助进入公共资金池，用于我们声明的各阶段用途。所有使用情况在看板和里程碑中透明可查。</p>
-          <div class="text-xs text-slate-500">最低金额：<span class="cyan-text">$500</span></div>
-        </div>
 
-        <!-- Co-build -->
-        <div class="support-card p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:rgba(74,222,128,0.1); color:var(--accent-green); border:1px solid rgba(74,222,128,0.3);">2</div>
-            <div>
-              <h3 class="font-bold">Co-build <span class="text-slate-400 font-normal text-sm">/ 共建</span></h3>
+            <div class="divider mb-16"></div>
+
+            <!-- TIMELINE: ORIGIN STORY -->
+            <section class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    起源
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ Origin Story</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">
+                    从一个开源贡献者到协议创建者的路径
+                </p>
+
+                <div class="space-y-0">
+                    <!-- 2016-2019 -->
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-line flex-1"></div>
+                        </div>
+                        <div class="pb-8">
+                            <div class="flex items-center gap-3 mb-1">
+                                <span class="text-xs font-mono cyan-text"
+                                    >2016 — 2019</span
+                                >
+                                <span
+                                    class="tag"
+                                    style="
+                                        background: rgba(34, 211, 238, 0.08);
+                                        color: #94a3b8;
+                                    "
+                                    >开源入门</span
+                                >
+                            </div>
+                            <p class="text-slate-300 text-sm">
+                                加入
+                                GitHub，持续三年做学习性的开源贡献。从代码贡献者开始，建立基础。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 2021-2022 -->
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="timeline-dot"
+                                style="
+                                    background: var(--secondary-blue);
+                                    box-shadow: 0 0 8px var(--secondary-blue);
+                                "
+                            ></div>
+                            <div class="timeline-line flex-1"></div>
+                        </div>
+                        <div class="pb-8">
+                            <div class="flex items-center gap-3 mb-1">
+                                <span
+                                    class="text-xs font-mono"
+                                    style="color: var(--secondary-blue)"
+                                    >2021 — 2022</span
+                                >
+                                <span
+                                    class="tag"
+                                    style="
+                                        background: rgba(59, 130, 246, 0.08);
+                                        color: #94a3b8;
+                                    "
+                                    >深度开源 + 社区</span
+                                >
+                            </div>
+                            <p class="text-slate-300 text-sm">
+                                陆续深度参与
+                                <strong class="text-white">DappLearning</strong
+                                >、<strong class="text-white">Rebase</strong
+                                >（开源工作）；<br />
+                                接触并加入
+                                <strong class="text-white">CDAO</strong
+                                >、<strong class="text-white">Plancker^</strong
+                                >、<strong class="text-white">GreenPill</strong
+                                >——从开源贡献者扩展到社区建设者。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 2022-2023 -->
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="timeline-dot"
+                                style="
+                                    background: var(--accent-yellow);
+                                    box-shadow: 0 0 8px var(--accent-yellow);
+                                "
+                            ></div>
+                            <div class="timeline-line flex-1"></div>
+                        </div>
+                        <div class="pb-8">
+                            <div class="flex items-center gap-3 mb-1">
+                                <span class="text-xs font-mono yellow-text"
+                                    >2022 — 2023</span
+                                >
+                                <span
+                                    class="tag"
+                                    style="
+                                        background: rgba(251, 191, 36, 0.08);
+                                        color: #94a3b8;
+                                    "
+                                    >以太坊建设</span
+                                >
+                            </div>
+                            <p class="text-slate-300 text-sm">
+                                参与
+                                <strong class="text-white">SoulWallet</strong>
+                                项目；前往
+                                <strong class="text-white">Zuzalu</strong
+                                >（2023年4月）与 Vitalik 沟通后，<br />
+                                Plancker^ 建立
+                                <strong class="text-white"
+                                    >AAStar（账户抽象）小组</strong
+                                >，专注 AA + 基础设施。 同期深度参与 Plancker
+                                社区协作工作。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 2023 Sep -->
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="timeline-dot"
+                                style="
+                                    background: var(--accent-orange);
+                                    box-shadow: 0 0 8px var(--accent-orange);
+                                "
+                            ></div>
+                            <div class="timeline-line flex-1"></div>
+                        </div>
+                        <div class="pb-8">
+                            <div class="flex items-center gap-3 mb-1">
+                                <span class="text-xs font-mono orange-text"
+                                    >2023 Sep</span
+                                >
+                                <span
+                                    class="tag"
+                                    style="
+                                        background: rgba(251, 146, 60, 0.08);
+                                        color: #94a3b8;
+                                    "
+                                    >CMU + 独立</span
+                                >
+                            </div>
+                            <p class="text-slate-300 text-sm">
+                                进入
+                                <strong class="text-white"
+                                    >清迈大学（CMU）</strong
+                                >，开始持续的以太坊研究与建设工作。<br />
+                                AAStar 同期从 Plancker^
+                                独立，继承精神，自主运营（正式独立：2024年11月）。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Now -->
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="timeline-dot"
+                                style="
+                                    background: var(--accent-green);
+                                    box-shadow: 0 0 12px var(--accent-green);
+                                    width: 14px;
+                                    height: 14px;
+                                "
+                            ></div>
+                        </div>
+                        <div class="pb-2">
+                            <div class="flex items-center gap-3 mb-1">
+                                <span class="text-xs font-mono green-text"
+                                    >2026 — NOW</span
+                                >
+                                <span
+                                    class="tag"
+                                    style="
+                                        background: rgba(74, 222, 128, 0.1);
+                                        color: var(--accent-green);
+                                        border: 1px solid
+                                            rgba(74, 222, 128, 0.3);
+                                    "
+                                    >Beta 即将发布</span
+                                >
+                            </div>
+                            <p class="text-slate-300 text-sm">
+                                Beta 版本原计划 3月30日，现调整至
+                                <strong class="text-white">4月15日发布</strong
+                                >。<br />
+                                Mycelium Protocol 生态已初具规模。这份 Cold
+                                Launch，是我们对所有支持者和参与者的透明清单。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider mb-16"></div>
+
+            <!-- ALREADY BUILT -->
+            <section class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    已有产出
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ What We've Built</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">
+                    Beta 之前，这些都已经存在
+                </p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="sub-card p-4">
+                        <div class="text-xs cyan-text font-mono mb-1">
+                            AAstar
+                        </div>
+                        <div class="font-semibold mb-1">AirAccount</div>
+                        <div class="text-xs text-slate-400">
+                            指纹登录·无 ETH·TEE 私钥管理
+                        </div>
+                    </div>
+                    <div class="sub-card p-4">
+                        <div class="text-xs cyan-text font-mono mb-1">
+                            AAstar
+                        </div>
+                        <div class="font-semibold mb-1">SuperPaymaster</div>
+                        <div class="text-xs text-slate-400">
+                            Gasless 交易·Web3 代理微支付
+                        </div>
+                    </div>
+                    <div class="sub-card p-4">
+                        <div class="text-xs cyan-text font-mono mb-1">
+                            AAstar
+                        </div>
+                        <div class="font-semibold mb-1">
+                            airaccount-contract
+                        </div>
+                        <div class="text-xs text-slate-400">
+                            446/446 测试通过·Session Keys·M6 进行中
+                        </div>
+                    </div>
+                    <div class="sub-card p-4">
+                        <div class="text-xs cyan-text font-mono mb-1">
+                            AAstar
+                        </div>
+                        <div class="font-semibold mb-1">SuperRelay</div>
+                        <div class="text-xs text-slate-400">
+                            ERC-4337 企业级 bundler·双签名 TEE
+                        </div>
+                    </div>
+                    <div class="sub-card p-4">
+                        <div class="text-xs yellow-text font-mono mb-1">
+                            MushroomDAO
+                        </div>
+                        <div class="font-semibold mb-1">BroodBrain</div>
+                        <div class="text-xs text-slate-400">
+                            协议神经系统·实时任务看板
+                        </div>
+                    </div>
+                    <div class="sub-card p-4">
+                        <div class="text-xs yellow-text font-mono mb-1">
+                            MushroomDAO
+                        </div>
+                        <div class="font-semibold mb-1">Cos72 + Sin90</div>
+                        <div class="text-xs text-slate-400 mb-1">
+                            社区 OS + 个人 OS·开发中
+                        </div>
+                        <div class="text-xs" style="color: var(--accent-green)">
+                            ← Beta 目标
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex gap-3 flex-wrap">
+                    <a href="https://www.mushroom.cv" class="text-xs nav-link"
+                        ><i class="fas fa-tasks mr-1"></i>实时看板</a
+                    >
+                    <a
+                        href="https://www.mushroom.cv/milestones"
+                        class="text-xs nav-link"
+                        ><i class="fas fa-flag mr-1"></i>里程碑</a
+                    >
+                    <a href="architecture.html" class="text-xs nav-link"
+                        ><i class="fas fa-sitemap mr-1"></i>架构图</a
+                    >
+                    <a
+                        href="https://github.com/AAStarCommunity"
+                        class="text-xs nav-link"
+                        ><i class="fab fa-github mr-1"></i>AAStarCommunity</a
+                    >
+                </div>
+            </section>
+
+            <div class="divider mb-16"></div>
+
+            <!-- PHASES -->
+            <section class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    三个阶段
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ Three Phases</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-3">
+                    各阶段资金独立筹集，相互叠加，不互相覆盖
+                </p>
+
+                <!-- Phase flow diagram -->
+                <div class="flex items-center gap-2 mb-10 overflow-x-auto pb-2">
+                    <div
+                        class="glass-card phase-a px-5 py-3 text-center flex-shrink-0"
+                    >
+                        <div class="green-text font-mono text-xs mb-1">
+                            PHASE A
+                        </div>
+                        <div class="font-bold text-sm">用爱发电</div>
+                        <div class="text-xs text-slate-400">缓慢前行</div>
+                    </div>
+                    <div class="text-slate-500 text-2xl flex-shrink-0">→</div>
+                    <div
+                        class="glass-card phase-b px-5 py-3 text-center flex-shrink-0"
+                    >
+                        <div class="yellow-text font-mono text-xs mb-1">
+                            PHASE B
+                        </div>
+                        <div class="font-bold text-sm">严谨科研</div>
+                        <div class="text-xs text-slate-400">稳定闭环</div>
+                    </div>
+                    <div class="text-slate-500 text-2xl flex-shrink-0">→</div>
+                    <div
+                        class="glass-card phase-c px-5 py-3 text-center flex-shrink-0"
+                    >
+                        <div class="purple-text font-mono text-xs mb-1">
+                            PHASE C
+                        </div>
+                        <div class="font-bold text-sm">社区启动</div>
+                        <div class="text-xs text-slate-400">产品交付加速</div>
+                    </div>
+                </div>
+
+                <!-- Phase A -->
+                <div class="glass-card phase-a p-6 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="tag"
+                            style="
+                                background: rgba(74, 222, 128, 0.1);
+                                color: var(--accent-green);
+                                border: 1px solid rgba(74, 222, 128, 0.3);
+                            "
+                            >Phase A</span
+                        >
+                        <h3 class="text-xl green-text">用爱发电·缓慢前行</h3>
+                    </div>
+                    <p class="text-slate-400 text-sm mb-5">
+                        三个独立子阶段，每一个都是独立的筹集目标，全部叠加生效。
+                    </p>
+
+                    <div class="space-y-4">
+                        <!-- A1 -->
+                        <div class="sub-card p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <span
+                                        class="text-xs font-mono text-slate-500 mr-2"
+                                        >A1</span
+                                    >
+                                    <span class="font-semibold text-sm"
+                                        >Claude Code Max 共享席位</span
+                                    >
+                                </div>
+                                <span class="amount-badge green-text text-lg"
+                                    >$1,200</span
+                                >
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 text-xs">
+                                <div>
+                                    <div class="text-slate-500 mb-1">时长</div>
+                                    <div class="text-slate-300">1 年</div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">用途</div>
+                                    <div class="text-slate-300">
+                                        $100/月 × 2人共享 Claude Max
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">产出</div>
+                                    <div class="text-slate-300">
+                                        Beta 后持续迭代，开发不中断
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- A2 -->
+                        <div class="sub-card p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <span
+                                        class="text-xs font-mono text-slate-500 mr-2"
+                                        >A2</span
+                                    >
+                                    <span class="font-semibold text-sm"
+                                        >双席位 + 服务器基础设施</span
+                                    >
+                                </div>
+                                <span class="amount-badge green-text text-lg"
+                                    >$3,600</span
+                                >
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 text-xs">
+                                <div>
+                                    <div class="text-slate-500 mb-1">时长</div>
+                                    <div class="text-slate-300">1 年</div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">
+                                        用途分解
+                                    </div>
+                                    <div class="text-slate-300">
+                                        2× Claude Max ($200) + 服务器节点 ($100)
+                                        = $300/月
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">产出</div>
+                                    <div class="text-slate-300">
+                                        加速协作效率，支撑 Beta 阶段测试基础设施
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- A3 -->
+                        <div class="sub-card p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <span
+                                        class="text-xs font-mono text-slate-500 mr-2"
+                                        >A3</span
+                                    >
+                                    <span class="font-semibold text-sm"
+                                        >科研基础设施（论文 + 设备）</span
+                                    >
+                                </div>
+                                <span class="amount-badge green-text text-lg"
+                                    >$8,000</span
+                                >
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 text-xs">
+                                <div>
+                                    <div class="text-slate-500 mb-1">时长</div>
+                                    <div class="text-slate-300">1 年</div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">
+                                        用途分解
+                                    </div>
+                                    <div class="text-slate-300">
+                                        论文发表：$2,000–3,000<br />
+                                        LoRa 设备 + 实验装置：余下预算
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500 mb-1">产出</div>
+                                    <div class="text-slate-300">
+                                        每年 2
+                                        篇学术论文，为协议提供严谨科研支撑
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4 pt-4 border-t border-slate-700 flex items-center justify-between"
+                    >
+                        <div class="text-xs text-slate-500">
+                            Phase A 合计（叠加）
+                        </div>
+                        <span class="amount-badge green-text text-xl"
+                            >$12,800 / yr</span
+                        >
+                    </div>
+                </div>
+
+                <!-- Phase B -->
+                <div class="glass-card phase-b p-6 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="tag"
+                            style="
+                                background: rgba(251, 191, 36, 0.1);
+                                color: var(--accent-yellow);
+                                border: 1px solid rgba(251, 191, 36, 0.3);
+                            "
+                            >Phase B</span
+                        >
+                        <h3 class="text-xl yellow-text">严谨科研·稳定闭环</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">
+                                月度预算
+                            </div>
+                            <div class="amount-badge yellow-text text-lg">
+                                $2,800
+                            </div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">时长</div>
+                            <div class="font-bold text-lg">12 个月</div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">
+                                年度合计
+                            </div>
+                            <div class="amount-badge yellow-text text-lg">
+                                $33,600
+                            </div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">
+                                团队规模
+                            </div>
+                            <div class="font-bold text-lg">3 兼职 + 基础</div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th>月度费用</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>兼职贡献者 × 3</td>
+                                <td class="yellow-text font-mono">$2,400</td>
+                                <td class="text-slate-400">
+                                    每人约
+                                    $800/月，包括社区拓展、用户维护、产品迭代反馈
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>基础运营</td>
+                                <td class="yellow-text font-mono">$400</td>
+                                <td class="text-slate-400">
+                                    工具、通讯、域名等基础开支
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-4 sub-card p-4">
+                        <div class="text-xs text-slate-500 mb-2">预期产出</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(251, 191, 36, 0.1);
+                                    color: var(--accent-yellow);
+                                "
+                                >Cos72 社区OS 雏形</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(251, 191, 36, 0.1);
+                                    color: var(--accent-yellow);
+                                "
+                                >Sin90 个人OS 雏形</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(251, 191, 36, 0.1);
+                                    color: var(--accent-yellow);
+                                "
+                                >稳定产品反馈闭环</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(251, 191, 36, 0.1);
+                                    color: var(--accent-yellow);
+                                "
+                                >组织化协作机制</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase C -->
+                <div class="glass-card phase-c p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="tag"
+                            style="
+                                background: rgba(167, 139, 250, 0.1);
+                                color: var(--accent-purple);
+                                border: 1px solid rgba(167, 139, 250, 0.3);
+                            "
+                            >Phase C</span
+                        >
+                        <h3 class="text-xl purple-text">
+                            社区启动·产品交付加速
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">
+                                月度预算
+                            </div>
+                            <div class="amount-badge purple-text text-lg">
+                                $4,800
+                            </div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">时长</div>
+                            <div class="font-bold text-lg">18 个月</div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">合计</div>
+                            <div class="amount-badge purple-text text-lg">
+                                $86,400
+                            </div>
+                        </div>
+                        <div class="sub-card p-3 text-center">
+                            <div class="text-xs text-slate-500 mb-1">
+                                核心开发
+                            </div>
+                            <div class="font-bold text-lg">2 人 Part-time</div>
+                        </div>
+                    </div>
+
+                    <table class="mb-5">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th>月度费用</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>核心开发者 × 2</td>
+                                <td class="purple-text font-mono">$4,800</td>
+                                <td class="text-slate-400">
+                                    每人 $2,400/月，相对稳定的 part-time
+                                    投入保障
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="sub-card p-4 mb-4">
+                        <div class="text-xs text-slate-500 mb-2">
+                            为什么这很重要
+                        </div>
+                        <p class="text-slate-300 text-sm">
+                            $2,400/月能为开发者提供基本的时间投入保障——不是全职薪资，但足以让专注度、交付稳定性、用户服务质量得到实质提升。这是从"散兵游勇"到"稳定核心团队"的关键跨越。
+                        </p>
+                    </div>
+
+                    <div class="sub-card p-4">
+                        <div class="text-xs text-slate-500 mb-2">预期产出</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                "
+                                >社区基础小组建立</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                "
+                                >DAO 治理组织启动</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                "
+                                >稳定用户群服务</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                "
+                                >完整产品交付</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                "
+                                >1.5年内社区初步成型</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary table -->
+                <div class="glass-card p-5 mt-6">
+                    <div
+                        class="text-xs text-slate-500 uppercase tracking-widest mb-4"
+                    >
+                        资金汇总 / Funding Summary
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>阶段</th>
+                                <th>目标</th>
+                                <th>金额</th>
+                                <th>时长</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="green-text font-mono text-xs"
+                                        >A1</span
+                                    >
+                                </td>
+                                <td>Claude Max 共享席位</td>
+                                <td class="green-text font-mono">$1,200</td>
+                                <td class="text-slate-400">1 年</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="green-text font-mono text-xs"
+                                        >A2</span
+                                    >
+                                </td>
+                                <td>双席位 + 服务器</td>
+                                <td class="green-text font-mono">$3,600</td>
+                                <td class="text-slate-400">1 年</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="green-text font-mono text-xs"
+                                        >A3</span
+                                    >
+                                </td>
+                                <td>科研论文 + 设备</td>
+                                <td class="green-text font-mono">$8,000</td>
+                                <td class="text-slate-400">1 年</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="yellow-text font-mono text-xs"
+                                        >B</span
+                                    >
+                                </td>
+                                <td>兼职团队 + 运营</td>
+                                <td class="yellow-text font-mono">$33,600</td>
+                                <td class="text-slate-400">1 年</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="purple-text font-mono text-xs"
+                                        >C</span
+                                    >
+                                </td>
+                                <td>核心开发 part-time</td>
+                                <td class="purple-text font-mono">$86,400</td>
+                                <td class="text-slate-400">1.5 年</td>
+                            </tr>
+                            <tr
+                                style="
+                                    border-top: 1px solid
+                                        rgba(34, 211, 238, 0.3);
+                                "
+                            >
+                                <td colspan="2" class="font-bold">
+                                    全部叠加合计
+                                </td>
+                                <td
+                                    class="cyan-text font-mono font-bold text-lg"
+                                >
+                                    $132,800
+                                </td>
+                                <td class="text-slate-400">独立筹集</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-slate-500 mt-3">
+                        *
+                        各阶段资金独立筹集、独立生效，不互相覆盖。筹集到哪个阶段，就启动哪个阶段。
+                    </p>
+                </div>
+            </section>
+
+            <div class="divider mb-16"></div>
+
+            <!-- HOW TO SUPPORT -->
+            <section class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    如何支持
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ Ways to Support</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">
+                    四种无许可的参与方式，任何人都可以选择其中一种或多种
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Grant -->
+                    <div class="support-card p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                style="
+                                    background: rgba(34, 211, 238, 0.1);
+                                    color: var(--primary-cyan);
+                                    border: 1px solid rgba(34, 211, 238, 0.3);
+                                "
+                            >
+                                1
+                            </div>
+                            <div>
+                                <h3 class="font-bold">
+                                    Grant
+                                    <span
+                                        class="text-slate-400 font-normal text-sm"
+                                        >/ 无条件赞助</span
+                                    >
+                                </h3>
+                            </div>
+                            <span class="ml-auto amount-badge cyan-text"
+                                >$500+</span
+                            >
+                        </div>
+                        <p class="text-slate-400 text-sm mb-3">
+                            认可愿景，不附加任何条件。你的赞助进入公共资金池，用于我们声明的各阶段用途。所有使用情况在看板和里程碑中透明可查。
+                        </p>
+                        <div class="text-xs text-slate-500">
+                            最低金额：<span class="cyan-text">$500</span>
+                        </div>
+                    </div>
+
+                    <!-- Co-build -->
+                    <div class="support-card p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                style="
+                                    background: rgba(74, 222, 128, 0.1);
+                                    color: var(--accent-green);
+                                    border: 1px solid rgba(74, 222, 128, 0.3);
+                                "
+                            >
+                                2
+                            </div>
+                            <div>
+                                <h3 class="font-bold">
+                                    Co-build
+                                    <span
+                                        class="text-slate-400 font-normal text-sm"
+                                        >/ 共建</span
+                                    >
+                                </h3>
+                            </div>
+                            <span class="ml-auto amount-badge green-text"
+                                >$1,000+</span
+                            >
+                        </div>
+                        <p class="text-slate-400 text-sm mb-3">
+                            提出你的核心诉求，投入资源加速你指定的模块。我们共同定义交付目标和时间节点。
+                        </p>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(74, 222, 128, 0.08);
+                                    color: #94a3b8;
+                                    border: 1px solid rgba(255, 255, 255, 0.08);
+                                "
+                                >社区大脑</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(74, 222, 128, 0.08);
+                                    color: #94a3b8;
+                                    border: 1px solid rgba(255, 255, 255, 0.08);
+                                "
+                                >Agent & Skill</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(74, 222, 128, 0.08);
+                                    color: #94a3b8;
+                                    border: 1px solid rgba(255, 255, 255, 0.08);
+                                "
+                                >社区积分</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(74, 222, 128, 0.08);
+                                    color: #94a3b8;
+                                    border: 1px solid rgba(255, 255, 255, 0.08);
+                                "
+                                >治理模块</span
+                            >
+                            <span
+                                class="tag"
+                                style="
+                                    background: rgba(74, 222, 128, 0.08);
+                                    color: #94a3b8;
+                                    border: 1px solid rgba(255, 255, 255, 0.08);
+                                "
+                                >其他模块</span
+                            >
+                        </div>
+                        <div class="text-xs text-slate-500">
+                            最低金额：<span class="green-text">$1,000</span>
+                        </div>
+                    </div>
+
+                    <!-- Consulting -->
+                    <div class="support-card p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                style="
+                                    background: rgba(251, 191, 36, 0.1);
+                                    color: var(--accent-yellow);
+                                    border: 1px solid rgba(251, 191, 36, 0.3);
+                                "
+                            >
+                                3
+                            </div>
+                            <div>
+                                <h3 class="font-bold">
+                                    Consulting
+                                    <span
+                                        class="text-slate-400 font-normal text-sm"
+                                        >/ 顾问服务</span
+                                    >
+                                </h3>
+                            </div>
+                            <span class="ml-auto amount-badge yellow-text"
+                                >$500+</span
+                            >
+                        </div>
+                        <p class="text-slate-400 text-sm mb-3">
+                            所有产品均为开源数字公共物品，任何人都可以 clone
+                            自建。但在使用过程中遇到问题时，我们提供顾问支持——从部署到定制化。
+                        </p>
+                        <div class="text-xs text-slate-500">
+                            最低金额：<span class="yellow-text">$500</span>
+                        </div>
+                    </div>
+
+                    <!-- Governance Token -->
+                    <div class="support-card p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                    border: 1px solid rgba(167, 139, 250, 0.3);
+                                "
+                            >
+                                4
+                            </div>
+                            <div>
+                                <h3 class="font-bold">
+                                    Governance Token
+                                    <span
+                                        class="text-slate-400 font-normal text-sm"
+                                        >/ 治理代币</span
+                                    >
+                                </h3>
+                            </div>
+                            <span
+                                class="ml-auto tag"
+                                style="
+                                    background: rgba(167, 139, 250, 0.1);
+                                    color: var(--accent-purple);
+                                    border: 1px solid rgba(167, 139, 250, 0.3);
+                                "
+                                >Cold Launch</span
+                            >
+                        </div>
+                        <p class="text-slate-400 text-sm mb-3">
+                            通过支持 Governance Token
+                            冷启动，获得参与社区的权利与投票权。你的思考、建议、想法可以在治理中留下痕迹。这是真正意义上的社区成员资格。
+                        </p>
+                        <div class="text-xs text-slate-500">
+                            无许可参与，详情即将公布
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 mt-5 flex items-center gap-3">
+                    <i class="fas fa-info-circle cyan-text"></i>
+                    <p class="text-slate-400 text-sm">
+                        所有数字公共物品均无许可开放。你可以直接 clone
+                        使用，无需任何支持。以上四种方式是为那些认可愿景、希望加速这件事的人设计的。
+                    </p>
+                </div>
+            </section>
+
+            <div class="divider mb-16"></div>
+
+            <!-- SUPPORTERS WALL -->
+            <section id="supporters" class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    支持者
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ Supporters</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">
+                    感谢所有与我们共同愿景的人
+                </p>
+
+                <div class="mb-8">
+                    <div
+                        class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"
+                    >
+                        <i class="fas fa-heart text-red-400"></i> 赞助者
+                        Sponsors · $500+
+                    </div>
+                    <div
+                        class="grid grid-cols-3 md:grid-cols-6 gap-3"
+                        id="sponsors-grid"
+                    >
+                        <div
+                            style="
+                                border: 1px dashed rgba(255, 255, 255, 0.12);
+                                border-radius: 8px;
+                                padding: 1rem;
+                                text-align: center;
+                                color: #475569;
+                                font-size: 0.8rem;
+                            "
+                        >
+                            成为第一位赞助者
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <div
+                        class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"
+                    >
+                        <i
+                            class="fas fa-hammer"
+                            style="color: var(--accent-green)"
+                        ></i>
+                        共建者 Co-builders · $1,000+
+                    </div>
+                    <div
+                        class="grid grid-cols-3 md:grid-cols-6 gap-3"
+                        id="cobuilders-grid"
+                    >
+                        <div
+                            style="
+                                border: 1px dashed rgba(255, 255, 255, 0.12);
+                                border-radius: 8px;
+                                padding: 1rem;
+                                text-align: center;
+                                color: #475569;
+                                font-size: 0.8rem;
+                            "
+                        >
+                            指定模块共建
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div
+                        class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"
+                    >
+                        <i
+                            class="fas fa-seedling"
+                            style="color: var(--accent-yellow)"
+                        ></i>
+                        Cold Launch 早期参与者
+                    </div>
+                    <div
+                        class="glass-card p-4 text-center text-slate-600 text-sm"
+                        id="early-grid"
+                    >
+                        冷启动进行中 · 参与记录即将更新
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <a
+                        href="dashboard.html#supporters"
+                        class="text-xs"
+                        style="color: var(--primary-cyan)"
+                    >
+                        <i class="fas fa-chart-bar mr-1"></i>查看完整支持者墙 →
+                    </a>
+                </div>
+            </section>
+
+            <script>
+                async function loadSupporters() {
+                    try {
+                        const res = await fetch(
+                            "dashboard-data.json?t=" + Date.now(),
+                        );
+                        const data = await res.json();
+                        const sponsors = (data.sponsors || []).filter(
+                            (s) => !s._template,
+                        );
+                        const builders = (data.cobuilders || []).filter(
+                            (s) => !s._template,
+                        );
+                        const early = (data.early_participants || []).filter(
+                            (s) => !s._template,
+                        );
+                        if (sponsors.length)
+                            document.getElementById("sponsors-grid").innerHTML =
+                                sponsors
+                                    .map(
+                                        (s) =>
+                                            `<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`,
+                                    )
+                                    .join("");
+                        if (builders.length)
+                            document.getElementById(
+                                "cobuilders-grid",
+                            ).innerHTML = builders
+                                .map(
+                                    (s) =>
+                                        `<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`,
+                                )
+                                .join("");
+                        if (early.length)
+                            document.getElementById("early-grid").innerHTML =
+                                early
+                                    .map(
+                                        (p) =>
+                                            `<a href="${p.link}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 m-1 text-xs rounded-full" style="background:rgba(251,191,36,0.06);border:1px solid rgba(255,255,255,0.08)">${p.name}</a>`,
+                                    )
+                                    .join("");
+                    } catch (e) {}
+                }
+                loadSupporters();
+            </script>
+
+            <div class="divider mb-16"></div>
+
+            <!-- LINKS / CTA -->
+            <section class="mb-8 text-center">
+                <h2 class="text-2xl mb-4 cyan-text">
+                    实时进展
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ Live Progress</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">
+                    所有承诺的交付物，都在这里实时可查
+                </p>
+
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a
+                        href="https://www.mushroom.cv"
+                        class="glass-card px-6 py-3 flex items-center gap-2 hover:border-cyan-400 transition-all"
+                    >
+                        <i class="fas fa-tasks cyan-text"></i>
+                        <span class="text-sm">实时任务看板</span>
+                    </a>
+                    <a
+                        href="https://www.mushroom.cv/milestones"
+                        class="glass-card px-6 py-3 flex items-center gap-2"
+                    >
+                        <i class="fas fa-flag yellow-text"></i>
+                        <span class="text-sm">里程碑 & 研究</span>
+                    </a>
+                    <a
+                        href="dashboard.html"
+                        class="glass-card px-6 py-3 flex items-center gap-2"
+                    >
+                        <i class="fas fa-chart-bar cyan-text"></i>
+                        <span class="text-sm">社区 Dashboard</span>
+                    </a>
+                    <a
+                        href="architecture.html"
+                        class="glass-card px-6 py-3 flex items-center gap-2"
+                    >
+                        <i
+                            class="fas fa-sitemap"
+                            style="color: var(--accent-purple)"
+                        ></i>
+                        <span class="text-sm">技术架构图</span>
+                    </a>
+                    <a
+                        href="https://github.com/AAStarCommunity"
+                        class="glass-card px-6 py-3 flex items-center gap-2"
+                    >
+                        <i class="fab fa-github green-text"></i>
+                        <span class="text-sm">所有开源代码</span>
+                    </a>
+                </div>
+            </section>
+
+            <div class="divider mb-16"></div>
+
+            <!-- FAQ -->
+            <section class="mb-16">
+                <h2 class="text-2xl mb-2 cyan-text">
+                    常见问题
+                    <span class="text-slate-400 text-lg font-normal"
+                        >/ FAQ</span
+                    >
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">点击问题展开回答</p>
+
+                <div class="space-y-3" id="faq-list">
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >Mycelium Protocol 是什么？和 AAStar
+                                是什么关系？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            Mycelium Protocol
+                            是一个开放协议——它定义了去中心化协作网络的规格和治理框架，由
+                            MushroomDAO 负责维护。<br /><br />
+                            AAStar 是协议生态中的
+                            <strong class="text-white">基础设施建设组</strong
+                            >，提供 Web3 账户（AirAccount）、无 Gas
+                            支付（SuperPaymaster）等核心能力。就像 Linux
+                            是操作系统协议，AAStar
+                            则是在这个协议上建设关键基础设施的团队。<br /><br />
+                            AAStar 前身是 Plancker^ 建设小组，2023年4月 Zuzalu
+                            与 Vitalik 沟通后正式聚焦
+                            AA（账户抽象），2024年11月独立运营。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >什么是"意义经济"？你们不是又一个 DeFi
+                                项目吗？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            不是。我们不做收益农场、不做 Token 炒作、不做 TVL
+                            竞赛。<br /><br />
+                            意义经济的核心是：把经济活动用作探索"我是谁、什么对我真正重要"的媒介，而不是目的本身。具体体现是：我们建设的产品（Cos72、Sin90）是为表达者、创作者、建设者提供基础设施——让有想象力和情感的个体在社区中找到可持续的经济循环，而不是把他们变成资本增殖的工具。<br /><br />
+                            我们用区块链技术，但目的是数字主权和协作，而不是金融投机。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >AirAccount 的"无需 ETH
+                                就能使用"是怎么实现的？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            通过
+                            <strong class="text-white"
+                                >ERC-4337 账户抽象 + SuperPaymaster</strong
+                            >
+                            实现。用户发起的交易 Gas 费用由 SuperPaymaster
+                            代为支付——费用来源可以是社区积分、赞助商补贴，或其他
+                            ERC-20 代币。<br /><br />
+                            用户只需要用设备指纹（WebAuthn）登录，无需助记词、无需
+                            ETH，就像普通 App 一样。背后的密钥由
+                            TEE（可信执行环境）保管，连我们自己都无法访问。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >代码都是开源的吗？你们怎么保证不会"跑路"？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            所有代码均在
+                            <a
+                                href="https://github.com/AAStarCommunity"
+                                target="_blank"
+                                class="cyan-text hover:underline"
+                                >github.com/AAStarCommunity</a
+                            >
+                            和
+                            <a
+                                href="https://github.com/MushroomDAO"
+                                target="_blank"
+                                class="cyan-text hover:underline"
+                                >github.com/MushroomDAO</a
+                            >
+                            公开，MIT/Apache 协议开源。任何人都可以
+                            fork、自己部署、自己运营。<br /><br />
+                            "跑路"在这里没有意义——因为没有闭源代码、没有托管资金、没有需要信任我们的核心环节。智能合约在链上，代码在
+                            GitHub，任务进度在
+                            <a
+                                href="https://www.mushroom.cv"
+                                class="cyan-text hover:underline"
+                                >mushroom.cv</a
+                            >
+                            实时可查。我们消失了，代码还在。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >Cold Launch
+                                筹到的钱怎么用？有透明度保证吗？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            每一笔资金对应明确的阶段和用途，写在本页面的"三个阶段"中。具体包括：<br /><br />
+                            · <strong class="text-white">A 阶段</strong>：Claude
+                            Code 订阅费 + 服务器 + 科研论文<br />
+                            ·
+                            <strong class="text-white">B 阶段</strong
+                            >：兼职社区团队（3人）+ 运营基础<br />
+                            ·
+                            <strong class="text-white">C 阶段</strong
+                            >：核心开发者 part-time 稳定化（2人，1.5年）<br /><br />
+                            所有任务和里程碑在
+                            <a
+                                href="https://www.mushroom.cv"
+                                class="cyan-text hover:underline"
+                                >mushroom.cv</a
+                            >
+                            实时可查。后续会在链上建立多签国库，进一步保障透明度。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >Governance Token 是什么？会不会是割韭菜？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            Governance Token 的核心功能是<strong
+                                class="text-white"
+                                >社区投票权和参与权</strong
+                            >，不是投机资产。持有者可以对协议方向、资金使用、产品优先级提出建议和投票。<br /><br />
+                            我们明确拒绝：没有
+                            IDO、没有预售白名单炒作、没有庄家控盘。冷启动阶段的
+                            Token
+                            定价透明、用途明确。如果你只想炒作，我们不是合适的项目。如果你认可愿景并希望参与治理，欢迎。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >Beta 什么时候上线？现在可以用什么？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            Beta 版本（Cos72 + Sin90）计划
+                            <strong class="text-white">2026年4月15日</strong>
+                            发布。<br /><br />
+                            现在可用的：<br />
+                            ·
+                            <strong class="text-white">AirAccount</strong
+                            >：指纹登录 Web3 账户（v0.16.7，Sepolia 测试网）<br />
+                            ·
+                            <strong class="text-white">SuperPaymaster</strong
+                            >：Gasless 交易（集成测试中）<br />
+                            ·
+                            <strong class="text-white">BroodBrain</strong
+                            >：任务看板
+                            <a
+                                href="https://www.mushroom.cv"
+                                class="cyan-text hover:underline"
+                                >mushroom.cv</a
+                            >（你现在就在用）<br />
+                            · 所有智能合约代码在 GitHub 可下载部署
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >我是一个普通用户，不懂区块链，我能用你们的产品吗？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            可以，这正是我们的目标。<br /><br />
+                            AirAccount 的设计原则就是"让 Web3 像 App
+                            一样简单"：指纹登录、不需要
+                            ETH、不需要助记词、不需要理解 Gas。<br /><br />
+                            Cos72
+                            是社区工具，就像一个集成了任务、投票、积分的开源论坛。Sin90
+                            是你的个人数字空间。两者都不要求你有区块链背景，只需要你有想表达和创作的欲望。
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >这个项目如何自我维持？你们靠什么活下去？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            我们有三条可持续路径：<br /><br />
+                            1.
+                            <strong class="text-white">协议费用</strong>：每笔
+                            Gas 代付收取极小比例手续费（取 0.001 ETH 或 10%
+                            中较小值），微小但稳定<br />
+                            2.
+                            <strong class="text-white">社区增值服务</strong
+                            >：开源产品免费，部署运维、定制功能、企业版收费——类似
+                            Red Hat 模式<br />
+                            3.
+                            <strong class="text-white"
+                                >iDoris 社区 AI 订阅</strong
+                            >：隐私保护 + Token Free + 低价推理，收月订阅费<br /><br />
+                            详见
+                            <a
+                                href="sustainability.html"
+                                class="cyan-text hover:underline"
+                                >可持续规划页面 →</a
+                            >
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card overflow-hidden">
+                        <button
+                            onclick="toggleFaq(this)"
+                            class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                        >
+                            <span class="font-semibold text-sm"
+                                >我想贡献代码 / 时间，怎么参与？</span
+                            >
+                            <i
+                                class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"
+                            ></i>
+                        </button>
+                        <div
+                            class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4"
+                        >
+                            欢迎。几个入口：<br /><br />
+                            ·
+                            <strong class="text-white">代码贡献</strong
+                            >：直接在各 repo 提 Issue 或 PR<br />
+                            · <strong class="text-white">加入协议</strong>：Fork
+                            Brood，提交
+                            <code class="bg-slate-800 px-1 rounded"
+                                >orgs/your-org/PROFILE.md</code
+                            >（见
+                            <a
+                                href="https://github.com/AAStarCommunity/Brood/blob/main/protocol/HOW_TO_JOIN.md"
+                                class="cyan-text hover:underline"
+                                >HOW_TO_JOIN.md</a
+                            >）<br />
+                            ·
+                            <strong class="text-white">社区建设</strong
+                            >：分享使用体验、翻译文档、组织本地活动<br />
+                            ·
+                            <strong class="text-white">科研合作</strong
+                            >：我们每年发布2篇论文，欢迎学术合作<br /><br />
+                            贡献可以兑换社区积分，积分可换产品服务使用权。
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <script>
+                function toggleFaq(btn) {
+                    const answer = btn.nextElementSibling;
+                    const icon = btn.querySelector("i");
+                    const isOpen = !answer.classList.contains("hidden");
+                    // close all
+                    document
+                        .querySelectorAll(".faq-answer")
+                        .forEach((a) => a.classList.add("hidden"));
+                    document
+                        .querySelectorAll(".faq-item button i")
+                        .forEach((i) => (i.style.transform = ""));
+                    // open if was closed
+                    if (!isOpen) {
+                        answer.classList.remove("hidden");
+                        icon.style.transform = "rotate(180deg)";
+                    }
+                }
+            </script>
+
+            <div class="text-center text-slate-600 text-xs mt-12 font-mono">
+                Mycelium Protocol · Cold Launch · 2026 ·
+                <a
+                    href="https://github.com/AAStarCommunity/Brood"
+                    class="hover:text-slate-400 transition-colors"
+                    >AAStarCommunity/Brood</a
+                >
             </div>
-            <span class="ml-auto amount-badge green-text">$1,000+</span>
-          </div>
-          <p class="text-slate-400 text-sm mb-3">提出你的核心诉求，投入资源加速你指定的模块。我们共同定义交付目标和时间节点。</p>
-          <div class="flex flex-wrap gap-1 mb-3">
-            <span class="tag" style="background:rgba(74,222,128,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.08);">社区大脑</span>
-            <span class="tag" style="background:rgba(74,222,128,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.08);">Agent & Skill</span>
-            <span class="tag" style="background:rgba(74,222,128,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.08);">社区积分</span>
-            <span class="tag" style="background:rgba(74,222,128,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.08);">治理模块</span>
-            <span class="tag" style="background:rgba(74,222,128,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.08);">其他模块</span>
-          </div>
-          <div class="text-xs text-slate-500">最低金额：<span class="green-text">$1,000</span></div>
         </div>
-
-        <!-- Consulting -->
-        <div class="support-card p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:rgba(251,191,36,0.1); color:var(--accent-yellow); border:1px solid rgba(251,191,36,0.3);">3</div>
-            <div>
-              <h3 class="font-bold">Consulting <span class="text-slate-400 font-normal text-sm">/ 顾问服务</span></h3>
-            </div>
-            <span class="ml-auto amount-badge yellow-text">$500+</span>
-          </div>
-          <p class="text-slate-400 text-sm mb-3">所有产品均为开源数字公共物品，任何人都可以 clone 自建。但在使用过程中遇到问题时，我们提供顾问支持——从部署到定制化。</p>
-          <div class="text-xs text-slate-500">最低金额：<span class="yellow-text">$500</span></div>
-        </div>
-
-        <!-- Governance Token -->
-        <div class="support-card p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:rgba(167,139,250,0.1); color:var(--accent-purple); border:1px solid rgba(167,139,250,0.3);">4</div>
-            <div>
-              <h3 class="font-bold">Governance Token <span class="text-slate-400 font-normal text-sm">/ 治理代币</span></h3>
-            </div>
-            <span class="ml-auto tag" style="background:rgba(167,139,250,0.1); color:var(--accent-purple); border:1px solid rgba(167,139,250,0.3);">Cold Launch</span>
-          </div>
-          <p class="text-slate-400 text-sm mb-3">通过支持 Governance Token 冷启动，获得参与社区的权利与投票权。你的思考、建议、想法可以在治理中留下痕迹。这是真正意义上的社区成员资格。</p>
-          <div class="text-xs text-slate-500">无许可参与，详情即将公布</div>
-        </div>
-
-      </div>
-
-      <div class="glass-card p-4 mt-5 flex items-center gap-3">
-        <i class="fas fa-info-circle cyan-text"></i>
-        <p class="text-slate-400 text-sm">所有数字公共物品均无许可开放。你可以直接 clone 使用，无需任何支持。以上四种方式是为那些认可愿景、希望加速这件事的人设计的。</p>
-      </div>
-    </section>
-
-    <div class="divider mb-16"></div>
-
-    <!-- SUPPORTERS WALL -->
-    <section id="supporters" class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">支持者 <span class="text-slate-400 text-lg font-normal">/ Supporters</span></h2>
-      <p class="text-slate-400 text-sm mb-8">感谢所有与我们共同愿景的人</p>
-
-      <div class="mb-8">
-        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <i class="fas fa-heart text-red-400"></i> 赞助者 Sponsors · $500+
-        </div>
-        <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="sponsors-grid">
-          <div style="border:1px dashed rgba(255,255,255,0.12);border-radius:8px;padding:1rem;text-align:center;color:#475569;font-size:0.8rem">
-            成为第一位赞助者
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-8">
-        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <i class="fas fa-hammer" style="color:var(--accent-green)"></i> 共建者 Co-builders · $1,000+
-        </div>
-        <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="cobuilders-grid">
-          <div style="border:1px dashed rgba(255,255,255,0.12);border-radius:8px;padding:1rem;text-align:center;color:#475569;font-size:0.8rem">
-            指定模块共建
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <i class="fas fa-seedling" style="color:var(--accent-yellow)"></i> Cold Launch 早期参与者
-        </div>
-        <div class="glass-card p-4 text-center text-slate-600 text-sm" id="early-grid">
-          冷启动进行中 · 参与记录即将更新
-        </div>
-      </div>
-
-      <div class="mt-6 text-center">
-        <a href="dashboard.html#supporters" class="text-xs" style="color:var(--primary-cyan)">
-          <i class="fas fa-chart-bar mr-1"></i>查看完整支持者墙 →
-        </a>
-      </div>
-    </section>
-
-    <script>
-    async function loadSupporters() {
-      try {
-        const res = await fetch('dashboard-data.json?t=' + Date.now());
-        const data = await res.json();
-        const sponsors = (data.sponsors||[]).filter(s=>!s._template);
-        const builders = (data.cobuilders||[]).filter(s=>!s._template);
-        const early = (data.early_participants||[]).filter(s=>!s._template);
-        if(sponsors.length) document.getElementById('sponsors-grid').innerHTML = sponsors.map(s=>`<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`).join('');
-        if(builders.length) document.getElementById('cobuilders-grid').innerHTML = builders.map(s=>`<a href="${s.website}" target="_blank" class="glass-card p-3 text-center text-xs">${s.name}</a>`).join('');
-        if(early.length) document.getElementById('early-grid').innerHTML = early.map(p=>`<a href="${p.link}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 m-1 text-xs rounded-full" style="background:rgba(251,191,36,0.06);border:1px solid rgba(255,255,255,0.08)">${p.name}</a>`).join('');
-      } catch(e){}
-    }
-    loadSupporters();
-    </script>
-
-    <div class="divider mb-16"></div>
-
-    <!-- LINKS / CTA -->
-    <section class="mb-8 text-center">
-      <h2 class="text-2xl mb-4 cyan-text">实时进展 <span class="text-slate-400 text-lg font-normal">/ Live Progress</span></h2>
-      <p class="text-slate-400 text-sm mb-8">所有承诺的交付物，都在这里实时可查</p>
-
-      <div class="flex flex-wrap justify-center gap-4">
-        <a href="https://www.mushroom.cv" class="glass-card px-6 py-3 flex items-center gap-2 hover:border-cyan-400 transition-all">
-          <i class="fas fa-tasks cyan-text"></i>
-          <span class="text-sm">实时任务看板</span>
-        </a>
-        <a href="https://www.mushroom.cv/milestones" class="glass-card px-6 py-3 flex items-center gap-2">
-          <i class="fas fa-flag yellow-text"></i>
-          <span class="text-sm">里程碑 & 研究</span>
-        </a>
-        <a href="dashboard.html" class="glass-card px-6 py-3 flex items-center gap-2">
-          <i class="fas fa-chart-bar cyan-text"></i>
-          <span class="text-sm">社区 Dashboard</span>
-        </a>
-        <a href="architecture.html" class="glass-card px-6 py-3 flex items-center gap-2">
-          <i class="fas fa-sitemap" style="color:var(--accent-purple)"></i>
-          <span class="text-sm">技术架构图</span>
-        </a>
-        <a href="https://github.com/AAStarCommunity" class="glass-card px-6 py-3 flex items-center gap-2">
-          <i class="fab fa-github green-text"></i>
-          <span class="text-sm">所有开源代码</span>
-        </a>
-      </div>
-    </section>
-
-    <div class="divider mb-16"></div>
-
-    <!-- FAQ -->
-    <section class="mb-16">
-      <h2 class="text-2xl mb-2 cyan-text">常见问题 <span class="text-slate-400 text-lg font-normal">/ FAQ</span></h2>
-      <p class="text-slate-400 text-sm mb-8">点击问题展开回答</p>
-
-      <div class="space-y-3" id="faq-list">
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">Mycelium Protocol 是什么？和 AAStar 是什么关系？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            Mycelium Protocol 是一个开放协议——它定义了去中心化协作网络的规格和治理框架，由 MushroomDAO 负责维护。<br><br>
-            AAStar 是协议生态中的 <strong class="text-white">基础设施建设组</strong>，提供 Web3 账户（AirAccount）、无 Gas 支付（SuperPaymaster）等核心能力。就像 Linux 是操作系统协议，AAStar 则是在这个协议上建设关键基础设施的团队。<br><br>
-            AAStar 前身是 Plancker^ 建设小组，2023年4月 Zuzalu 与 Vitalik 沟通后正式聚焦 AA（账户抽象），2024年11月独立运营。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">什么是"意义经济"？你们不是又一个 DeFi 项目吗？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            不是。我们不做收益农场、不做 Token 炒作、不做 TVL 竞赛。<br><br>
-            意义经济的核心是：把经济活动用作探索"我是谁、什么对我真正重要"的媒介，而不是目的本身。具体体现是：我们建设的产品（Cos72、Sin90）是为表达者、创作者、建设者提供基础设施——让有想象力和情感的个体在社区中找到可持续的经济循环，而不是把他们变成资本增殖的工具。<br><br>
-            我们用区块链技术，但目的是数字主权和协作，而不是金融投机。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">AirAccount 的"无需 ETH 就能使用"是怎么实现的？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            通过 <strong class="text-white">ERC-4337 账户抽象 + SuperPaymaster</strong> 实现。用户发起的交易 Gas 费用由 SuperPaymaster 代为支付——费用来源可以是社区积分、赞助商补贴，或其他 ERC-20 代币。<br><br>
-            用户只需要用设备指纹（WebAuthn）登录，无需助记词、无需 ETH，就像普通 App 一样。背后的密钥由 TEE（可信执行环境）保管，连我们自己都无法访问。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">代码都是开源的吗？你们怎么保证不会"跑路"？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            所有代码均在 <a href="https://github.com/AAStarCommunity" target="_blank" class="cyan-text hover:underline">github.com/AAStarCommunity</a> 和 <a href="https://github.com/MushroomDAO" target="_blank" class="cyan-text hover:underline">github.com/MushroomDAO</a> 公开，MIT/Apache 协议开源。任何人都可以 fork、自己部署、自己运营。<br><br>
-            "跑路"在这里没有意义——因为没有闭源代码、没有托管资金、没有需要信任我们的核心环节。智能合约在链上，代码在 GitHub，任务进度在 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a> 实时可查。我们消失了，代码还在。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">Cold Launch 筹到的钱怎么用？有透明度保证吗？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            每一笔资金对应明确的阶段和用途，写在本页面的"三个阶段"中。具体包括：<br><br>
-            · <strong class="text-white">A 阶段</strong>：Claude Code 订阅费 + 服务器 + 科研论文<br>
-            · <strong class="text-white">B 阶段</strong>：兼职社区团队（3人）+ 运营基础<br>
-            · <strong class="text-white">C 阶段</strong>：核心开发者 part-time 稳定化（2人，1.5年）<br><br>
-            所有任务和里程碑在 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a> 实时可查。后续会在链上建立多签国库，进一步保障透明度。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">Governance Token 是什么？会不会是割韭菜？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            Governance Token 的核心功能是<strong class="text-white">社区投票权和参与权</strong>，不是投机资产。持有者可以对协议方向、资金使用、产品优先级提出建议和投票。<br><br>
-            我们明确拒绝：没有 IDO、没有预售白名单炒作、没有庄家控盘。冷启动阶段的 Token 定价透明、用途明确。如果你只想炒作，我们不是合适的项目。如果你认可愿景并希望参与治理，欢迎。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">Beta 什么时候上线？现在可以用什么？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            Beta 版本（Cos72 + Sin90）计划 <strong class="text-white">2026年4月15日</strong> 发布。<br><br>
-            现在可用的：<br>
-            · <strong class="text-white">AirAccount</strong>：指纹登录 Web3 账户（v0.16.7，Sepolia 测试网）<br>
-            · <strong class="text-white">SuperPaymaster</strong>：Gasless 交易（集成测试中）<br>
-            · <strong class="text-white">BroodBrain</strong>：任务看板 <a href="https://www.mushroom.cv" class="cyan-text hover:underline">mushroom.cv</a>（你现在就在用）<br>
-            · 所有智能合约代码在 GitHub 可下载部署
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">我是一个普通用户，不懂区块链，我能用你们的产品吗？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            可以，这正是我们的目标。<br><br>
-            AirAccount 的设计原则就是"让 Web3 像 App 一样简单"：指纹登录、不需要 ETH、不需要助记词、不需要理解 Gas。<br><br>
-            Cos72 是社区工具，就像一个集成了任务、投票、积分的开源论坛。Sin90 是你的个人数字空间。两者都不要求你有区块链背景，只需要你有想表达和创作的欲望。
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">这个项目如何自我维持？你们靠什么活下去？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            我们有三条可持续路径：<br><br>
-            1. <strong class="text-white">协议费用</strong>：每笔 Gas 代付收取极小比例手续费（取 0.001 ETH 或 10% 中较小值），微小但稳定<br>
-            2. <strong class="text-white">社区增值服务</strong>：开源产品免费，部署运维、定制功能、企业版收费——类似 Red Hat 模式<br>
-            3. <strong class="text-white">iDoris 社区 AI 订阅</strong>：隐私保护 + Token Free + 低价推理，收月订阅费<br><br>
-            详见 <a href="sustainability.html" class="cyan-text hover:underline">可持续规划页面 →</a>
-          </div>
-        </div>
-
-        <div class="faq-item glass-card overflow-hidden">
-          <button onclick="toggleFaq(this)" class="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="font-semibold text-sm">我想贡献代码 / 时间，怎么参与？</span>
-            <i class="fas fa-chevron-down text-xs cyan-text transition-transform flex-shrink-0"></i>
-          </button>
-          <div class="faq-answer hidden px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-            欢迎。几个入口：<br><br>
-            · <strong class="text-white">代码贡献</strong>：直接在各 repo 提 Issue 或 PR<br>
-            · <strong class="text-white">加入协议</strong>：Fork Brood，提交 <code class="bg-slate-800 px-1 rounded">orgs/your-org/PROFILE.md</code>（见 <a href="https://github.com/AAStarCommunity/Brood/blob/main/protocol/HOW_TO_JOIN.md" class="cyan-text hover:underline">HOW_TO_JOIN.md</a>）<br>
-            · <strong class="text-white">社区建设</strong>：分享使用体验、翻译文档、组织本地活动<br>
-            · <strong class="text-white">科研合作</strong>：我们每年发布2篇论文，欢迎学术合作<br><br>
-            贡献可以兑换社区积分，积分可换产品服务使用权。
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <script>
-    function toggleFaq(btn) {
-      const answer = btn.nextElementSibling;
-      const icon = btn.querySelector('i');
-      const isOpen = !answer.classList.contains('hidden');
-      // close all
-      document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
-      document.querySelectorAll('.faq-item button i').forEach(i => i.style.transform = '');
-      // open if was closed
-      if (!isOpen) {
-        answer.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
-      }
-    }
-    </script>
-
-    <div class="text-center text-slate-600 text-xs mt-12 font-mono">
-      Mycelium Protocol · Cold Launch · 2026 · <a href="https://github.com/AAStarCommunity/Brood" class="hover:text-slate-400 transition-colors">AAStarCommunity/Brood</a>
-    </div>
-
-  </div>
-</body>
+    </body>
 </html>
