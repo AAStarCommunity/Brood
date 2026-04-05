@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Monitor — Mycelium Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #020617;
+      --cyan: #22d3ee;
+      --blue: #3b82f6;
+      --green: #4ade80;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+      --purple: #a78bfa;
+      --red: #f87171;
+      --glass: rgba(15,23,42,0.8);
+      --border: rgba(34,211,238,0.25);
+    }
+    body { background: var(--bg); color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
+    .bg-grid {
+      position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(circle at 50% 30%, black, transparent 75%);
+      opacity: 0.12;
+    }
+    .glass { border:1px solid var(--border); background:var(--glass); backdrop-filter:blur(10px); border-radius:12px; transition:all 0.3s; }
+    .glass:hover { border-color:var(--cyan); box-shadow:0 0 20px rgba(34,211,238,0.1); }
+    .metric-card { border:1px solid rgba(255,255,255,0.08); background:rgba(30,41,59,0.5); border-radius:10px; transition:all 0.2s; }
+    .metric-card:hover { border-color:var(--cyan); background:rgba(30,41,59,0.8); }
+    .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+    .s-active  { background:var(--green);  box-shadow:0 0 6px var(--green); }
+    .s-beta    { background:var(--yellow); box-shadow:0 0 6px var(--yellow); }
+    .s-draft   { background:var(--blue);   box-shadow:0 0 6px var(--blue); }
+    .s-research{ background:var(--purple); box-shadow:0 0 4px var(--purple); }
+    .s-planned { background:#475569; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:20px; font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+    .product-row { border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s; }
+    .product-row:last-child { border-bottom:none; }
+    .product-row:hover { background:rgba(34,211,238,0.03); }
+    .section-title { font-size:1.2rem; font-weight:700; margin-bottom:0.25rem; }
+    .nav-link { color:#94a3b8; font-size:0.85rem; transition:color 0.2s; }
+    .nav-link:hover { color:var(--cyan); }
+    .divider { height:1px; background:linear-gradient(to right, transparent, var(--border), transparent); }
+    .sponsor-placeholder { border:1px dashed rgba(255,255,255,0.15); border-radius:8px; padding:1rem; text-align:center; color:#475569; font-size:0.8rem; }
+    .number { font-family:'Courier New', monospace; font-weight:700; }
+    .pulse { animation: pulse-glow 2s infinite; }
+    @keyframes pulse-glow { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50" style="background:rgba(2,6,23,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)">
+  <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+    <span style="color:var(--cyan)" class="font-mono font-bold text-sm tracking-widest">MYCELIUM PROTOCOL</span>
+    <div class="flex gap-5">
+      <a href="https://www.mushroom.cv" class="nav-link">看板</a>
+      <a href="cold-launch.html" class="nav-link">Cold Launch</a>
+      <a href="architecture.html" class="nav-link">架构</a>
+      <a href="https://github.com/AAStarCommunity" class="nav-link"><i class="fab fa-github mr-1"></i>GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-6 pt-24 pb-20">
+
+  <!-- HEADER -->
+  <div class="flex items-start justify-between mb-10">
+    <div>
+      <div class="flex items-center gap-3 mb-2">
+        <span class="status-dot s-active pulse"></span>
+        <span class="text-xs font-mono" style="color:var(--cyan)">LIVE MONITOR</span>
+      </div>
+      <h1 class="text-4xl font-bold mb-2">社区监控 <span class="text-slate-400 text-2xl font-normal">/ Community Monitor</span></h1>
+      <p class="text-slate-400 text-sm">Mycelium Protocol 生态实时状态 · 数据由脚本定期更新</p>
+    </div>
+    <div class="text-right text-xs text-slate-600 font-mono" id="last-updated">更新中...</div>
+  </div>
+
+  <!-- METRICS OVERVIEW -->
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-4">
+      <h2 class="section-title" style="color:var(--cyan)">关键指标</h2>
+      <span class="tag" style="background:rgba(34,211,238,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)">Overview</span>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3" id="metrics-grid">
+      <!-- Row 1: On-chain -->
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-link mr-1"></i>链上账户</div>
+        <div class="number text-2xl" style="color:var(--cyan)" id="m-accounts">—</div>
+        <div class="text-xs text-slate-600 mt-1">Accounts Created</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-exchange-alt mr-1"></i>链上交易</div>
+        <div class="number text-2xl" style="color:var(--cyan)" id="m-txns">—</div>
+        <div class="text-xs text-slate-600 mt-1">Transactions Processed</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-gas-pump mr-1"></i>Gas 节省</div>
+        <div class="number text-2xl" style="color:var(--green)" id="m-gas">—</div>
+        <div class="text-xs text-slate-600 mt-1">ETH Saved via Paymaster</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-users mr-1"></i>社区成员</div>
+        <div class="number text-2xl" style="color:var(--green)" id="m-members">—</div>
+        <div class="text-xs text-slate-600 mt-1">Community Members</div>
+      </div>
+      <!-- Row 2: Development -->
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-code-branch mr-1"></i>活跃贡献者</div>
+        <div class="number text-2xl" style="color:var(--yellow)" id="m-contributors">—</div>
+        <div class="text-xs text-slate-600 mt-1">Active Contributors</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-tasks mr-1"></i>已完成任务</div>
+        <div class="number text-2xl" style="color:var(--yellow)" id="m-tasks">—</div>
+        <div class="text-xs text-slate-600 mt-1">Tasks Completed</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-robot mr-1"></i>Skills 总数</div>
+        <div class="number text-2xl" style="color:var(--purple)" id="m-skills">—</div>
+        <div class="text-xs text-slate-600 mt-1">Skills Built</div>
+      </div>
+      <div class="metric-card p-4">
+        <div class="text-xs text-slate-500 mb-1"><i class="fas fa-cube mr-1"></i>生态组织</div>
+        <div class="number text-2xl" style="color:var(--purple)" id="m-orgs">—</div>
+        <div class="text-xs text-slate-600 mt-1">Orgs in Ecosystem</div>
+      </div>
+    </div>
+
+    <!-- Metrics waiting for products to launch -->
+    <div class="glass p-3 text-xs text-slate-500 flex items-center gap-2">
+      <i class="fas fa-info-circle" style="color:var(--cyan)"></i>
+      更多指标（对话次数、Agent 运行数、消息传递量）将在 Cos72 + Sin90 Beta 上线后启用。
+      <a href="https://www.mushroom.cv/milestones" class="ml-auto nav-link whitespace-nowrap">查看里程碑 →</a>
+    </div>
+  </section>
+
+  <div class="divider mb-12"></div>
+
+  <!-- PRODUCT CATALOG -->
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-6">
+      <h2 class="section-title" style="color:var(--cyan)">产品全景</h2>
+      <span class="tag" style="background:rgba(34,211,238,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)">Product Catalog</span>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap gap-4 mb-5 text-xs text-slate-400">
+      <span><span class="status-dot s-active"></span>Active</span>
+      <span><span class="status-dot s-beta"></span>Beta / 开发中</span>
+      <span><span class="status-dot s-draft"></span>初稿 / 待验收</span>
+      <span><span class="status-dot s-research"></span>研究 / 设计中</span>
+      <span><span class="status-dot s-planned"></span>计划中</span>
+    </div>
+
+    <!-- LAYER 1: Infrastructure -->
+    <div class="glass mb-5">
+      <div class="px-5 py-3 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-layer-group text-xs" style="color:var(--cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--cyan)">L1 · 基础设施 Infrastructure</span>
+          <span class="tag ml-auto" style="background:rgba(34,211,238,0.08);color:var(--cyan)">AAstar</span>
+        </div>
+      </div>
+      <div class="divide-y divide-slate-800">
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-active"></span>
+            <a href="https://github.com/AAStarCommunity/SuperPaymaster" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">SuperPaymaster</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">Gas sponsor + 微支付 + Agent 经济核心，兼容 EIP-8004、x402、Tempo MPP，提供 credit payment</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">Infra</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">Active</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-active"></span>
+            <a href="https://github.com/AAStarCommunity/airaccount-contract" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">airaccount-contract</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">Stage2 合约账户，ARM TEE 社区保险箱，日限额 + 社交恢复 + 自动安全升级。446/446 测试通过，M6 进行中</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">Infra</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">M6 Active</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-active"></span>
+            <a href="https://github.com/AAStarCommunity/airaccount" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">AirAccount (KMS)</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">TEE 私钥管理服务，WebAuthn 无密码认证，AWS KMS 兼容 API。指纹登录，无需 ETH</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">Infra</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">Active</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-active"></span>
+            <a href="https://github.com/AAStarCommunity/aastar-sdk" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">AAStar SDK</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">TS/JS 底层能力 SDK，封装 AirAccount + SuperPaymaster + CometENS</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">SDK</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">Active</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-beta"></span>
+            <a href="https://github.com/AAStarCommunity/YetAnotherAA" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">YetAnotherAA</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">基于 SDK 扩展，集成全部 AAStar 能力，作为所有 DApp 的基础底座</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">Infra</span>
+            <span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">Beta</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-active"></span>
+            <a href="https://github.com/AAStarCommunity/Brood" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">BroodBrain</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">协议神经系统：任务分配 + 进度追踪发布 + Claude 上下文全局同步。你现在看到的这个页面就是它</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(34,211,238,0.08);color:var(--cyan)">Tools</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 2: Community Products -->
+    <div class="glass mb-5">
+      <div class="px-5 py-3 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-users text-xs" style="color:var(--yellow)"></i>
+          <span class="font-bold text-sm" style="color:var(--yellow)">L2 · 社区产品 Community Products</span>
+          <span class="tag ml-auto" style="background:rgba(251,191,36,0.08);color:var(--yellow)">MushroomDAO</span>
+        </div>
+      </div>
+      <div class="divide-y divide-slate-800">
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-beta"></span>
+            <span class="font-semibold text-sm">Cos72</span>
+            <span class="text-xs text-slate-500 ml-1">= MyTask + MyVote + MyShop</span>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">社区操作系统：任务协调 + 共识投票 + 积分兑换。三模块集成入口，可多端安装</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">Community OS</span>
+            <span class="tag" style="background:rgba(59,130,246,0.08);color:var(--blue)">Beta</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4 pl-6 text-xs text-slate-500">
+            <span class="status-dot s-draft"></span>
+            <a href="https://github.com/MushroomDAO/MyTask" target="_blank" class="hover:text-slate-300">↳ MyTask</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">任务协调模块，基于 Snapshot 扩展。初稿完成，待审核校验</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(59,130,246,0.08);color:var(--blue)">审核中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4 pl-6 text-xs text-slate-500">
+            <span class="status-dot s-draft"></span>
+            <a href="https://github.com/MushroomDAO/MyVote" target="_blank" class="hover:text-slate-300">↳ MyVote</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">共识投票模块，IPFS 存储 + 链上存证 + 自动执行到国库。初稿完成，待验收</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(59,130,246,0.08);color:var(--blue)">待验收</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4 pl-6 text-xs text-slate-500">
+            <span class="status-dot s-draft"></span>
+            <a href="https://github.com/MushroomDAO/MyShop" target="_blank" class="hover:text-slate-300">↳ MyShop</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">积分兑换模块。基础功能完成，待验收和集成</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(59,130,246,0.08);color:var(--blue)">待集成</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/MushroomDAO/Sin90" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">Sin90</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">个体操作系统：插件 + PC 端 + 移动端。端侧模型 + 知识库，三步走（信息→决策→行动）</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">Personal OS</span>
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">研究中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-planned"></span>
+            <a href="https://github.com/MushroomDAO/ENS-tool" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">CometENS</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">ENS 工具，配合 AirAccount 地址，为社区和个人免费提供可读域名</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(71,85,105,0.2);color:#94a3b8">待开发</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 3: AI Layer -->
+    <div class="glass mb-5">
+      <div class="px-5 py-3 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-brain text-xs" style="color:var(--purple)"></i>
+          <span class="font-bold text-sm" style="color:var(--purple)">L3 · AI 能力层 AI Infrastructure</span>
+          <span class="tag ml-auto" style="background:rgba(167,139,250,0.08);color:var(--purple)">AuraAI</span>
+        </div>
+      </div>
+      <div class="divide-y divide-slate-800">
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/AuraAIHQ/iDoris" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">iDoris</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">核心大脑：边缘计算模型库，为个体和社区提供隐私保护、Token Free 架构。多端自进化</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">Community Brain</span>
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">设计中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/AuraAIHQ/Agent24" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">Agent24</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">个人 AI 代理，为每个社区成员提供个性化的协助能力</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">思考设计中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-planned"></span>
+            <a href="https://github.com/AuraAIHQ/OpenCrab" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">OpenCrab</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">社区信息抓取 + 处理 Agent，另一类型的内容聚合工具</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(71,85,105,0.2);color:#94a3b8">早期</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-beta"></span>
+            <a href="https://github.com/AuraAIHQ/courses" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">AuraAI Courses</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">面向儿童的 AI / 编程教育课程，5 门基础课已上线</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">Education</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">进行中</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 0: Protocol Research -->
+    <div class="glass">
+      <div class="px-5 py-3 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-atom text-xs" style="color:var(--orange)"></i>
+          <span class="font-bold text-sm" style="color:var(--orange)">L0 · 协议研究 Protocol Research</span>
+          <span class="tag ml-auto" style="background:rgba(251,146,60,0.08);color:var(--orange)">MushroomDAO</span>
+        </div>
+      </div>
+      <div class="divide-y divide-slate-800">
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/MushroomDAO/CityOS" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">CityOS</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">AI + Blockchain 城市操作系统，Cos72/Sin90 向城市维度的延伸</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(251,146,60,0.08);color:var(--orange)">City OS</span>
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">研究中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-planned"></span>
+            <a href="https://github.com/MushroomDAO/Park-PublicGoodsGarden" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">Park</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">数字公共物品花园协议，持续为三大角色、社区和城市设计构建数字公共物品</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(71,85,105,0.2);color:#94a3b8">待启动</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/MushroomDAO/Spores" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">Spores</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">孢子协议：可持续协作机制，菌丝网络养分传输的链上实现</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">设计中</span>
+          </div>
+        </div>
+        <div class="product-row px-5 py-3 grid grid-cols-12 gap-3 items-start">
+          <div class="col-span-4">
+            <span class="status-dot s-research"></span>
+            <a href="https://github.com/MushroomDAO/Asset3" target="_blank" class="font-semibold hover:text-cyan-400 transition-colors text-sm">Asset3</a>
+          </div>
+          <div class="col-span-5 text-xs text-slate-400">底层资产协议，思考研究中</div>
+          <div class="col-span-3 flex flex-wrap gap-1 justify-end">
+            <span class="tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">研究中</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider mb-12"></div>
+
+  <!-- REALTIME LINKS -->
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-4">
+      <h2 class="section-title" style="color:var(--cyan)">实时进展</h2>
+      <span class="tag" style="background:rgba(34,211,238,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)">Live</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <a href="https://www.mushroom.cv" class="glass p-4 flex items-center gap-3">
+        <i class="fas fa-tasks" style="color:var(--cyan)"></i>
+        <div><div class="text-sm font-semibold">任务看板</div><div class="text-xs text-slate-500">实时任务状态</div></div>
+      </a>
+      <a href="https://www.mushroom.cv/milestones" class="glass p-4 flex items-center gap-3">
+        <i class="fas fa-flag" style="color:var(--yellow)"></i>
+        <div><div class="text-sm font-semibold">里程碑</div><div class="text-xs text-slate-500">研究 & 发布节点</div></div>
+      </a>
+      <a href="architecture.html" class="glass p-4 flex items-center gap-3">
+        <i class="fas fa-sitemap" style="color:var(--purple)"></i>
+        <div><div class="text-sm font-semibold">技术架构</div><div class="text-xs text-slate-500">系统层级图</div></div>
+      </a>
+      <a href="cold-launch.html" class="glass p-4 flex items-center gap-3">
+        <i class="fas fa-rocket" style="color:var(--orange)"></i>
+        <div><div class="text-sm font-semibold">Cold Launch</div><div class="text-xs text-slate-500">资金用途 & 参与</div></div>
+      </a>
+      <a href="sustainability.html" class="glass p-4 flex items-center gap-3">
+        <i class="fas fa-chart-line" style="color:var(--green)"></i>
+        <div><div class="text-sm font-semibold">可持续规划</div><div class="text-xs text-slate-500">收入模式 & 可持续</div></div>
+      </a>
+    </div>
+  </section>
+
+  <div class="divider mb-12"></div>
+
+  <!-- RELATED LINKS -->
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-4">
+      <h2 class="section-title" style="color:var(--cyan)">相关资料</h2>
+      <span class="tag" style="background:rgba(34,211,238,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)">Related Links</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="glass p-4">
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3">演讲 PPT</div>
+        <div class="space-y-2">
+          <a href="https://docs.google.com/presentation/d/1LYWK1BETRRygChza3NCF7nVxRsjR_ymyagyrY9jL3gU/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-presentation-screen text-xs text-slate-500"></i>Be Yourself YoungMan
+          </a>
+          <a href="https://docs.google.com/presentation/d/1T2pAuX2ZRakLq0JI6HT5Kn_NW31DVGGP9p-SrlOzqLs/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-presentation-screen text-xs text-slate-500"></i>Open Source Empower Individuals
+          </a>
+          <a href="https://docs.google.com/presentation/d/1XLEl4sd5Qe9kKMrUwSby7Dk-9G-fw3pqJWhXmDosv4k/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-presentation-screen text-xs text-slate-500"></i>Mycelium Quick Intro
+          </a>
+          <a href="https://docs.google.com/presentation/d/1dc6Rygjw0qQUAohB7pUq-FNsiXox6P0cUhm28qELEBs/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-presentation-screen text-xs text-slate-500"></i>Cos72 + Sin90
+          </a>
+        </div>
+      </div>
+      <div class="glass p-4">
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3">技术资料</div>
+        <div class="space-y-2">
+          <a href="https://docs.google.com/presentation/d/1nzTe40Img2E8iinYk-Fk3IXLqC_TXidMys5Mec0R2og/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-book text-xs text-slate-500"></i>Gas on Ethereum
+          </a>
+        </div>
+      </div>
+      <div class="glass p-4">
+        <div class="text-xs text-slate-500 uppercase tracking-widest mb-3">研究文档</div>
+        <div class="space-y-2">
+          <a href="https://docs.google.com/spreadsheets/d/10ec6OyzmefxSMJUdjL-BF1TQtZ-ylZ-vGl4MF9PJ4jc/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-table text-xs text-slate-500"></i>Research Docs List
+          </a>
+          <a href="https://docs.google.com/spreadsheets/d/1SIL3_iLN61b3IwQGW91eY7hKfH4-16QQsTy3b-eBVJs/edit?usp=sharing" target="_blank" class="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors">
+            <i class="fas fa-table text-xs text-slate-500"></i>Research Slides
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider mb-12"></div>
+
+  <!-- SUPPORTERS WALL -->
+  <section id="supporters" class="mb-12">
+    <div class="flex items-center gap-3 mb-2">
+      <h2 class="section-title" style="color:var(--cyan)">支持者 <span class="text-slate-400 text-lg font-normal">/ Supporters</span></h2>
+    </div>
+    <p class="text-slate-500 text-xs mb-6">感谢所有与我们共同愿景的人 · 数据来自 dashboard-data.json</p>
+
+    <!-- Sponsors -->
+    <div class="mb-6">
+      <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+        <i class="fas fa-heart text-red-400"></i> 赞助者 Sponsors
+        <span class="tag" style="background:rgba(248,113,113,0.08);color:var(--red)">$500+</span>
+      </div>
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="sponsors-grid">
+        <div class="sponsor-placeholder">
+          <div class="mb-1">成为第一位赞助者</div>
+          <a href="cold-launch.html#supporters" style="color:var(--cyan)" class="text-xs">了解详情 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Co-builders -->
+    <div class="mb-6">
+      <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+        <i class="fas fa-hammer" style="color:var(--green)"></i> 共建者 Co-builders
+        <span class="tag" style="background:rgba(74,222,128,0.08);color:var(--green)">$1000+</span>
+      </div>
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="cobuilders-grid">
+        <div class="sponsor-placeholder">
+          <div class="mb-1">指定模块共建</div>
+          <a href="cold-launch.html#supporters" style="color:var(--cyan)" class="text-xs">了解详情 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Early Participants -->
+    <div>
+      <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+        <i class="fas fa-seedling" style="color:var(--yellow)"></i> Cold Launch 早期参与者
+        <span class="tag" style="background:rgba(251,191,36,0.08);color:var(--yellow)">Governance Token</span>
+      </div>
+      <div class="glass p-4" id="early-participants">
+        <p class="text-slate-600 text-sm text-center py-2">冷启动进行中 · 参与记录即将更新</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="text-center text-slate-700 text-xs mt-8 font-mono">
+    Mycelium Protocol · Community Monitor · 数据每日更新 ·
+    <a href="https://github.com/AAStarCommunity/Brood" class="hover:text-slate-400 transition-colors">AAStarCommunity/Brood</a>
+  </div>
+</div>
+
+<script>
+  // Load data from dashboard-data.json
+  async function loadDashboard() {
+    try {
+      const res = await fetch('dashboard-data.json?t=' + Date.now());
+      const data = await res.json();
+      const m = data.metrics;
+
+      const fmt = v => v === 0 ? '—' : Number(v).toLocaleString();
+
+      document.getElementById('m-accounts').textContent = fmt(m.accounts_created);
+      document.getElementById('m-txns').textContent = fmt(m.transactions_processed);
+      document.getElementById('m-gas').textContent = m.gas_saved_eth === '0.00' ? '—' : m.gas_saved_eth + ' ETH';
+      document.getElementById('m-members').textContent = fmt(m.community_members);
+      document.getElementById('m-contributors').textContent = fmt(m.active_contributors);
+      document.getElementById('m-tasks').textContent = fmt(m.tasks_completed);
+      document.getElementById('m-skills').textContent = fmt(m.skills_created);
+      document.getElementById('m-orgs').textContent = fmt(m.orgs_in_ecosystem);
+      document.getElementById('last-updated').textContent = '最后更新: ' + data.updated_at;
+
+      // Sponsors
+      const realSponsors = (data.sponsors || []).filter(s => !s._template);
+      if (realSponsors.length > 0) {
+        const grid = document.getElementById('sponsors-grid');
+        grid.innerHTML = realSponsors.map(s => `
+          <a href="${s.website}" target="_blank" class="glass p-3 flex flex-col items-center gap-2 text-center hover:border-cyan-400">
+            ${s.logo_url ? `<img src="${s.logo_url}" alt="${s.name}" class="h-8 object-contain">` : ''}
+            <span class="text-xs text-slate-300">${s.name}</span>
+          </a>
+        `).join('');
+      }
+
+      // Co-builders
+      const realCobuilders = (data.cobuilders || []).filter(s => !s._template);
+      if (realCobuilders.length > 0) {
+        const grid = document.getElementById('cobuilders-grid');
+        grid.innerHTML = realCobuilders.map(s => `
+          <a href="${s.website}" target="_blank" class="glass p-3 flex flex-col items-center gap-2 text-center hover:border-green-400">
+            ${s.logo_url ? `<img src="${s.logo_url}" alt="${s.name}" class="h-8 object-contain">` : ''}
+            <span class="text-xs text-slate-300">${s.name}</span>
+            <span class="tag" style="background:rgba(74,222,128,0.08);color:#86efac">${s.module}</span>
+          </a>
+        `).join('');
+      }
+
+      // Early participants
+      const realParticipants = (data.early_participants || []).filter(s => !s._template);
+      if (realParticipants.length > 0) {
+        document.getElementById('early-participants').innerHTML = realParticipants.map(p =>
+          `<a href="${p.link}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 m-1 text-xs rounded-full hover:text-cyan-400 transition-colors" style="background:rgba(251,191,36,0.06);border:1px solid rgba(255,255,255,0.08)">
+            <i class="fas fa-seedling text-yellow-500"></i>${p.name}
+          </a>`
+        ).join('');
+      }
+    } catch(e) {
+      document.getElementById('last-updated').textContent = '数据加载失败';
+    }
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
