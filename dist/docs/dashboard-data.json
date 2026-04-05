@@ -1,0 +1,48 @@
+{
+  "_comment": "This file is updated by scripts/update-dashboard.js. Edit manually only for sponsors/cobuilders.",
+  "updated_at": "2026-03-28",
+  "metrics": {
+    "accounts_created": 0,
+    "transactions_processed": 0,
+    "gas_saved_eth": "0.00",
+    "community_members": 0,
+    "active_contributors": 12,
+    "tasks_completed": 0,
+    "skills_created": 3,
+    "agents_running": 0,
+    "conversations_handled": 0,
+    "active_repos": 32,
+    "orgs_in_ecosystem": 3,
+    "papers_published": 0,
+    "open_tasks": 0
+  },
+  "sponsors": [
+    {
+      "_template": true,
+      "name": "Your Org Name",
+      "logo_url": "https://example.com/logo.png",
+      "website": "https://example.com",
+      "amount_usd": 500,
+      "since": "2026-01-01"
+    }
+  ],
+  "cobuilders": [
+    {
+      "_template": true,
+      "name": "Your Org Name",
+      "logo_url": "https://example.com/logo.png",
+      "website": "https://example.com",
+      "module": "community-brain",
+      "since": "2026-01-01"
+    }
+  ],
+  "early_participants": [
+    {
+      "_template": true,
+      "name": "Participant Name or Alias",
+      "link": "https://github.com/username",
+      "type": "governance-token",
+      "since": "2026-01-01"
+    }
+  ]
+}
