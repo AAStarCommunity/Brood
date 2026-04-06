@@ -175,6 +175,21 @@ git -C <repo_path> log <branch> -- --oneline --since="30 days ago" -50
 
 ### 第六步：更新任务文件
 
+#### 6a. 回写预估进度到任务文件（关键！）
+
+**必须执行**：将评估得到的进度百分比回写到任务文件中的 `预估进度: N%` 标记。这是 build 脚本 `computeMilestoneProgress()` 计算首页进度条的数据源。
+
+```bash
+# 将任务文件中的 "预估进度: XX%" 替换为新值
+sed -i '' "s/预估进度: [0-9]*%/预估进度: ${NEW_PROGRESS}%/" "<task_file>"
+```
+
+如果任务文件中没有 `预估进度:` 标记，在进度报告区块的第一行添加。
+
+**如果不执行此步骤，首页和看板的进度条不会更新！**
+
+#### 6b. 写入进度报告到 Description section
+
 将进度信息写入任务的 **Description** section（`<!-- SECTION:DESCRIPTION:BEGIN/END -->` 标记内），因为 backlog web UI 只渲染已知 section，自定义 section 不会在页面上显示。
 
 **写入规则**:
@@ -324,15 +339,29 @@ for phase in ['Phase 1', 'Phase 2', 'Phase 3']:
 | TASK-YY | {标题} | **—** | 无关联仓库 | — | {说明} |
 ```
 
-### 第八步：构建并提交更新
+### 第八步：构建、部署并提交更新
 
-先重新构建静态站点（让 web 版展示最新内容），再提交推送：
+先重新构建静态站点，然后部署到 Cloudflare，最后提交推送：
 
 ```bash
-cd "$REPO_ROOT" && pnpm run build && bash "$REPO_ROOT/update-task.sh"
+cd "$REPO_ROOT" && pnpm run build && pnpm run deploy:cf && bash "$REPO_ROOT/update-task.sh"
 ```
 
-注意：`pnpm run build` 需要一定时间（启动本地 backlog server → 抓取 → 生成 dist/），使用 Bash 工具时设置 `timeout: 120000`（2 分钟）以确保不会超时中断。
+注意：
+- `pnpm run build` 需要一定时间（启动本地 backlog server → 抓取 → 生成 dist/），使用 Bash 工具时设置 `timeout: 120000`（2 分钟）以确保不会超时中断。
+- `pnpm run deploy:cf` 部署到 Cloudflare Pages。**如果部署失败**（网络问题等），重试一次：
+  ```bash
+  pnpm run deploy:cf 2>&1 || (echo "⚠️ 首次部署失败，5秒后重试..." && sleep 5 && pnpm run deploy:cf)
+  ```
+- 部署成功后，验证线上页面已更新（用 WebFetch 检查关键页面）。
+- `bash update-task.sh` 会 git add + commit + push，确保代码和数据同步到 GitHub。
+
+**完整验证清单**（第八步完成后必须检查）：
+1. ✅ 任务文件的 `预估进度: N%` 已更新
+2. ✅ doc-7 Progress Report 已更新
+3. ✅ `pnpm run build` 输出的 Milestone weighted progress 数值已变化
+4. ✅ Cloudflare 部署成功（输出 `Deployment complete`）
+5. ✅ Git push 成功
 
 ## 重要注意事项
 
