@@ -1,10 +1,10 @@
 ---
 id: TASK-10
 title: '[Feature] Sign90 - Smart Account Core'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-13 14:38'
+updated_date: '2026-04-06 11:41'
 labels:
   - feature
   - sign90
@@ -13,7 +13,8 @@ milestone: m-1
 dependencies:
   - TASK-7
 references:
-  - 'https://github.com/AAStarCommunity/airaccount-contract/tree/M5'
+  - 'https://github.com/AAStarCommunity/airaccount-contract'
+  - 'https://github.com/AAStarCommunity/airaccount'
 ---
 
 ## Description
@@ -45,5 +46,5 @@ Develop and deploy the foundational Smart Contract Account for Sign90.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Implement custom SCA with upgradability,Support 2/3 multi-sig logic by default,Compatible with ERC-4337 EntryPoint
+- [x] #1 Implement custom SCA with upgradability,Support 2/3 multi-sig logic by default,Compatible with ERC-4337 EntryPoint
 <!-- AC:END -->
