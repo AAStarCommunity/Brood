@@ -28,7 +28,7 @@ A meta-task to group all Genesis Launch activities.
 
 ### 📊 进度报告 (2026-03-17 扫描)
 
-**🚀 预估进度: 50%** | 近 30 天 19 次提交，最近一次 2026-02-15（4周前）
+**🚀 预估进度: 75%** | 近 30 天 19 次提交，最近一次 2026-02-15（4周前）
 
 **✅ AC 完成情况**:
 - 🔧 #1 Shop contract and web interface — check-acceptance 分支活跃：MintERC721Action 合约、category API、购买风险评级、诊断面板、ACCEPTANCE.md 均已完成；check-acceptance 验收标准覆盖完整

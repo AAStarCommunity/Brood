@@ -26,7 +26,7 @@ Develop and deploy the foundational Smart Contract Account for Sign90.
 
 ### 📊 进度报告 (2026-03-17 扫描)
 
-**🚀 预估进度: 85%** | 近 30 天 25+ 次提交，最近一次 2026-03-16（昨天），M6 gas 优化启动
+**🚀 预估进度: 92%** | 近 30 天 25+ 次提交，最近一次 2026-03-16（昨天），M6 gas 优化启动
 
 **✅ AC 完成情况**:
 - ✅ #1 Implement custom SCA — AirAccount 非升级型 ERC-4337 SCA，passkey 认证 + 三层安全（Tier1/2/DVT），M3/M4/M5 全部完成

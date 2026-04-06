@@ -30,7 +30,7 @@ https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
 ### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由智能匹配自动补全
 
-**🚀 预估进度: 85%** | 近 30 天 35+ 次提交，最近一次 2026-03-17（今天），JBBA citations 更新
+**🚀 预估进度: 90%** | 近 30 天 35+ 次提交，最近一次 2026-03-17（今天），JBBA citations 更新
 
 **✅ AC 完成情况**:
 - ✅ Paper7: CommunityFi Reputation-Backed Credit — DSR P1-P6 全部 Done，P7 Step 3 所有审稿意见修复

@@ -23,7 +23,7 @@ A standalone abstract account project embedded in Chrome Plugin, solving basic c
 
 ### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
 
-**🚀 预估进度: 70%** | 近 30 天 16 次提交，最近一次 2026-03-13（v0.16.7 合并 main）
+**🚀 预估进度: 72%** | 近 30 天 16 次提交，最近一次 2026-03-13（v0.16.7 合并 main）
 
 **✅ AC 完成情况**:
 - ✅ Hide private key management from user — WebAuthn passkey 实现，TX 描述隐私遮蔽（v0.16.6）
