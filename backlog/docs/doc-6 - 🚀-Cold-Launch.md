@@ -3,13 +3,17 @@ id: doc-6
 title: "\U0001F680 Cold Launch"
 type: guide
 created_date: '2026-03-11 20:00'
-updated_date: '2026-03-28 04:57'
+updated_date: '2026-04-07 00:00'
 tags:
   - launch
   - protocol
   - vision
 ---
-# Protocol Launch
+# 🚀 Cold Launch
+
+**→ [launch.mushroom.box](https://launch.mushroom.box)**
+
+详细的冷启动页面已迁移至独立站点，点击上方链接访问。
 
 [→ 中文版](#中文版-chinese-translation)
 
