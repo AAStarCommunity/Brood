@@ -1,7 +1,7 @@
 ---
 name: sync-progress
 description: 扫描所有 "In Progress" 任务关联的 GitHub 仓库，通过本地 git commit 历史和 CHANGELOG 文件分析开发进度，估算完成百分比并更新任务文件。当用户想了解项目进展、更新任务进度时使用。
-allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run build *), Bash(bash *update-task*), Bash(echo *), Read, Glob, Grep, Edit
+allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run build *), Bash(bash *update-task*), Bash(echo *), Bash(python3 *), Read, Glob, Grep, Edit, Write
 ---
 
 # Sync Progress — GitHub 仓库进度扫描器
@@ -41,6 +41,50 @@ CLONE_DIR="${SCAN_ROOT}"
 ## 执行流程
 
 严格按以下步骤执行：
+
+### Phase 0：生态仓库地图扫描与更新
+
+在分析进度之前，先同步生态仓库全景图（`docs/ECOSYSTEM_MAP.md`）。目的：
+- 建立本地路径 → GitHub remote URL 的实时映射
+- 发现新克隆的仓库（自动加入地图）
+- 标记 dormant 仓库状态变更
+- 为后续任务匹配提供准确的本地路径
+
+**执行步骤**：
+
+1. **扫描 `$SCAN_ROOT` 下所有 git 仓库**，构建 remote→本地路径映射表：
+
+```bash
+find "$SCAN_ROOT" -maxdepth 4 -name ".git" -type d 2>/dev/null | while read gitdir; do
+  repo_dir=$(dirname "$gitdir")
+  remote=$(git -C "$repo_dir" remote get-url origin 2>/dev/null | sed 's/\.git$//' | sed 's|git@github.com:|https://github.com/|')
+  last_commit=$(git -C "$repo_dir" log -1 --format="%ad" --date=short 2>/dev/null)
+  # 只输出属于三大 org 或 jhfnetboy 的仓库
+  echo "$repo_dir|$remote|$last_commit"
+done | grep -E 'github\.com/(AAStarCommunity|MushroomDAO|AuraAIHQ|jhfnetboy)/'
+```
+
+2. **读取 `$REPO_ROOT/docs/ECOSYSTEM_MAP.md`**，与扫描结果对比：
+   - 如果扫描到新仓库（地图中不存在），打印 `🆕 新发现: {path} → {remote}`
+   - 如果某仓库 last_commit 距今超过 12 个月且地图中标记为 Active，打印 `⚠️ 状态变更: {repo} 应标为 Dormant`
+   - 如果某地图条目的本地路径不存在，打印 `❓ 本地缺失: {repo}`（说明未 clone）
+
+3. **用 Edit 工具更新 ECOSYSTEM_MAP.md**（仅在有变化时）：
+   - 更新文件顶部的"最后更新"日期
+   - 对状态有变化的行，更新状态列（🟢/🟡/🔴）和最近提交列
+   - 对新发现的三大 org 仓库，在对应 org 区块末尾追加新行
+
+4. 输出扫描摘要：
+```
+📡 生态地图扫描完成
+   本地已有仓库: {N} 个（三大 org + jhfnetboy）
+   新发现: {N} 个 | 状态变更: {N} 个 | 本地缺失: {N} 个
+   地图已更新: docs/ECOSYSTEM_MAP.md
+```
+
+**注意**：Phase 0 扫描结果的路径映射表在内存中保留，供第三步（定位本地仓库）直接使用，避免重复 find 扫描。
+
+---
 
 ### 第一步：收集进行中的任务
 
@@ -324,15 +368,32 @@ for phase in ['Phase 1', 'Phase 2', 'Phase 3']:
 | TASK-YY | {标题} | **—** | 无关联仓库 | — | {说明} |
 ```
 
-### 第八步：构建并提交更新
+### 第八步：构建、提交并部署
 
-先重新构建静态站点（让 web 版展示最新内容），再提交推送：
+先重新构建静态站点，提交推送，再部署到 Cloudflare Pages：
 
 ```bash
-cd "$REPO_ROOT" && pnpm run build && bash "$REPO_ROOT/update-task.sh"
+# Step 8-1: 构建（timeout 120s）
+cd "$REPO_ROOT" && pnpm run build
+
+# Step 8-2: 提交推送
+bash "$REPO_ROOT/update-task.sh"
+
+# Step 8-3: 部署 Cloudflare Pages（带一次 retry）
+cd "$REPO_ROOT" && pnpm run deploy:cf || (sleep 5 && pnpm run deploy:cf)
 ```
 
-注意：`pnpm run build` 需要一定时间（启动本地 backlog server → 抓取 → 生成 dist/），使用 Bash 工具时设置 `timeout: 120000`（2 分钟）以确保不会超时中断。
+注意事项：
+- `pnpm run build` 需要约 30-60 秒（启动本地 backlog server → 抓取 → 生成 dist/），Bash 工具设置 `timeout: 120000`
+- `pnpm run deploy:cf` 可能因网络问题失败，失败后等 5 秒重试一次
+- 如果二次重试仍失败，打印失败信息但不中断流程，告知用户手动执行 `pnpm run deploy:cf`
+
+**验证清单**（完成后逐项确认）：
+- [ ] `backlog/tasks/` 中的任务文件已更新（包含 `### 📊 进度报告` 和 `预估进度: N%`）
+- [ ] `backlog/docs/doc-7 - 📊-Progress-Report.md` 的 Phase 进度表和总览表已更新
+- [ ] `docs/ECOSYSTEM_MAP.md` 的状态和日期已更新
+- [ ] `dist/` 重新生成，含最新内容
+- [ ] Cloudflare Pages 部署成功（或提示用户手动重试）
 
 ## 重要注意事项
 
