@@ -14,6 +14,7 @@ dependencies:
   - TASK-6
 references:
   - 'https://github.com/AAStarCommunity/Cos72'
+  - 'https://github.com/MushroomDAO/MyTask'
 ---
 
 ## Description
@@ -21,20 +22,22 @@ references:
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Implement the three core modules for Cos72 Chrome Plugin.
 
-### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
+### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 10%** | 近 30 天 0 次提交，最近一次 2024-08-11（约 19 个月前）
+**🚀 预估进度: 25%** | MushroomDAO/MyTask 14 次提交（近 60 天），最近一次 2026-04-05
 
 **✅ AC 完成情况**:
-- ⬜ #1 MyTask: Community tasks execution — 仓库 `AAStarCommunity/Cos72` 最后一次 PR 合并于 2024-08-11，无 MyTask 功能实现
-- ⬜ #3 MyVote: Snapshot-based governance voting — 未找到相关 commit
-- ⬜ #4 MyShop: Redeem points for goods/services — 未找到相关 commit（MyShop 有独立仓库 MushroomDAO/MyShop，TASK-23 中追踪）
+- 🔧 #1 MyTask: Community tasks execution — **MushroomDAO/MyTask** 活跃开发中：x402 API server（Hono.js + EIP-3009 验证）、Jury 合约（callback + gas 保护）、DeployLocal + Anvil E2E、CODEOWNERS 建立
+- ⬜ #3 MyVote: Snapshot-based governance voting — 无相关仓库，未启动
+- 🔧 #4 MyShop: Redeem points for goods/services — MushroomDAO/MyShop（TASK-23）M1 功能完整，已覆盖此 AC
 
-**📝 近期动态** (AAStarCommunity/Cos72 - 该仓库无 CHANGELOG):
-- 2024-08-11: Merge pull request #4 from AAStarCommunity/dev（最后一次提交，19 个月前）
-- 仓库长期无活动
+**📝 近期动态** (MushroomDAO/MyTask):
+- 04-05: refactor(jury): Task storage 拆分为 core + TaskExtension mapping
+- 04-04: feat(api-server): x402 API server Sprint 1 T04（Hono.js）
+- 04-03: fix: EIP-3009 真实签名验证 + idempotency 修复
+- 04-02: feat(jury): 通用 context + callback，多场景 dispute 支持
 
-💡 Cos72 主仓库几乎停滞（19 个月无提交），三个核心模块（MyTask/MyShop/MyVote）均未开始实现。需确认是否有其他活跃分支或新仓库承接此工作。
+💡 MyTask 模块独立为 MushroomDAO/MyTask 仓库，已有 x402 支付 + Jury 仲裁合约的初步实现（Sprint 1）。MyShop 已完成（TASK-23），MyVote 未启动。整体从"停滞"转为"重启活跃"。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

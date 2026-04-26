@@ -14,6 +14,9 @@ dependencies:
   - TASK-7
 references:
   - 'https://github.com/AuraAIHQ/Agent24'
+  - 'https://github.com/AuraAIHQ/agent-speaker'
+  - 'https://github.com/MushroomDAO/agent-speaker-relay'
+  - 'https://github.com/AuraAIHQ/simple-agent'
 priority: medium
 ordinal: 3000
 ---

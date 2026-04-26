@@ -1,6 +1,6 @@
 # Ecosystem Repository Map
 
-> 维护者: auto + manual | 最后更新: 2026-04-14
+> 维护者: auto + manual | 最后更新: 2026-04-26
 > 三大组织（AAStarCommunity / MushroomDAO / AuraAIHQ）+ 个人核心仓库的全量 repo 清单。
 > `sync-progress` skill 的 Phase 0 步骤会自动扫描本文件并与本地 `~/Dev` 目录对齐。
 
@@ -23,10 +23,10 @@
 
 | Repo | 本地路径 | GitHub URL | 最近提交 | 状态 | 说明 |
 |:---|:---|:---|:---:|:---:|:---|
-| airaccount-contract | `/Dev/mycelium/my-exploration/projects/airaccount-contract` | https://github.com/AAStarCommunity/airaccount-contract | 2026-04-10 | 🟢 | Sign90 智能账户合约，M6 开发中 |
-| AirAccount | `/Dev/aastar/AirAccount` | https://github.com/AAStarCommunity/AirAccount | 2026-03-26 | 🟢 | AirAccount 隐形账户前端 v0.16.x |
-| SuperPaymaster | `/Dev/aastar/SuperPaymaster` | https://github.com/AAStarCommunity/SuperPaymaster | 2026-03-04 | 🟢 | Paymaster SDK & API 服务 |
-| Brood | `/Dev/Brood` | https://github.com/AAStarCommunity/Brood | 2026-03-28 | 🟢 | BroodBrain 静态 backlog 发布系统（本仓库） |
+| airaccount-contract | `/Dev/mycelium/my-exploration/projects/airaccount-contract` | https://github.com/AAStarCommunity/airaccount-contract | 2026-04-15 | 🟢 | Sign90 智能账户合约，M7 r11 + audit pre-freeze |
+| AirAccount | `/Dev/aastar/AirAccount` | https://github.com/AAStarCommunity/AirAccount | 2026-04-15 | 🟢 | AirAccount 隐形账户 v0.16.8，Apache 2.0 license |
+| SuperPaymaster | `/Dev/aastar/SuperPaymaster` | https://github.com/AAStarCommunity/SuperPaymaster | 2026-04-15 | 🟢 | Paymaster + x402 ticket model，audit report |
+| Brood | `/Dev/Brood` | https://github.com/AAStarCommunity/Brood | 2026-04-26 | 🟢 | BroodBrain 静态 backlog 发布系统（本仓库） |
 | unruggable-gateways (CometENS) | `/Dev/aastar/CometENS` | https://github.com/AAStarCommunity/unruggable-gateways-ens-resolution-demos | 2026-02-21 | 🟢 | CometENS，ENS 解析演示 |
 | SuperPaymaster-Contract | `/Dev/aastar/SuperPaymaster-Contract` | https://github.com/AAStarCommunity/SuperPaymaster-Contract | 2025-04-11 | 🟡 | SuperPaymaster 合约（旧，已有新 SP 替代） |
 | Cos72 | `/Dev/mycelium/my-exploration/projects/Cos72` | https://github.com/AAStarCommunity/Cos72 | 2025-11-11 | 🟡 | 社区 OS 核心模块（停滞中） |
@@ -51,15 +51,20 @@
 
 | Repo | 本地路径 | GitHub URL | 最近提交 | 状态 | 说明 |
 |:---|:---|:---|:---:|:---:|:---|
-| MyShop | `/Dev/tmp/MushroomDAO-MyShop` | https://github.com/MushroomDAO/MyShop | 2026-04-04 | 🟢 | 社区积分兑换 Shop，Phase 1 核心 |
+| MyShop | `/Dev/tmp/MushroomDAO-MyShop` | https://github.com/MushroomDAO/MyShop | 2026-04-04 | 🟢 | 社区积分兑换 Shop，M1 完整 + Slither 审计 |
+| MyTask | `/Dev/crypto-projects/MyTask` | https://github.com/MushroomDAO/MyTask | 2026-04-05 | 🟢 | 任务模块，x402 API + Jury 合约（TASK-13） |
+| agent-speaker-relay | `/Dev/tools/strfry` | https://github.com/MushroomDAO/agent-speaker-relay | 2026-04-12 | 🟢 | Nostr relay（strfry Docker），agent 通信基础设施 |
+| Agent-WeChat-SDK | `/Dev/crypto-projects/Agent-WeChat-SDK` | https://github.com/MushroomDAO/Agent-WeChat-SDK | 2026-04-26 | 🟢 | WeChat agent bridge + @agent-wechat/core（今天！） |
+| Xiaoheishu | `/Dev/crypto-projects/blog/submodules/xiaoheishu` | https://github.com/MushroomDAO/Xiaoheishu | 2026-04-?? | 🟢 | Xiaoheishu（从 jhfnetboy 迁移到 MushroomDAO） |
+| launch | `/Dev/crypto-projects/launch` | https://github.com/MushroomDAO/launch | 2026-04-26 | 🟢 | 冷启动页面（launch.mushroom.box，今天更新） |
+| blog | `/Dev/crypto-projects/blog` | https://github.com/MushroomDAO/blog | 2026-04-25 | 🟢 | 博客/内容站（含 Xiaoheishu submodule） |
+| CometENS | `/Dev/aastar/ens-tool` | https://github.com/MushroomDAO/CometENS | 2026-04-05 | 🟢 | CometENS 工具（MushroomDAO fork） |
 | Doris | `/Dev/mycelium/mushroom-protocols-dev/Doris` | https://github.com/MushroomDAO/Doris | 2025-06-26 | 🔴 | iDoris AI 框架后端 |
 | OpenPNTs | `/Dev/mycelium/mushroom-protocols-dev/OpenPNTs` | https://github.com/MushroomDAO/OpenPNTs | 2025-07-11 | 🔴 | 开放积分协议 |
 | docs (mushroom-docs) | `/Dev/mycelium/mushroom-docs` | https://github.com/MushroomDAO/docs | 2025-07-15 | 🔴 | MushroomDAO 文档 |
 | Spores | `/Dev/tmp/Spores` | https://github.com/MushroomDAO/Spores | 2025-11-15 | 🟡 | Spores SDK（仅 README） |
-| mushroom.github.io | `/Dev/mycelium/mushroom.github.io` | https://github.com/MushroomDAO/mushroom.github.io | — | 🔴 | 官网静态页（旧） |
+| mushroom.github.io | `/Dev/mycelium/mushroom.github.io` | https://github.com/MushroomDAO/mushroom.github.io | 2025-07-28 | 🟡 | 官网静态页（旧，9个月前） |
 | mycelium-protocol-reserach | `/Dev/mycelium/mycelium-protocol-reserach` | https://github.com/HyperCapitalHQ/mycelium-protocol | 2025-07-19 | 🔴 | 协议研究（HyperCapitalHQ org 下） |
-| 7702 | `/Dev/mycelium/my-exploration/projects/7702` | — | — | 🔴 | EIP-7702 实验 |
-| ArcadiaV3 | `/Dev/mycelium/my-exploration/projects/ArcadiaV3` | — | — | 🔴 | Arcadia v3 游戏（停滞） |
 
 ---
 
@@ -69,8 +74,11 @@
 
 | Repo | 本地路径 | GitHub URL | 最近提交 | 状态 | 说明 |
 |:---|:---|:---|:---:|:---:|:---|
-| courses | `/Dev/AuraAI/courses` | https://github.com/AuraAIHQ/courses | 2026-03-08 | 🟢 | AI 课程框架，5 门课程 |
-| AuraAI (jhfnetboy) | `/Dev/crypto-projects/AuraAI` | https://github.com/jhfnetboy/AuraAI | 2026-03-04 | 🟢 | AuraAI 核心（个人 repo，功能开发中） |
+| Agent24 | `/Dev/tools/autoagent` | https://github.com/AuraAIHQ/Agent24 | 2026-04-10 | 🟢 | Claude Code agent 执行框架，eval system + memory（TASK-11） |
+| agent-speaker | `/Dev/tools/agent-mouth-cli` | https://github.com/AuraAIHQ/agent-speaker | 2026-04-21 | 🟢 | Nostr 消息通信 + TUI + SQLite + NIP-44 加密（TASK-34） |
+| simple-agent | `/Dev/crypto-projects/Agent-WeChat-SDK/agents/simple-agent` | https://github.com/AuraAIHQ/simple-agent | 2026-04-?? | 🟢 | 轻量 TypeScript agent 框架（Agent-WeChat-SDK submodule） |
+| courses | `/Dev/AuraAI/courses` | https://github.com/AuraAIHQ/courses | 2026-04-15 | 🟢 | AI 课程框架，5 门课程，Apache 2.0（TASK-35） |
+| AuraAI (jhfnetboy) | `/Dev/crypto-projects/AuraAI` | https://github.com/jhfnetboy/AuraAI | 2026-04-15 | 🟢 | AuraAI 知识库，Apache 2.0 license（TASK-34） |
 
 ---
 
@@ -89,11 +97,13 @@
 
 | TASK | 标题 | 关联仓库 | 状态 |
 |:---|:---|:---|:---|
-| TASK-10 | Sign90 Smart Account Core | AAStarCommunity/airaccount-contract | 🟢 In Progress |
-| TASK-12 | AirAccount 隐形账户 | AAStarCommunity/AirAccount | 🟢 In Progress |
-| TASK-4 | SuperPaymaster 合约 | AAStarCommunity/SuperPaymaster | 🟢 In Progress |
-| TASK-23 | Meta Phase 1 Genesis Launch | MushroomDAO/MyShop | 🟢 In Progress |
-| TASK-31 | Paper3: SuperPaymaster 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress |
+| TASK-10 | Sign90 Smart Account Core | AAStarCommunity/airaccount-contract | 🟢 In Progress (90%) |
+| TASK-12 | AirAccount 隐形账户 | AAStarCommunity/AirAccount | 🟢 In Progress (72%) |
+| TASK-4 | SuperPaymaster 合约 | AAStarCommunity/SuperPaymaster | 🟢 In Progress (50%) |
+| TASK-11 | Agent24 Execution Loop | AuraAIHQ/Agent24 + agent-speaker + relay | 🟢 To Do（活跃 repos） |
+| TASK-13 | Cos72 Core Modules | MushroomDAO/MyTask + MyShop + Cos72 | 🟢 In Progress (25%) |
+| TASK-23 | Meta Phase 1 Genesis Launch | MushroomDAO/MyShop | 🟢 In Progress (65%) |
+| TASK-31 | Paper3: SuperPaymaster 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress (90%) |
 | TASK-32 | Paper7: CommunityFi 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress |
 | TASK-34 | AuraAI | jhfnetboy/AuraAI | 🟡 In Progress |
 | TASK-35 | AuraAI Courses | AuraAIHQ/courses | 🟡 In Progress |

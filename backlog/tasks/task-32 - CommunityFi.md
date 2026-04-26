@@ -28,22 +28,18 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由智能匹配自动补全
+### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 85%** | 近 30 天 35+ 次提交，最近一次 2026-03-17（今天），JBBA citations 更新
+**🚀 预估进度: 85%** | 近 30 天 3 次提交，最近一次 2026-04-24（tokenomics 合并），Paper7 待提交
 
 **✅ AC 完成情况**:
-- ✅ Paper7: CommunityFi Reputation-Backed Credit — DSR P1-P6 全部 Done，P7 Step 3 所有审稿意见修复
-- ✅ JBBA 投稿包 — Word 文件 + British English 转换 + IEEE 引用格式 + 双盲匿名化（03-15）
-- ✅ **今天**: JBBA target citations 和 related work 更新完成
-- ✅ submission-prepare skill 集成到 P7 工作流（03-16）
-- 🔧 **投稿提交** — JBBA Cover Letter 完成，待最终提交
+- ✅ Paper7: CommunityFi Reputation-Backed Credit — DSR P1-P6 全部 Done，P7 Step 3 审稿意见修复完毕
+- ✅ JBBA 投稿包完备 — 双盲格式 + British English + IEEE 引用 + Cover Letter + 31 处语言修复
+- 🔧 **投稿提交** — 投稿包就绪，待最终提交到 JBBA 系统
 
-**📝 近期动态** (DSR-Research-Flow，今日活跃):
-- 03-17: **chore: paper7 update JBBA target citations and related work**（今天 — 引用标准化）
-- 03-16: docs: integrate submission-prepare skill into P7 workflow
-- 03-16: feat: add submission-prepare skill (P7 Step 4 workflow)
-- 03-15~16: feat: JBBA 投稿 Word + arXiv PDF，British English + 31 处修复，双盲匿名化
+**📝 近期动态** (DSR-Research-Flow):
+- 04-24: merge: research/tokenomics branch → main（tokenomics 研究整合，可能增强 CommunityFi 理论部分）
+- 03-17: chore: paper7 JBBA citations + related work 更新（最后一次 paper7 专属提交）
 
-💡 Paper7 JBBA 投稿包已完备（双盲格式、British English、Cover Letter、citations 更新），剩余 15% 是实际提交到 JBBA 系统。
+💡 JBBA 投稿包已就绪逾一个月，建议优先完成实际提交（剩余 15%）。tokenomics 研究合并可能带来 paper7 理论补强机会。
 <!-- SECTION:DESCRIPTION:END -->
