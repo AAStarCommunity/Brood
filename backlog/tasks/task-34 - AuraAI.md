@@ -10,6 +10,11 @@ milestone: m-3
 dependencies: []
 references:
   - 'https://github.com/jhfnetboy/AuraAI'
+  - 'https://github.com/AuraAIHQ/Agent24'
+  - 'https://github.com/AuraAIHQ/agent-speaker'
+  - 'https://github.com/MushroomDAO/agent-speaker-relay'
+  - 'https://github.com/MushroomDAO/Agent-WeChat-SDK'
+  - 'https://github.com/AuraAIHQ/simple-agent'
 priority: low
 ---
 
@@ -23,20 +28,22 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
+### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 15%** | 近 30 天 3 次提交，最近一次 2026-03-04
+**🚀 预估进度: 30%** | 多仓库活跃：Agent24（20次提交）、agent-speaker（23次）、relay（15次）、Agent-WeChat-SDK（4次，今天！）
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — 仓库 `jhfnetboy/AuraAI` 存在，结构搭建完成（Aura建立✅标注）
-- 🔧 Prompt Engineering 知识库建设 — CO-STAR 框架文档、Prompt Engineering 基础技术整理中（近期 3 次提交均为文档）
-- ⬜ OpenCrab/Agent24 PC+Mobile agent — 无相关代码 commit
-- ⬜ iDoris 三层结构、Mycelium Network、AK47 — 无相关代码
+- ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 完成
+- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** 活跃：pluggable eval system（codex/agent-speaker/dual）、MemPalace memory、/setup onboarding skill、staged evaluation；Codex 5轮审查通过
+- 🔧 Bot（WeChat 第二位）— **MushroomDAO/Agent-WeChat-SDK** 今日启动：@agent-wechat/core + CLI + simple-agent submodule + wechat-agent-bridge 设计文档
+- 🔧 通信基础设施 — **AuraAIHQ/agent-speaker** (Nostr 消息 + TUI + SQLite + NIP-44 加密) + **MushroomDAO/agent-speaker-relay** (strfry Nostr relay Docker)
+- ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
 
-**📝 近期动态** (jhfnetboy/AuraAI):
-- 03-04: Update prompt engineering basic techniques section
-- 03-04: Revise CO-STAR framework document for clarity and examples
-- 03-04: Rename CO-STAR framework document to Reference/ directory
+**📝 近期动态**:
+- 04-26: feat: Agent-WeChat-SDK — @agent-wechat/core + CLI + simple-agent（今天！）
+- 04-21: agent-speaker: group chat + TUI Bubble Tea + SQLite storage
+- 04-12: agent-speaker-relay: strfry Docker + CI/CD for Nostr relay
+- 04-10: Agent24: pluggable eval system + MemPalace memory + org sync
 
-💡 AuraAI 仓库目前主要是 AI 知识库/文档积累，具体功能（agent、iDoris、Mycelium）尚未有代码实现。方向清晰，整体处于早期规划+知识储备阶段。
+💡 AuraAI 生态从知识库阶段全面进入代码实现阶段：Agent24 执行框架 + Nostr 通信 + WeChat SDK 同步推进。目前缺少 iDoris 核心和 Mycelium Network（剩余 70%）。
 <!-- SECTION:DESCRIPTION:END -->

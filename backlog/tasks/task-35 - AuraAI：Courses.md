@@ -25,19 +25,18 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 - [Course 4 - Workshop](https://docs.google.com/presentation/d/1hDTDav9pyJCirTRWr82akpcY4ftXTY96JOGHX3onJhM/edit?usp=sharing)
 -
 
-### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
+### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 35%** | 近 30 天 2 次提交，最近一次 2026-03-08
+**🚀 预估进度: 35%** | 近 30 天以 Apache 2.0 license 为主，最近课程提交 2026-03-08（~7周前）
 
 **✅ AC 完成情况**:
-- ✅ Course 0-4 内容框架 — `AuraAIHQ/courses` 已添加 5 门课程（Course 0-4），Google Slides 链接对应
-- 🔧 课程知识库建设 — "Document key figures in computer science and AI"（计算机和 AI 领域关键人物文档）添加中
-- ⬜ 更多课程贡献 — 5 门之后的课程扩展未开始
+- ✅ Course 0-4 内容框架 — `AuraAIHQ/courses` 5 门课程框架 + Google Slides 链接，Apache 2.0 license 合规
+- 🔧 课程知识库建设 — CS/AI 关键人物知识库（2026-03-08），近期无新增内容
+- ⬜ 更多课程贡献 — Course 5+ 未开始
 
 **📝 近期动态** (AuraAIHQ/courses):
-- 03-08: Document key figures in computer science and AI（CS/AI 关键人物知识库）
-- 03-08: feat: add 0,1,2,3,4 courses（5 门课程框架建立）
-- 初始 commit: Initial commit（仓库建立）
+- 04-15: chore: Apache 2.0 license + TRADEMARK（合规更新）
+- 03-08: Document key figures in computer science and AI（最后一次课程内容提交）
 
-💡 Courses 仓库刚建立（约 2 周），已搭建 0-4 共 5 门课程框架并链接 Google Slides，正在添加配套知识内容。是 AuraAI 生态系统的教育分支，目前活跃度良好。
+💡 Courses 框架稳定（5 门课程），近 7 周无课程内容更新。建议随 AuraAI 其他模块（Agent24/agent-speaker）启动后，同步推进课程内容。
 <!-- SECTION:DESCRIPTION:END -->

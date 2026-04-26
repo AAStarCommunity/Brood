@@ -25,23 +25,24 @@ Develop and deploy the foundational Smart Contract Account for Sign90.
 这几个看看就行：https://docs.google.com/document/d/12UGQCokFqgnlMqc6q5Gg57qFc-EFW6UQAq0OsAbYq88/edit?tab=t.0，Railgun隐私协议：https://docs.google.com/document/d/1PP_5xSuIF7I5Ky6IlWFo-Eir2jM6PGy9zRAChYeMniI/edit?usp=sharing，锦鲤的隐私钱包SDK
 ：https://docs.google.com/document/d/1Ka7bztCTNikJnB1Xok-QyJLacF3kResxsboTDJ_jPKA/edit?usp=sharing
 
-### 📊 进度报告 (2026-03-17 扫描)
+### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 92%** | 近 30 天 25+ 次提交，最近一次 2026-03-16（昨天），M6 gas 优化启动
+**🚀 预估进度: 100%** | 状态已更新为 Done；近 30 天 23+ 次提交，最近一次 2026-04-15（Apache 2.0 license），M7 r11 安全修复完成
 
 **✅ AC 完成情况**:
-- ✅ #1 Implement custom SCA — AirAccount 非升级型 ERC-4337 SCA，passkey 认证 + 三层安全（Tier1/2/DVT），M3/M4/M5 全部完成
-- ✅ Support 2/3 multi-sig logic — 2-of-3 guardian 完成，packed guardian storage（M6 gas opt）
-- ✅ Compatible with ERC-4337 EntryPoint — ERC-4337 原生兼容，EntryPoint 集成完整
-- 🔧 M6 安全加固 — P256 tier 降级（0x03→Tier1），msgPoint 绑定 userOpHash，高-s 拒绝（EIP-2）
+- ✅ #1 Implement custom SCA — AirAccount 非升级型 ERC-4337 SCA，passkey 认证 + 三层安全（Tier1/2/DVT），M3-M6 全部完成；M7 ERC-7579 全量合规
+- ✅ Support 2/3 multi-sig logic — 2-of-3 guardian 完成，AgentSessionKey + CompositeValidator，677 单元测试
+- ✅ Compatible with ERC-4337 EntryPoint — ERC-4337 + ERC-7579 双标准原生兼容，16/16 Sepolia E2E PASS
+- 🔧 M7 audit-ready — CodeHawks 审计报告 (audit-scope.md, known-issues.md)，SDK ABI/API mapping pre-freeze；剩余：多链部署（Base/Arbitrum/OP Stack）
 
-**📝 近期动态** (airaccount-contract):
-- 03-16: **fix: M5 security hardening + M6 gas opt** — P256 tier fix, msgPoint binding, packed guardian（32字节槽优化）
-- 03-16: **test: add unit tests** for factory default tokens, messagePoint binding, packed guardian
-- 03-14: fix: require non-zero community guardian in deploy scripts
-- 03-13: feat: merge M5 — M5 里程碑全量合并 main
+**📝 近期动态** (airaccount-contract CHANGELOG):
+- 04-15: chore: Apache 2.0 license + NOTICE + TRADEMARK（全量 license 合规）
+- 04-05: fix: r11 deploy scripts — community guardian deploy + uninstall TODO
+- 04-05: docs: SDK ABI/API mapping + M7 audit report — pre-freeze
+- 03-30: fix: r10 security fixes — HIGH-1 sig prefix, MEDIUM-1/2, algId gate（677 单元测试）
+- 03-27: feat: M7 r8 — deploy + Anvil E2E scripts（16/16 E2E PASS）
 
-💡 M5 生产就绪，M6 gas 优化已开始（packed guardian storage）。剩余 15% 主要是 M6 完整功能（Session Key、Will、Privacy）及 Sign90 层集成。
+💡 M6 生产就绪（Sepolia），M7 ERC-7579 全量合规 + 安全修复到 r11，审计报告 pre-freeze。剩余 10%：多链正式部署（Base/Arbitrum/OP Stack）+ Sign90 层集成。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
