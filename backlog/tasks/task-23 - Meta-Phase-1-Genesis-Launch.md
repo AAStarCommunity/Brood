@@ -4,7 +4,7 @@ title: '[Meta] Phase 1: Genesis Launch'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:18'
-updated_date: '2026-04-07 10:16'
+updated_date: '2026-04-26 23:56'
 labels:
   - milestone
   - phase-1
@@ -15,6 +15,7 @@ dependencies: []
 references:
   - 'https://github.com/MushroomDAO/launch'
 priority: high
+ordinal: 4000
 ---
 
 ## Description
@@ -26,20 +27,20 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-04-26 扫描)
+### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 65%** | 近 30 天 15 次提交，最近一次 2026-04-04（Slither 审计 + gas 优化）
+**🚀 预估进度: 70%** | 近 30 天 20+ 次提交，最近一次 2026-04-26（roadshow prep）；launch 仓库新增 gasless GToken 购买页 + Cloudflare Worker relayer
 
 **✅ AC 完成情况**:
-- 🔧 #1 Shop contract and web interface — M1 全量功能完成：合约 C1-C11（约束、treasury、dispute window、whitelist 验证器）+ 前端 F1-F8（商品详情、购买历史、状态机、IPFS 多 gateway、移动端 CSS、收益提取 UI）+ Worker W1-W5（SQLite 持久化、购买 API）；Codex 安全审查 + Slither gas 优化通过
-- ⬜ GToken launch contract — 未找到相关实现，仍未启动
+- ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成（C1-C11 合约 + F1-F8 前端 + W1-W5 Worker + Codex/Slither 安全审计）
+- 🔧 GToken launch contract — **MushroomDAO/launch** 新增 gasless GToken 购买页（launch.html）+ Cloudflare Worker relayer（gasless purchase），x402 集成；GToken 合约本体待部署
 
-**📝 近期动态** (MushroomDAO/MyShop check-acceptance branch):
-- 04-04: fix(contracts): Slither 审计修复 + gas 优化 + Solidity 0.8.33
-- 04-03: docs: M1 验收测试用例（role-based，v0.2.0-M1）
-- 04-02: fix(security): Codex review — reentrancy, cross-shop drain, nonce replay
-- 04-01: feat(frontend): F6 收益提取 UI + F8 IPFS 多 gateway
-- 03-31: feat(contracts): C10 EligibilityValidator 白名单 + eligibilityData mapping
+**📝 近期动态** (MushroomDAO/launch):
+- 04-26: prep(5-18): Hangzhou roadshow prep — R1 Q1.1 backfill + critical questions
+- 04-26: docs: MILESTONES.md（canonical）+ gasless-buy-plan.md
+- 04-26: feat(site): launch.html — gasless GToken purchase page
+- 04-26: feat(relayer): Cloudflare Worker gasless purchase relayer
+- 04-26: fix(relayer): buyer address + RPC errors + infra gate（2-round review）
 
-💡 Shop M1 功能完整（合约+前端+Worker+安全审计），GToken 合约未启动。若 GToken 明确不在本阶段，可将 Shop 单独标为完成。
+💡 MyShop M1 完整，launch 站点新增 gasless 购买流程（Worker relayer + 前端页）。GToken 合约本体是剩余 30% 的关键，Hangzhou roadshow 5-18 为近期里程碑。
 <!-- SECTION:DESCRIPTION:END -->

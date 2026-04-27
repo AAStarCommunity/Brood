@@ -28,22 +28,22 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-04-26 扫描)
+### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 30%** | 多仓库活跃：Agent24（20次提交）、agent-speaker（23次）、relay（15次）、Agent-WeChat-SDK（4次，今天！）
+**🚀 预估进度: 35%** | 多仓库持续活跃：agent-speaker（group chat + TUI + SQLite 完成）、Agent-WeChat-SDK（@agent-wechat/core + CLI 启动）、relay（Docker 稳定）
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 完成
-- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** 活跃：pluggable eval system（codex/agent-speaker/dual）、MemPalace memory、/setup onboarding skill、staged evaluation；Codex 5轮审查通过
-- 🔧 Bot（WeChat 第二位）— **MushroomDAO/Agent-WeChat-SDK** 今日启动：@agent-wechat/core + CLI + simple-agent submodule + wechat-agent-bridge 设计文档
-- 🔧 通信基础设施 — **AuraAIHQ/agent-speaker** (Nostr 消息 + TUI + SQLite + NIP-44 加密) + **MushroomDAO/agent-speaker-relay** (strfry Nostr relay Docker)
+- ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 全量合规
+- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** pluggable eval（codex/agent-speaker/dual）、MemPalace memory、/setup onboarding skill；近期以 license 合规为主
+- 🔧 Bot（WeChat 第二位）— **MushroomDAO/Agent-WeChat-SDK** @agent-wechat/core + CLI + simple-agent submodule 已实现，wechat-agent-bridge 设计文档完成
+- ✅ 通信基础设施 — **AuraAIHQ/agent-speaker**（group chat + TUI Bubble Tea + SQLite + NIP-44 加密，PR #3 merge）+ **MushroomDAO/agent-speaker-relay**（strfry Docker + restart.sh + Alpine/Ubuntu 双构建）完成度高
 - ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
 
 **📝 近期动态**:
-- 04-26: feat: Agent-WeChat-SDK — @agent-wechat/core + CLI + simple-agent（今天！）
-- 04-21: agent-speaker: group chat + TUI Bubble Tea + SQLite storage
-- 04-12: agent-speaker-relay: strfry Docker + CI/CD for Nostr relay
-- 04-10: Agent24: pluggable eval system + MemPalace memory + org sync
+- 04-27: agent-speaker: fix(tui): send messages + close DB + bounds-check npub slices（PR review 修复）
+- 04-26: Agent-WeChat-SDK: feat: @agent-wechat/core + CLI + simple-agent submodule
+- 04-21: agent-speaker: group chat 全测试覆盖 + TUI Bubble Tea（feat merge）
+- 04-12: agent-speaker-relay: restart.sh + Alpine 构建优化 + OOM 修复
 
-💡 AuraAI 生态从知识库阶段全面进入代码实现阶段：Agent24 执行框架 + Nostr 通信 + WeChat SDK 同步推进。目前缺少 iDoris 核心和 Mycelium Network（剩余 70%）。
+💡 通信基础设施（Nostr relay + agent-speaker）趋于成熟，WeChat SDK 启动。Agent24 执行框架框架完整。剩余 65%：iDoris 三层（社区AI/大模型/训练服务）、Mycelium Network、AK47 工具库。
 <!-- SECTION:DESCRIPTION:END -->

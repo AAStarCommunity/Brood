@@ -4,7 +4,7 @@ title: '[Feature] AirAccount - Invisible Crypto Account'
 status: In Progress
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-03-07 12:09'
+updated_date: '2026-04-26 23:56'
 labels:
   - feature
   - airaccount
@@ -14,6 +14,7 @@ dependencies:
   - TASK-6
 references:
   - 'https://github.com/AAStarCommunity/AirAccount'
+ordinal: 2000
 ---
 
 ## Description
@@ -21,9 +22,9 @@ references:
 <!-- SECTION:DESCRIPTION:BEGIN -->
 A standalone abstract account project embedded in Chrome Plugin, solving basic crypto account hurdles.
 
-### 📊 进度报告 (2026-04-26 扫描)
+### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 72%** | 近 30 天以 Apache 2.0 license 为主，最近功能提交 2026-03-26（v0.16.8）
+**🚀 预估进度: 72%** | 近 30 天仅 Apache 2.0 license 合规提交（14次），最近功能提交 2026-03-26（v0.16.8）
 
 **✅ AC 完成情况**:
 - ✅ Hide private key management from user — WebAuthn passkey 实现，TX 描述隐私遮蔽（v0.16.6），Apache 2.0 license 合规

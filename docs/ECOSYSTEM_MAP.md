@@ -1,6 +1,6 @@
 # Ecosystem Repository Map
 
-> 维护者: auto + manual | 最后更新: 2026-04-26
+> 维护者: auto + manual | 最后更新: 2026-04-27
 > 三大组织（AAStarCommunity / MushroomDAO / AuraAIHQ）+ 个人核心仓库的全量 repo 清单。
 > `sync-progress` skill 的 Phase 0 步骤会自动扫描本文件并与本地 `~/Dev` 目录对齐。
 
@@ -64,6 +64,7 @@
 | docs (mushroom-docs) | `/Dev/mycelium/mushroom-docs` | https://github.com/MushroomDAO/docs | 2025-07-15 | 🔴 | MushroomDAO 文档 |
 | Spores | `/Dev/tmp/Spores` | https://github.com/MushroomDAO/Spores | 2025-11-15 | 🟡 | Spores SDK（仅 README） |
 | mushroom.github.io | `/Dev/mycelium/mushroom.github.io` | https://github.com/MushroomDAO/mushroom.github.io | 2025-07-28 | 🟡 | 官网静态页（旧，9个月前） |
+| PublicGoodsPark | `/Dev/crypto-projects/PublicGoodsPark` | https://github.com/MushroomDAO/PublicGoodsPark | 2025-12-07 | 🟡 | 公共物品公园协议 |
 | mycelium-protocol-reserach | `/Dev/mycelium/mycelium-protocol-reserach` | https://github.com/HyperCapitalHQ/mycelium-protocol | 2025-07-19 | 🔴 | 协议研究（HyperCapitalHQ org 下） |
 
 ---
@@ -88,7 +89,11 @@
 
 | Repo | 本地路径 | GitHub URL | 最近提交 | 状态 | 说明 |
 |:---|:---|:---|:---:|:---:|:---|
-| DSR-Research-Flow | `/Dev/tmp/DSR-Research-Flow` | https://github.com/jhfnetboy/DSR-Research-Flow | 2026-03-23 | 🟢 | 研究论文流（Paper3 SuperPaymaster, Paper7 CommunityFi） |
+| DSR-Research-Flow | `/Dev/tmp/DSR-Research-Flow` | https://github.com/jhfnetboy/DSR-Research-Flow | 2026-04-24 | 🟢 | 研究论文流（Paper3 SuperPaymaster, Paper7 CommunityFi） |
+| YetAnotherAA | `/Dev/aastar/YetAnotherAA` | https://github.com/jhfnetboy/YetAnotherAA | 2025-10-23 | 🟡 | AL Account 抽象层（以 AAStarCommunity 版本为主，jhfnetboy fork 已停止更新） |
+| EvoScientist | `/Dev/PhD/EvoScientist` | https://github.com/jhfnetboy/EvoScientist | 2026-04-12 | 🟢 | 进化科学研究工具 |
+| mempalace | `/Dev/tools/mempalace` | https://github.com/jhfnetboy/mempalace | 2026-04-07 | 🟢 | Agent24 的 MemPalace 记忆模块 |
+| InnovateCrab | `/Dev/aastar/InnovateCrab` | https://github.com/jhfnetboy/InnovateCrab | 2026-03-19 | 🟢 | 创新蟹实验项目 |
 | bundler | `/Dev/Projects/bundler` | https://github.com/jhfnetboy/bundler | 2023-02-21 | 🔴 | ERC-4337 Bundler（基于废弃 Goerli，需重建） |
 
 ---
@@ -97,22 +102,23 @@
 
 | TASK | 标题 | 关联仓库 | 状态 |
 |:---|:---|:---|:---|
-| TASK-10 | Sign90 Smart Account Core | AAStarCommunity/airaccount-contract | 🟢 In Progress (90%) |
+| TASK-10 | Sign90 Smart Account Core | AAStarCommunity/airaccount-contract | ✅ Done (100%) |
+| TASK-4 | SuperPaymaster 合约 | AAStarCommunity/SuperPaymaster | ✅ Done (100%) |
+| TASK-9 | CometENS 免费子域名 | MushroomDAO/CometENS | 🟢 In Progress (65%) |
+| TASK-23 | Meta Phase 1 Genesis Launch | MushroomDAO/launch + MyShop | 🟢 In Progress (70%) |
 | TASK-12 | AirAccount 隐形账户 | AAStarCommunity/AirAccount | 🟢 In Progress (72%) |
-| TASK-4 | SuperPaymaster 合约 | AAStarCommunity/SuperPaymaster | 🟢 In Progress (50%) |
-| TASK-11 | Agent24 Execution Loop | AuraAIHQ/Agent24 + agent-speaker + relay | 🟢 To Do（活跃 repos） |
-| TASK-13 | Cos72 Core Modules | MushroomDAO/MyTask + MyShop + Cos72 | 🟢 In Progress (25%) |
-| TASK-23 | Meta Phase 1 Genesis Launch | MushroomDAO/MyShop | 🟢 In Progress (65%) |
 | TASK-31 | Paper3: SuperPaymaster 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress (90%) |
-| TASK-32 | Paper7: CommunityFi 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress |
-| TASK-34 | AuraAI | jhfnetboy/AuraAI | 🟡 In Progress |
-| TASK-35 | AuraAI Courses | AuraAIHQ/courses | 🟡 In Progress |
-| TASK-13 | Cos72 Core Modules | AAStarCommunity/Cos72 | 🔴 In Progress |
-| TASK-2 | Cos72 Cards/Points/Perks | AAStarCommunity/demo | 🔴 In Progress |
-| TASK-19 | Spores SDK | MushroomDAO/Spores | 🔴 In Progress |
-| TASK-26 | Bundler | jhfnetboy/bundler | 🔴 In Progress |
+| TASK-32 | Paper7: CommunityFi 论文 | jhfnetboy/DSR-Research-Flow | 🟢 In Progress (85%) |
+| TASK-34 | AuraAI | AuraAIHQ/* + MushroomDAO/* + jhfnetboy/AuraAI | 🟢 In Progress (35%) |
+| TASK-13 | Cos72 Core Modules | MushroomDAO/MyTask + AAStarCommunity/Cos72 | 🟢 In Progress (30%) |
+| TASK-35 | AuraAI Courses | AuraAIHQ/courses | 🟡 In Progress (35%) |
+| TASK-5 | AL Account (YetAnotherAA) | AAStarCommunity/YetAnotherAA | 🟡 In Progress (20%) |
+| TASK-2 | Cos72 Cards/Points/Perks | AAStarCommunity/demo | 🔴 In Progress (10%) |
+| TASK-19 | Spores SDK | MushroomDAO/Spores | 🔴 In Progress (5%) |
+| TASK-26 | Bundler | jhfnetboy/bundler | 🔴 In Progress (5%) |
 | TASK-28 | OpenCrab Agent | 无关联仓库 | ⚪ 设计阶段 |
 | TASK-29 | Asset3 Protocol | 无关联仓库 | ⚪ 设计阶段 |
+| TASK-30 | EOA Bridge (Paper6) | jhfnetboy/DSR-Research-Flow | 🔴 In Progress (5%) |
 
 ---
 

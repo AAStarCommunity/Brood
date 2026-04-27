@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-04-26 10:00'
+updated_date: '2026-04-27 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-04-26**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-04-27**.*
 
 ---
 
@@ -15,9 +15,9 @@ updated_date: '2026-04-26 10:00'
 
 | Phase | 加权进度 | 任务数 | 说明 |
 |:---|:---:|:---:|:---|
-| **Phase 1**: Genesis Launch | **52%** | 13个任务 | Done=5, In Progress=4, To Do=4 |
+| **Phase 1**: Genesis Launch | **59%** | 13个任务 | Done=5, In Progress=6, To Do=2 |
 | **Phase 2**: Community Expansion | **2%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
-| **Phase 3**: Ecosystem Maturity | **5%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
+| **Phase 3**: Ecosystem Maturity | **6%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
 
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
 
@@ -27,20 +27,22 @@ updated_date: '2026-04-26 10:00'
 
 | 任务 | 标题 | 进度 | 仓库 | 最近提交 | 状态摘要 |
 |:---|:---|:---:|:---|:---:|:---|
-| TASK-10 | Sign90 Smart Account Core | **Done** | airaccount-contract | 04-15 | ✅ Done: M7 r11 安全修复完成，audit pre-freeze |
-| TASK-4 | SuperPaymaster 合约 | **Done** | SuperPaymaster | 04-15 | ✅ Done: ticket model + x402 micropayment 引入 |
-| TASK-23 | Meta Phase 1 Genesis Launch | **65%** | MushroomDAO/MyShop | 04-04 | Shop M1 + Slither 审计完成，GToken 未启动 |
+| TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
+| TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
+| TASK-9 | CometENS 免费子域名 | **65%** | MushroomDAO/CometENS | 04-27 | v0.5.0 + D6 多根域名完成，活跃！ |
+| TASK-23 | Meta Phase 1 Genesis Launch | **70%** | MushroomDAO/launch | 04-26 | gasless GToken买页+Worker relayer，roadshow 5-18 |
+| TASK-12 | AirAccount 隐形账户 | **72%** | AirAccount | 04-15 | v0.16.8 稳定，Apache 2.0，无新功能 |
 | TASK-31 | Paper3: SuperPaymaster 论文 | **90%** | DSR-Research-Flow | 04-24 | v7.6 精简完成，待提交 Ledger/BRA |
 | TASK-32 | Paper7: CommunityFi 论文 | **85%** | DSR-Research-Flow | 04-24 | 投稿包就绪，待提交 JBBA |
-| TASK-12 | AirAccount 隐形账户 | **72%** | AirAccount | 04-15 | v0.16.8 稳定，Apache 2.0，无新功能 |
-| TASK-34 | AuraAI | **30%** | AuraAIHQ + MushroomDAO | 04-26 | Agent24+agent-speaker+WeChat-SDK 启动！ |
-| TASK-13 | Cos72 Core Modules | **25%** | MushroomDAO/MyTask | 04-05 | MyTask 重启：x402 API + Jury 合约 |
+| TASK-34 | AuraAI | **35%** | AuraAIHQ + MushroomDAO | 04-27 | agent-speaker group chat 完成，WeChat SDK 启动 |
+| TASK-13 | Cos72 Core Modules | **30%** | MushroomDAO/MyTask | 04-27 | MyTask Sprint 1 merge，license 合规 |
 | TASK-35 | AuraAI Courses | **35%** | AuraAIHQ/courses | 04-15 | 5 门课程框架，近期无新内容 |
+| TASK-5 | AL Account (YetAnotherAA) | **20%** | AAStarCommunity/YetAnotherAA | 2025-10 | 框架存在，近6个月无功能提交 |
 | TASK-36 | Main Road Research | **10%** | zeroclaw（未本地化）| — | 持续研究追踪 |
 | TASK-2 | Cos72 Cards/Points/Perks | **10%** | AAStarCommunity/demo | 2025-10 | 基础框架，核心功能未实现 |
 | TASK-26 | Bundler | **5%** | jhfnetboy/bundler | 2023-02 | 基于废弃 Goerli，需重建 |
-| TASK-28 | OpenCrab Agent | **10%** | 无关联仓库 | — | 设计阶段 |
-| TASK-29 | Asset3 Protocol | **10%** | 无活跃仓库 | — | 思考/设计阶段 |
+| TASK-28 | OpenCrab Agent | **10%** | 无关联仓库 | — | 设计阶段（m-2） |
+| TASK-29 | Asset3 Protocol | **10%** | 无活跃仓库 | — | 思考/设计阶段（m-3） |
 | TASK-30 | EOA Bridge (Paper6) | **5%** | DSR-Research-Flow | 04-24 | Paper6 未启动 |
 | TASK-19 | Spores SDK | **5%** | MushroomDAO/Spores | 2025-11 | 仅 README |
 
@@ -60,34 +62,33 @@ updated_date: '2026-04-26 10:00'
 - **仓库**: `AAStarCommunity/SuperPaymaster`
 - **最新动态**: 2026-04-15 Apache 2.0；Ticket Model（burnTicket/lockStakeWithTicket）+ x402 submodule
 - UUPS v4.0.0 Sepolia 部署完成，7链稳定币策略就绪，安全审计报告提交
-- x402 微支付标准引入（standards/x402 submodule），Credit System 开始建设
+- x402 微支付标准引入（standards/x402 submodule）
 
-#### TASK-23 · Meta Phase 1 Genesis Launch · 65% · Phase 1
-- **仓库**: `MushroomDAO/MyShop` (check-acceptance)
-- **最新动态**: 2026-04-04 Slither 审计修复 + gas 优化 + Solidity 0.8.33
-- Shop M1 完整：C1-C11 合约 + F1-F8 前端 + W1-W5 Worker，Codex + Slither 双重安全审计通过
-- GToken 合约未启动（影响上限约 35%）
+#### TASK-9 · CometENS · 65% · Phase 1
+- **仓库**: `MushroomDAO/CometENS`（本地 /Dev/aastar/ens-tool）
+- **最新动态**: 2026-04-27 D6 multi-root domain + Apache 2.0 badge；v0.5.0（2026-04-04）
+- L2RecordsV3 ERC-721 子域 + 3种插件（Free/Whitelist/FlatFee）+ OPResolver Bedrock 状态证明
+- 132 TS + 182 Foundry 测试全部通过；3轮 Codex 安全审核通过
+- 下一步：.cv/.box/.zparty 实际域名映射 + mushroom.cv 自动授予
 
-#### TASK-34 · AuraAI · 30% · Phase 3
+#### TASK-23 · Meta Phase 1 Genesis Launch · 70% · Phase 1
+- **仓库**: `MushroomDAO/launch`（新）；`MushroomDAO/MyShop`（历史）
+- **最新动态**: 2026-04-26 gasless GToken 购买页 + Cloudflare Worker relayer + roadshow prep
+- Shop M1 完整：C1-C11 合约 + F1-F8 前端 + W1-W5 Worker，Codex + Slither 双重审计通过
+- GToken：launch.html 购买页 + relayer Worker 已上线；GToken 合约本体待部署
+- Hangzhou roadshow 5-18 为近期里程碑
+
+#### TASK-34 · AuraAI · 35% · Phase 3
 - **仓库**: `jhfnetboy/AuraAI`、`AuraAIHQ/Agent24`、`AuraAIHQ/agent-speaker`、`MushroomDAO/agent-speaker-relay`、`MushroomDAO/Agent-WeChat-SDK`
-- **最新动态**: 2026-04-26 Agent-WeChat-SDK 启动（今天！）；agent-speaker 2026-04-21
-- 🚀 重大突破：多仓库并行推进！Agent24（exec loop）+ agent-speaker（Nostr 通信）+ relay（基础设施）+ WeChat SDK
+- **最新动态**: 2026-04-27 agent-speaker TUI fix（PR review）；2026-04-26 WeChat SDK @agent-wechat/core + CLI
+- agent-speaker：group chat + TUI Bubble Tea + SQLite + NIP-44 加密（PR #3 merge 完成）
+- relay：strfry Docker + restart.sh + Alpine/Ubuntu 双构建，稳定运行
 - 下一步：iDoris 三层结构 + Mycelium Network
 
-#### TASK-13 · Cos72 Core Modules · 25% · Phase 1
+#### TASK-13 · Cos72 Core Modules · 30% · Phase 1
 - **仓库**: `MushroomDAO/MyTask`、`AAStarCommunity/Cos72`
-- **最新动态**: 2026-04-05 MushroomDAO/MyTask：x402 API + Jury 合约（Sprint 1）
-- MyTask 模块独立开发活跃，MyShop 已在 TASK-23 完成，MyVote 未启动
-
-#### TASK-31 · Paper3: SuperPaymaster AOA · 90% · Research
-- **仓库**: `jhfnetboy/DSR-Research-Flow`
-- **最新动态**: 2026-04-24 tokenomics 研究合并；2026-04-08 paper3 v7.6 精简至 BRA 目标页数
-- v7.6 精简至 BRA 目标页数（18-22页），Ledger 投稿包完备
-- 待实际提交到期刊系统
-
-#### TASK-32 · Paper7: CommunityFi · 85% · Research
-- JBBA 投稿包就绪（双盲 + British English + Cover Letter），待提交
-- tokenomics 研究合并，可能带来理论补强
+- **最新动态**: 2026-04-27 license 合规 PR merge；Sprint 1 API server（@x402/hono SDK + EIP-3009）已 merge
+- MyTask Sprint 1 完成：x402 支付 + Jury 仲裁合约；MyShop M1 完整（TASK-23）；MyVote 未启动
 
 ---
 
@@ -95,37 +96,27 @@ updated_date: '2026-04-26 10:00'
 
 #### TASK-12 · AirAccount 隐形账户 · 72% · Phase 1
 - v0.16.8 稳定（TA panic + HTTP 500 修复），Apache 2.0 license 完成
-- 近期无新功能；Chrome Plugin 集成和 guardian 社交恢复待完成
+- 近期（30天）仅 license 合规提交；Chrome Plugin 集成和 guardian 社交恢复待完成
 
-#### TASK-35 · AuraAI Courses · 35% · Research
-- 5 门课程框架稳定，7 周无内容更新
-
----
-
-### 🔴 低活跃 / 未启动 (placeholder section)
-- v7.6 精简至 BRA 目标页数（18-22页），Ledger 投稿包完备
-- 待实际提交到期刊系统
+#### TASK-31 · Paper3: SuperPaymaster AOA · 90% · Research
+- v7.6 精简至 BRA 目标页数（18-22页），Ledger 投稿包完备；待实际提交期刊系统
 
 #### TASK-32 · Paper7: CommunityFi · 85% · Research
-- JBBA 投稿包就绪（双盲 + British English + Cover Letter），待提交
-- tokenomics 研究合并，可能带来理论补强
-
-#### TASK-12 · AirAccount 隐形账户 · 72% · Phase 1
-- v0.16.8 稳定（TA panic + HTTP 500 修复），Apache 2.0 license 完成
-- 近期无新功能；Chrome Plugin 集成和 guardian 社交恢复待完成
+- JBBA 投稿包就绪（双盲 + British English + Cover Letter），tokenomics 研究合并，待提交
 
 #### TASK-35 · AuraAI Courses · 35% · Research
-- 5 门课程框架稳定，7 周无内容更新
+- 5 门课程框架稳定，近期无课程内容更新
 
 ---
 
 ### 🔴 低活跃 / 未启动
 
+#### TASK-5 · AL Account (YetAnotherAA) · 20% · Phase 1
+- `AAStarCommunity/YetAnotherAA`（本地 jhfnetboy fork，用户确认 AAStar 版本为主）
+- 最后真实功能提交 2025-10-23；近期仅 license 合规；guardian QR setup 框架存在
+
 #### TASK-36 · Main Road Research · 10% · Research
 - zeroclaw-labs 持续追踪 Ethereum roadmap
-
-#### TASK-13 · Cos72 Core Modules · 25% → 低活跃 · Phase 1
-- MyTask 模块重启，MyVote 未启动；Cos72 主仓库最后提交 2024-08-11（19个月前）
 
 #### TASK-2 · Cos72 Cards/Points/Perks · 10% · Phase 1
 - `AAStarCommunity/demo` 最后提交 2025-10-10，"Coming Soon" 状态
@@ -139,12 +130,8 @@ updated_date: '2026-04-26 10:00'
 #### TASK-26 · Bundler · 5% · Phase 2
 - `jhfnetboy/bundler` 2023-02-21，基于废弃 Goerli，需重建
 
-#### TASK-19 · Spores SDK · 5% · Phase 3
-- `MushroomDAO/Spores` 仅有 README（2025-11-15）
-
 #### TASK-28 · OpenCrab Agent · 设计阶段 · Phase 2
 #### TASK-29 · Asset3 Protocol · 设计阶段 · Phase 3
-#### TASK-30 · EOA Bridge Paper6 · 5% · Research
 
 ---
 
@@ -152,6 +139,7 @@ updated_date: '2026-04-26 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
+| 2026-04-27 | **59%** | **2%** | **6%** | TASK-9 65%（CometENS v0.5.0 活跃）；TASK-23 70%（gasless GToken 购买页）；TASK-5 20%（新加入）；TASK-34 35%；TASK-13 30% |
 | 2026-04-26 | **52%** | **2%** | **5%** | TASK-10+TASK-4 标记 Done（Phase 1 +5%）；TASK-13 25%（MyTask重启）；TASK-34 30%（Agent24+agent-speaker+WeChat-SDK） |
 | 2026-04-05 | **53%** | **5%** | **8%** | TASK-10↑92% M7完成; TASK-4↑60% V5.3 agent; TASK-23↑75% MyShop极度活跃; TASK-31↑95% |
 | 2026-03-18 | **36%** | **2%** | **3%** | 新增 Phase 加权进度计算；任务真实进度取代机械计数 |
