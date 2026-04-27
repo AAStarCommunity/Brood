@@ -4,13 +4,46 @@
 
 构建让合作更快、更多样的去中心化协作网络。
 
-We launch a protocol to innovate cooperations more faster and diversity.
+We build a protocol to make cooperation faster and more diverse.
 
-## 愿景
+## 核心价值观：数字公共物品（Digital Public Goods）
 
-一个区块链赋能人、改善生活的世界——超越金融投机，成为真正的协作基础设施。
+> "开源、免费、无许可，任何人都可以使用、修改和部署"
 
-A blockchain that empowers people and improves lives, transcending its role as a mere tool for financial speculation.
+**数字公共物品**不会因为使用人数增加而降低每个人享受到的福祉——这与商业平台"数据即资产"的逻辑完全相反。
+
+我们拒绝以提取个人隐私数据为基础的商业模式，拒绝构建数字劳工生态，拒绝通过垄断平台控制普通人的消费决策和思维。
+
+## 意义经济（Meaning Economy）
+
+AI 正在替代大部分生产力角色，但无法替代人类的**想象力、创造力和情感**。在 AI 时代，人类的核心价值将从"生产者"转向：
+
+- **表达者（Expressors）** — 分享真实体验和观点
+- **创造者（Creators）** — 产生内容、艺术、想法
+- **建设者（Builders）** — 构建工具、协议、社区
+
+Mycelium Protocol 为这些角色提供数字基础设施，让他们在意义经济中获得应有的回报，而非成为平台的免费数字劳工。
+
+## 数字主权（Digital Sovereignty）
+
+普通个体有权掌控：
+- 自己的数据（不被平台提取用于广告）
+- 自己的身份（不依赖中心化平台的账户）
+- 自己的资产（不受平台单方面规则限制）
+- 自己的表达收益（不被平台无偿占用）
+
+## 三层服务对象
+
+```
+个人（Individual）
+  ↓ 数字主权：数据、身份、资产自主
+  
+社区（Community）
+  ↓ 非营利协作基础设施，社区工具
+  
+城市（City）
+  ↓ 连接社区与居民的操作系统
+```
 
 ## 菌丝网络的本质
 
@@ -29,7 +62,8 @@ A blockchain that empowers people and improves lives, transcending its role as a
    提供技术基础支持
 
 2. DAO 组织（MushroomDAO）
-   负责组织和规划，引导和帮助有需要的社区使用协议，创建新协议
+   负责组织和规划，引导和帮助有需要的社区使用协议
+   维护 GToken 治理和社区国库
 
 3. 基础协议（Foundation Protocols）
    Park: 数字公共物品
@@ -41,12 +75,22 @@ A blockchain that empowers people and improves lives, transcending its role as a
 
 真菌在地球上存在了 45 亿年，Mycelium 借鉴其生存之道：
 
-1. **共生** — 构建共生关系，你是我，我是你（菌根、真菌动物）
+1. **共生** — 构建共生关系，你是我，我是你
 2. **循环** — 粉碎垃圾，分解有机物，为环境提供养分
-3. **传输** — 通过网络结构传输养分（菌丝网络、菌根网络）
-4. **多样性** — 通过创造性构建解决各种问题（固氮瘤菌、青霉素）
-5. **指数** — 通过孢子大规模传播与复制，让网络指数级增长
-6. **互利** — 通过互利互惠让网络更加稳定，扶助弱小，共同成长
+3. **传输** — 通过网络结构传输养分
+4. **多样性** — 通过创造性构建解决各种问题
+5. **指数** — 通过孢子大规模传播，让网络指数级增长
+6. **互利** — 通过互利互惠让网络更加稳定
+
+## 开源 + 商业双生模型（Linux + Red Hat 的升级版）
+
+- **开源组织（MushroomDAO）**: 研发数字公共物品，免费提供给所有人（个人/小社区 ≤50人 永久免费）
+- **商业实体（HyperCapital）**: 唯一授权商业合作伙伴，提供 Pro 服务、企业定制、gasless 代付
+- **协议约定**:
+  - 商业收入的 40% 回流社区国库
+  - 商业实体持有 20% GToken（治理权对齐，非控制）
+  - 社区国库由 Gnosis Safe 多签管理，全链上透明
+  - 三年后社区可投票引入竞争，独家授权有条件有期限
 
 ## 当前生态参与者
 
@@ -54,7 +98,7 @@ A blockchain that empowers people and improves lives, transcending its role as a
 |-----|------|------|
 | AAstar | Web3 基础设施（ERC-4337） | 活跃 |
 | AuraAI | AI 能力层 | 建设中 |
-| MushroomDAO | 协议治理 | 活跃 |
+| MushroomDAO | 协议治理 + 数字公共物品 | 活跃 |
 | BroodBrain | 协议神经系统 | 活跃 |
 
 ## 如何参与

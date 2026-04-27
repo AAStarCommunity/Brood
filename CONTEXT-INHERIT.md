@@ -126,7 +126,8 @@ BroodBrain 是 Mycelium Protocol 的神经系统，存放了三层上下文：
 
 | 文件 | 说明 |
 |-----|------|
-| `protocol/MISSION.md` | 菌丝协议使命愿景 |
+| `protocol/MISSION.md` | 菌丝协议使命愿景、意义经济、数字公共物品 |
+| `protocol/FOUNDER.md` | 创始人背景（Jason）、价值观、决策逻辑 |
 | `protocol/ECOSYSTEM_MAP.md` | 生态全景图 |
 | `protocol/HOW_TO_JOIN.md` | 如何加入协议 |
 | `orgs/aastar/PROFILE.md` | AAstar 组织名片 |
