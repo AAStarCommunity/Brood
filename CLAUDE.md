@@ -77,6 +77,26 @@ The injected fetch interceptor in `index.html` automatically appends `.json` to 
 
 Skill 定义: `.claude/skills/sync-progress/SKILL.md`
 
+## Mycelium Protocol 生态上下文 / Ecosystem Context
+
+BroodBrain 本身是 Mycelium Protocol 的神经系统。本仓库存放三层上下文：
+
+**L0 协议层** (`protocol/`):
+- `protocol/MISSION.md` — 菌丝协议使命愿景
+- `protocol/ECOSYSTEM_MAP.md` — 组织全景图
+- `protocol/HOW_TO_JOIN.md` — 如何加入协议
+- `protocol/REPO_REGISTRY.md` — 仓库能力注册表
+
+**L1 组织层** (`orgs/`):
+- `orgs/aastar/PROFILE.md` + `INTERFACES.md` — AAstar 组织名片和接口规范
+- `orgs/auraai/PROFILE.md` + `INTERFACES.md` — AuraAI 组织名片和接口规范
+- `orgs/mycelium/PROFILE.md` + `INTERFACES.md` — MushroomDAO 组织名片和接口规范
+- `orgs/template/PROFILE.md` — 新组织加入模板
+
+**其他 repo 如何引入本仓库的生态上下文**：见 `CONTEXT-INHERIT.md`
+
+**仓库级生态地图**（含本地路径 + 状态）：`docs/ECOSYSTEM_MAP.md`
+
 ## Git Workflow
 
 - Single `main` branch, direct commits
