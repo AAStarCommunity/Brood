@@ -127,8 +127,53 @@
 
 > GitHub: github.com/AuraAIHQ | 定位: AI 能力与教育
 
+### Agent24
+- **本地路径**: `/Users/jason/Dev/auraai/Agent24`
+- **GitHub**: git@github.com:AuraAIHQ/Agent24.git
+- **用途**: 自进化 Claude Code Skills 系统（/evolve, /evaluate, /setup, /org-sync），分层记忆（L0-L3 MemPalace 风格）+ DGM-style archive + 可插拔外部评估（self/codex/agent-speaker/dual）
+- **活跃度**: 高
+- **对外接口**: SKILL.md skills 安装到 ~/.claude/skills/，agent-config.yaml 驱动行为
+- **依赖**: agent-speaker（可选，外部评估用）
+
+### Agent24-Desktop（新增 2026-04-27）
+- **本地路径**: `/Users/jason/Dev/auraai/Agent24-Desktop`
+- **GitHub**: git@github.com:AuraAIHQ/Agent24-Desktop.git
+- **用途**: 跨平台 Electron 桌面框架，可插拔能力模块、AI 解耦适配（iDoris/Claude/Local）、分层记忆、跨 agent 通信。应用方（小黑书等）从此 fork
+- **活跃度**: M0 启动期
+- **依赖**: Agent24（skills 通过 MCP bridge）、iDoris（AI 主供应商）、agent-speaker（跨 agent 通信）、iDoris-SDK（微信能力）
+- **参考实现**: `vendor/xiaoheishu` submodule（MushroomDAO/Xiaoheishu）
+
+### iDoris
+- **本地路径**: `/Users/jason/Dev/auraai/iDoris`
+- **GitHub**: git@github.com:AuraAIHQ/iDoris.git
+- **用途**: 隐私优先的本地 AI 模型（Prism 启发），跨域个人数据整合，"中型模型 + 丰富数据"范式
+- **活跃度**: 规划期（README + Prism 分析报告）
+- **对外接口**: 待定义（本地推理 API）
+
+### iDoris-SDK（迁移 2026-04-27，前 MushroomDAO/Agent-WeChat-SDK）
+- **本地路径**: 待克隆 → `/Users/jason/Dev/auraai/iDoris-SDK`（参考备份: `/Users/jason/Dev/backup/crypto-projects_Agent-WeChat-SDK`）
+- **GitHub**: git@github.com:AuraAIHQ/iDoris-SDK.git
+- **用途**: 微信桥接 SDK，任何实现 Agent 接口的代码都能挂到这个壳上接入个人微信号
+- **活跃度**: 中
+- **对外接口**: `@agent-wechat/core` npm 包，`Agent.chat(req) → resp` 接口契约
+- **依赖**: wechat-agent-bridge submodule（mason0510/wechat-agent-bridge）
+
+### agent-speaker
+- **本地路径**: `/Users/jason/Dev/auraai/agent-speaker`
+- **GitHub**: git@github.com:AuraAIHQ/agent-speaker.git
+- **用途**: Nostr-based 跨 agent 通信，NIP-44 加密，MCP 服务器集成（5 个 agent_* tools）
+- **活跃度**: 中
+- **对外接口**: `agent-speaker` CLI binary + MCP server（agent_send_message / agent_query_messages / agent_timeline / agent_init_identity / agent_manage_relays）
+
+### simple-agent
+- **本地路径**: 未克隆
+- **GitHub**: git@github.com:AuraAIHQ/simple-agent.git
+- **用途**: 微信场景 Level 1 规则 agent（StorageAgent：文件归档不依赖 LLM）
+- **活跃度**: 低
+- **依赖**: weixin-agent-sdk（workspace）
+
 ### courses
-- **本地路径**: `/Users/jason/Dev/AuraAI/courses`
+- **本地路径**: `/Users/jason/Dev/auraai/courses`
 - **GitHub**: git@github.com:AuraAIHQ/courses.git
 - **用途**: 面向儿童的编程/AI 教育课程（5个课程，含 Workshop）
 - **活跃度**: 低（2 commits）

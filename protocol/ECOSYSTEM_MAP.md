@@ -31,6 +31,7 @@
 | **Cos72** | MushroomDAO | 社区操作系统：Onboarding + 正反馈激励 + 治理 |
 | **Sin90** | MushroomDAO | 个人操作系统：表达者·创作者·建设者的数字自我 |
 | **iDoris** | AuraAI | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 |
+| **Agent24-Desktop** | AuraAI | 跨平台 Electron 框架·可插拔能力模块·AI 解耦适配 |
 | **CityOS** | MushroomDAO | AI + Blockchain 城市操作系统 |
 
 ---
@@ -87,11 +88,15 @@ git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/
 
 | 产品 | 定位 | 相对路径 | GitHub | 本地状态 |
 |-----|------|---------|--------|---------|
-| **iDoris** | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 | `../AuraAI/iDoris` | [AuraAIHQ/iDoris](https://github.com/AuraAIHQ/iDoris) | ✗ 未克隆 |
-| **OpenCrab** | A Crab work for community（社区信息爬虫/代理） | `../AuraAI/OpenCrab` | [AuraAIHQ/OpenCrab](https://github.com/AuraAIHQ/OpenCrab) | ✗ 未克隆 |
-| **Agent24** | Personal Agent for me and all（个人 AI 代理） | `../AuraAI/Agent24` | [AuraAIHQ/Agent24](https://github.com/AuraAIHQ/Agent24) | ✗ 未克隆 |
-| **AuraAI** | AI assistant for community and individuals（知识库+能力基础） | `../AuraAI/AuraAI` | [AuraAIHQ/AuraAI](https://github.com/AuraAIHQ/AuraAI) | ✗ 未克隆 |
-| **courses** | AI/编程教育课程（面向儿童，5门） | `../AuraAI/courses` | [AuraAIHQ/courses](https://github.com/AuraAIHQ/courses) | ✓ 已克隆 |
+| **iDoris** | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 | `../auraai/iDoris` | [AuraAIHQ/iDoris](https://github.com/AuraAIHQ/iDoris) | ✓ 已克隆 |
+| **iDoris-SDK** | 微信桥接 SDK·任意 Agent 接入个人微信号（前 MushroomDAO/Agent-WeChat-SDK） | `../auraai/iDoris-SDK` | [AuraAIHQ/iDoris-SDK](https://github.com/AuraAIHQ/iDoris-SDK) | ✗ 未克隆 |
+| **Agent24** | 自进化 Claude Code Skills 系统（Personal Agent for me and all） | `../auraai/Agent24` | [AuraAIHQ/Agent24](https://github.com/AuraAIHQ/Agent24) | ✓ 已克隆 |
+| **Agent24-Desktop** | 跨平台 Electron 框架·可插拔能力模块·应用方 fork 起点 | `../auraai/Agent24-Desktop` | [AuraAIHQ/Agent24-Desktop](https://github.com/AuraAIHQ/Agent24-Desktop) | ✓ 已克隆 |
+| **agent-speaker** | Nostr-based 跨 agent 通信·NIP-44 加密·MCP 集成 | `../auraai/agent-speaker` | [AuraAIHQ/agent-speaker](https://github.com/AuraAIHQ/agent-speaker) | ✓ 已克隆 |
+| **simple-agent** | 微信场景 Level 1 agent（StorageAgent 等） | `../auraai/simple-agent` | [AuraAIHQ/simple-agent](https://github.com/AuraAIHQ/simple-agent) | ✗ 未克隆 |
+| **OpenCrab** | A Crab work for community（社区信息爬虫/代理） | `../auraai/OpenCrab` | [AuraAIHQ/OpenCrab](https://github.com/AuraAIHQ/OpenCrab) | ✗ 未克隆 |
+| **AuraAI** | AI assistant for community and individuals（知识库+能力基础） | `../auraai/AuraAI` | [AuraAIHQ/AuraAI](https://github.com/AuraAIHQ/AuraAI) | ✗ 未克隆 |
+| **courses** | AI/编程教育课程（面向儿童，5门） | `../auraai/courses` | [AuraAIHQ/courses](https://github.com/AuraAIHQ/courses) | ✓ 已克隆 |
 
 ### 活跃分支
 
@@ -106,11 +111,15 @@ git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/
 ### 克隆命令
 
 ```bash
-git clone git@github.com:AuraAIHQ/iDoris.git      ../AuraAI/iDoris
-git clone git@github.com:AuraAIHQ/OpenCrab.git    ../AuraAI/OpenCrab
-git clone git@github.com:AuraAIHQ/Agent24.git     ../AuraAI/Agent24
-git clone git@github.com:AuraAIHQ/AuraAI.git      ../AuraAI/AuraAI
-git clone git@github.com:AuraAIHQ/courses.git     ../AuraAI/courses
+git clone git@github.com:AuraAIHQ/iDoris.git           ../auraai/iDoris
+git clone git@github.com:AuraAIHQ/iDoris-SDK.git       ../auraai/iDoris-SDK
+git clone git@github.com:AuraAIHQ/Agent24.git          ../auraai/Agent24
+git clone git@github.com:AuraAIHQ/Agent24-Desktop.git  ../auraai/Agent24-Desktop
+git clone git@github.com:AuraAIHQ/agent-speaker.git    ../auraai/agent-speaker
+git clone git@github.com:AuraAIHQ/simple-agent.git     ../auraai/simple-agent
+git clone git@github.com:AuraAIHQ/OpenCrab.git         ../auraai/OpenCrab
+git clone git@github.com:AuraAIHQ/AuraAI.git           ../auraai/AuraAI
+git clone git@github.com:AuraAIHQ/courses.git          ../auraai/courses
 ```
 
 ---
