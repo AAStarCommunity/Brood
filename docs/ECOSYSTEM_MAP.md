@@ -97,6 +97,7 @@ git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/
 | **OpenCrab** | A Crab work for community（社区信息爬虫/代理） | `../auraai/OpenCrab` | [AuraAIHQ/OpenCrab](https://github.com/AuraAIHQ/OpenCrab) | ✗ 未克隆 |
 | **AuraAI** | AI assistant for community and individuals（知识库+能力基础） | `../auraai/AuraAI` | [AuraAIHQ/AuraAI](https://github.com/AuraAIHQ/AuraAI) | ✗ 未克隆 |
 | **courses** | AI/编程教育课程（面向儿童，5门） | `../auraai/courses` | [AuraAIHQ/courses](https://github.com/AuraAIHQ/courses) | ✓ 已克隆 |
+| **auraai-packages** | AuraAI 共享包/工具库 | `../auraai/auraai-packages` | [AuraAIHQ/auraai-packages](https://github.com/AuraAIHQ/auraai-packages) | ✓ 已克隆 |
 
 ### 活跃分支
 
@@ -119,7 +120,8 @@ git clone git@github.com:AuraAIHQ/agent-speaker.git    ../auraai/agent-speaker
 git clone git@github.com:AuraAIHQ/simple-agent.git     ../auraai/simple-agent
 git clone git@github.com:AuraAIHQ/OpenCrab.git         ../auraai/OpenCrab
 git clone git@github.com:AuraAIHQ/AuraAI.git           ../auraai/AuraAI
-git clone git@github.com:AuraAIHQ/courses.git          ../auraai/courses
+git clone git@github.com:AuraAIHQ/courses.git            ../auraai/courses
+git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packages
 ```
 
 ---

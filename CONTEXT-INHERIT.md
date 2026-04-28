@@ -122,6 +122,38 @@ BroodBrain 是 Mycelium Protocol 的神经系统，存放了三层上下文：
 
 ---
 
+## 反向同步：repo → Brood
+
+@-include 解决了"Brood → repo"的向下传播，但 repo 中的变更（版本升级、接口修改、新增依赖）需要反向回流到 Brood。
+
+### 自动方式：`/sync-context-reverse`
+
+在 Brood 目录中运行：
+
+```bash
+cd ~/Dev/Brood && claude
+# 然后输入: /sync-context-reverse
+```
+
+该 skill 会自动完成：
+1. **@-include 健康检查** — 验证所有 repo 引用完整性，自动修复
+2. **版本号同步** — 从 repo 提取实际版本，更新 PROFILE.md + INTERFACES.md
+3. **接口变更检测** — 对比 repo 代码与 INTERFACES.md，输出变更建议
+4. **依赖关系验证** — 检查 `depends_on:` 与实际代码依赖的一致性
+5. **生态地图刷新** — 更新 ECOSYSTEM_MAP.md 的状态和日期
+
+### 手动方式：在 repo 中直接编辑 Brood
+
+Claude Code 可以跨目录编辑文件。在任何 repo 中工作时，可以直接指示 Claude 更新 Brood：
+
+```
+"AirAccount 版本升级到 v0.17.0 了，帮我更新 Brood 的 INTERFACES.md"
+```
+
+Claude 会直接编辑 `/Users/jason/Dev/Brood/orgs/aastar/INTERFACES.md`。
+
+---
+
 ## 更多资源
 
 | 文件 | 说明 |

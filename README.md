@@ -60,7 +60,66 @@ pnpm run deploy:cf
 这样以后你每次 `git push` 给 Github，Cloudflare 也一样会自动拉取 `dist/` 并秒速部署到它的全球 CDN 上。
 
 ---
-Local plist
+
+## 上下文体系 / Context Architecture
+
+BroodBrain 是 Mycelium Protocol 的神经系统，通过三层上下文实现跨 repo 协作感知：
+
+### 三层结构
+
+| 层 | 位置 | 内容 | 更新频率 |
+|:---|:---|:---|:---|
+| **L0** 协议层 | `protocol/` | 使命愿景、生态全景图、加入方式 | 很少（重大方向调整时） |
+| **L1** 组织层 | `orgs/{org}/` | 组织名片 (PROFILE.md)、接口规范 (INTERFACES.md) | 偶尔（org 定位/接口变更时） |
+| **L2** 仓库层 | 各 repo 的 `CLAUDE.md` | 项目专属说明 + @-include 引用 L0/L1 | 频繁（每次开发自然演进） |
+
+### 数据流
+
+```
+┌─────────────────────────────────────┐
+│  L0  protocol/MISSION.md            │ ← 很少改，重大方向调整时
+│  L1  orgs/{org}/PROFILE.md          │ ← org 定位变化时
+│      orgs/{org}/INTERFACES.md       │ ← 接口/依赖关系变化时
+└──────────────┬──────────────────────┘
+               │ @-include（自动向下传播）
+               ▼
+┌─────────────────────────────────────┐
+│  L2  {repo}/CLAUDE.md               │ ← 每次 repo 开发时自然演进
+│      - 系统区（@-include，不动）      │
+│      - 项目区（自由更新）             │
+└──────────────┬──────────────────────┘
+               │ /sync-context-reverse（自动反向回流）
+               ▼
+┌─────────────────────────────────────┐
+│  Brood orgs/ + protocol/            │ ← 版本/接口/状态变更自动同步
+└─────────────────────────────────────┘
+```
+
+**向下传播**：L0/L1 文件一改，所有 repo 下次启动 Claude Code 时自动生效（@-include 是实时引用）。
+
+**反向回流**：在 Brood 中运行 `/sync-context-reverse`，自动扫描所有 repo 的版本号、接口签名、依赖关系，将变更同步回 INTERFACES.md / PROFILE.md / ECOSYSTEM_MAP.md。
+
+### 初始化新 repo
+
+```bash
+# 一条命令接入生态上下文
+./scripts/init-brood-context.sh ~/Dev/{org}/{repo} {org-id}
+# org-id: aastar | auraai | mycelium
+```
+
+### Custom Skills
+
+| Skill | 命令 | 用途 |
+|:---|:---|:---|
+| **sync-progress** | `/sync-progress` | 扫描 In Progress 任务的 GitHub 进度，更新任务文件 |
+| **sync-context-reverse** | `/sync-context-reverse` | 反向同步接口/版本/状态变更到 Brood |
+| **license-update** | `/license-update` | Apache 2.0 + NOTICE + TRADEMARK 合规检查与批量同步 |
+
+详见 `CONTEXT-INHERIT.md`。
+
+---
+
+## Local plist
 -   # 查看状态（PID 和退出码）
   launchctl list | grep backlog
 

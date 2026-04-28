@@ -1,10 +1,10 @@
 ---
 id: TASK-12
 title: '[Feature] AirAccount - Invisible Crypto Account'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-28 11:15'
-updated_date: '2026-04-26 23:56'
+updated_date: '2026-04-27 04:49'
 labels:
   - feature
   - airaccount

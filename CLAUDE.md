@@ -77,6 +77,29 @@ The injected fetch interceptor in `index.html` automatically appends `.json` to 
 
 Skill 定义: `.claude/skills/sync-progress/SKILL.md`
 
+### `/sync-context-reverse` — 生态上下文反向同步
+
+扫描所有生态 repo，将变更反向回流到 Brood 的 L0/L1 上下文文件：
+
+- **@-include 健康检查**：验证所有 repo 的 CLAUDE.md 引用完整性，自动修复缺失/过时引用
+- **版本号同步**：从 repo 提取实际版本，更新 PROFILE.md 和 INTERFACES.md
+- **接口变更检测**：对比 repo 代码与 INTERFACES.md 的接口定义，输出变更建议
+- **依赖关系验证**：检查 PROFILE.md 的 `depends_on:` 与实际代码依赖是否一致
+- **生态地图刷新**：更新 ECOSYSTEM_MAP.md 中各 repo 的状态和最近提交日期
+
+Skill 定义: `.claude/skills/sync-context-reverse/SKILL.md`
+
+### `/license-update` — License 合规同步
+
+扫描所有活跃 repo 的 License 三件套（Apache 2.0 LICENSE + NOTICE + TRADEMARK.md）合规状态：
+
+- **缺失初始化**：新 repo 缺少 license 文件时，从 `protocol/license-templates/` 模板创建
+- **模板同步**：TRADEMARK 政策或 LICENSE 内容变更时，批量更新所有 repo
+- **NOTICE 参数化**：第一行自动填入 `Mycelium Protocol — {RepoName}`
+
+模板来源: `protocol/license-templates/`（LICENSE, NOTICE.template, TRADEMARK.md）
+Skill 定义: `.claude/skills/license-update/SKILL.md`
+
 ## Mycelium Protocol 生态上下文 / Ecosystem Context
 
 BroodBrain 本身是 Mycelium Protocol 的神经系统。本仓库存放三层上下文：
