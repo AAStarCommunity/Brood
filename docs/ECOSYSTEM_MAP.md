@@ -1,6 +1,6 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-03-24
+> 最后更新: 2026-04-30
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
 > 数据来源：gh CLI 扫描 GitHub 所有分支 + 本地 repo 检查
 
@@ -142,6 +142,7 @@ git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packag
 | **MyVote** | 社区治理投票模块 | `../mycelium/MyVote` | [MushroomDAO/MyVote](https://github.com/MushroomDAO/MyVote) | ✗ 未克隆 |
 | **MyShop** | 社区商店/积分兑换模块 | `../mycelium/MyShop` | [MushroomDAO/MyShop](https://github.com/MushroomDAO/MyShop) | ✗ 未克隆 |
 | **Asset3** | （资产协议，设计阶段） | `../mycelium/Asset3` | [MushroomDAO/Asset3](https://github.com/MushroomDAO/Asset3) | ✗ 未克隆 |
+| **Expresser** | 记录瞬间·生成诗歌·个人表达工具 | `../mycelium/Expresser` | [MushroomDAO/Expresser](https://github.com/MushroomDAO/Expresser) | ✓ 已克隆 |
 
 ### 基础协议 repos
 
@@ -172,6 +173,7 @@ git clone git@github.com:MushroomDAO/MyVote.git           ../mycelium/MyVote
 git clone git@github.com:MushroomDAO/MyShop.git           ../mycelium/MyShop
 git clone git@github.com:MushroomDAO/Asset3.git           ../mycelium/Asset3
 git clone git@github.com:AAStarCommunity/Cos72.git        ../Community/Cos72
+git clone git@github.com:MushroomDAO/Expresser.git        ../mycelium/Expresser
 ```
 
 ---
