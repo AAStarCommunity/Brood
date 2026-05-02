@@ -489,6 +489,10 @@ for phase in ['Phase 1', 'Phase 2', 'Phase 3']:
 
 ### 第八步：构建、提交并部署
 
+> ⚠️ **绝对不能跳过此步骤。**
+> 任务文件写入进度后，`dist/` 不会自动更新，线上看板显示的仍是上一次 build 的旧数据。
+> **已发生事故（2026-05-02）**：sync-progress 运行后漏掉第八步，导致线上任务仍显示"2026-04-27 扫描"的旧进度报告，用户反馈才发现。根因：把"写入任务文件"误当做"完成"，忘记 build + deploy 才让内容上线。
+
 先重新构建静态站点，提交推送，再部署到 Cloudflare Pages：
 
 ```bash
@@ -507,15 +511,18 @@ cd "$REPO_ROOT" && pnpm run deploy:cf || (sleep 5 && pnpm run deploy:cf)
 - `pnpm run deploy:cf` 可能因网络问题失败，失败后等 5 秒重试一次
 - 如果二次重试仍失败，打印失败信息但不中断流程，告知用户手动执行 `pnpm run deploy:cf`
 
-**验证清单**（完成后逐项确认）：
+**验证清单**（完成后逐项确认，必须全部打勾才算完成）：
 - [ ] `backlog/tasks/` 中的任务文件已更新（包含 `### 📊 进度报告` 和 `预估进度: N%`）
 - [ ] `backlog/docs/doc-7 - 📊-Progress-Report.md` 的 Phase 进度表和总览表已更新
 - [ ] `docs/ECOSYSTEM_MAP.md` 的状态和日期已更新
-- [ ] `dist/` 重新生成，含最新内容
-- [ ] Cloudflare Pages 部署成功（或提示用户手动重试）
+- [ ] `dist/` 重新生成，含最新内容（`pnpm run build` 成功）
+- [ ] `update-task.sh` commit + push 成功
+- [ ] Cloudflare Pages 部署成功，输出 deployment URL（或提示用户手动重试）
+- [ ] 在终端确认：打开 CF 部署 URL，检查任意一个任务的进度报告日期是今天
 
 ## 重要注意事项
 
+- **第八步不可跳过**：写入任务文件 ≠ 上线。必须 `pnpm run build` → `update-task.sh` → `pnpm run deploy:cf` 三步全部完成，内容才会在线上可见。漏掉任意一步，用户看到的仍是上次 build 的旧数据。（2026-05-02 事故教训）
 - **严格本地优先**：先 `git pull`/`git fetch` 将远程同步到本地，之后所有分析（git log、读文件等）只使用本地分支和本地文件，禁止使用 `origin/` 前缀的远程引用。不调用 GitHub API。
 - `git pull` 失败不要中断流程，改用 `git fetch` 然后继续分析本地已有数据
 - `git log` 使用本地分支名（不加 `origin/` 前缀），用 `--all` 参数确保覆盖所有本地分支
