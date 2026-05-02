@@ -1,6 +1,6 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-04-30
+> 最后更新: 2026-05-02
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
 > 数据来源：gh CLI 扫描 GitHub 所有分支 + 本地 repo 检查
 

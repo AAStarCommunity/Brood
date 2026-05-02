@@ -11,7 +11,7 @@
 ### 1. AirAccount — 账户基础设施
 
 **仓库**: `github.com/AAStarCommunity/AirAccount`
-**版本**: v0.16.8（生产中）
+**版本**: v2025.09.29-kms-web-ui（git tag，KMS 分支生产中）
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
@@ -36,7 +36,7 @@
 ### 2. SuperPaymaster — Gas 抽象支付
 
 **仓库**: `github.com/AAStarCommunity/SuperPaymaster`
-**版本**: v4.4.0（含 UUPS 升级，Sepolia 已部署）
+**版本**: v5.3.0-dev（git tag，含 UUPS 升级，Sepolia 已部署）
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
