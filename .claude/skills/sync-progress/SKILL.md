@@ -8,34 +8,46 @@ allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run b
 
 你是一个项目进度分析师。你的任务是扫描所有进行中的 backlog 任务，通过分析关联 GitHub 仓库的 **commit 历史** 和 **CHANGELOG 文件**，评估每个任务的完成进度。
 
-## 前置：动态路径检测
+## 本地目录 → 组织约定（固定映射）
 
-本 skill 不依赖硬编码路径，所有路径在运行时动态检测：
+**这是整个生态的约定**：所有仓库按所属组织存放在固定的本地目录下：
+
+| 本地目录 | GitHub 组织 | 说明 |
+|:---|:---|:---|
+| `~/Dev/aastar/` | `AAStarCommunity` | 区块链基础设施（SuperPaymaster、AirAccount、SuperRelay 等） |
+| `~/Dev/auraai/` | `AuraAIHQ` | AI 基础设施（iDoris、Agent24、agent-speaker 等） |
+| `~/Dev/mycelium/` | `MushroomDAO` | 社区/个人/城市 OS（Sin90、Cos72、CometENS、Expresser 等） |
+
+当用户在 GitHub 新建仓库并 clone 到本地时，**必须**放在对应组织的目录下。例如：
+- `git clone git@github.com:AAStarCommunity/NewRepo.git ~/Dev/aastar/NewRepo`
+- `git clone git@github.com:AuraAIHQ/NewRepo.git ~/Dev/auraai/NewRepo`
+- `git clone git@github.com:MushroomDAO/NewRepo.git ~/Dev/mycelium/NewRepo`
+
+Clone 备用目录（未找到本地仓库时临时 clone）：`~/Dev/tmp/`
+
+## 前置：动态路径检测
 
 ```bash
 # 1. 项目根目录（Brood 所在位置）
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
-# 2. 本地仓库扫描根目录（按优先级检测）
-#    a) 环境变量覆盖（用户可在 .env 或 shell profile 中设置）
-#    b) 项目根目录的父目录（假设开发者把项目集中放在同一个 Dev 目录）
-#    c) 兜底使用 $HOME
-if [ -n "$SYNC_SCAN_ROOT" ]; then
-  SCAN_ROOT="$SYNC_SCAN_ROOT"
-else
-  SCAN_ROOT=$(dirname "$REPO_ROOT")
-fi
+# 2. 三大组织固定本地目录
+DIR_AASTAR="$HOME/Dev/aastar"
+DIR_AURAAI="$HOME/Dev/auraai"
+DIR_MYCELIUM="$HOME/Dev/mycelium"
 
-# 3. Clone 缓存目录（未找到本地仓库时临时 clone，放在 SCAN_ROOT 同级目录下）
-CLONE_DIR="${SCAN_ROOT}"
+# 3. Clone 备用目录
+CLONE_DIR="$HOME/Dev/tmp"
 ```
 
-**运行时**：先执行上述命令确定 `REPO_ROOT`、`SCAN_ROOT`、`CLONE_DIR`，后续所有步骤使用这些变量。把检测结果打印出来让用户确认：
+**运行时**：先执行上述命令，打印确认：
 
 ```
 📍 项目根目录: /Users/xxx/Dev/Brood
-🔍 仓库扫描范围: /Users/xxx/Dev
-📦 Clone 缓存: /Users/xxx/Dev（与 Brood 同级目录）
+🗂️  AAStarCommunity: ~/Dev/aastar/
+🗂️  AuraAIHQ:        ~/Dev/auraai/
+🗂️  MushroomDAO:     ~/Dev/mycelium/
+📦 Clone 备用:       ~/Dev/tmp/
 ```
 
 ## 执行流程
@@ -45,44 +57,130 @@ CLONE_DIR="${SCAN_ROOT}"
 ### Phase 0：生态仓库地图扫描与更新
 
 在分析进度之前，先同步生态仓库全景图（`docs/ECOSYSTEM_MAP.md`）。目的：
-- 建立本地路径 → GitHub remote URL 的实时映射
+- 建立本地路径 → GitHub remote URL 的实时映射（供第三步直接使用）
 - 发现新克隆的仓库（自动加入地图）
+- 为新发现的仓库匹配 backlog 任务，补全 `references:` 字段
 - 标记 dormant 仓库状态变更
-- 为后续任务匹配提供准确的本地路径
 
 **执行步骤**：
 
-1. **扫描 `$SCAN_ROOT` 下所有 git 仓库**，构建 remote→本地路径映射表：
+#### 步骤 0-1：扫描三大固定目录
 
-```bash
-find "$SCAN_ROOT" -maxdepth 4 -name ".git" -type d 2>/dev/null | while read gitdir; do
-  repo_dir=$(dirname "$gitdir")
-  remote=$(git -C "$repo_dir" remote get-url origin 2>/dev/null | sed 's/\.git$//' | sed 's|git@github.com:|https://github.com/|')
-  last_commit=$(git -C "$repo_dir" log -1 --format="%ad" --date=short 2>/dev/null)
-  # 只输出属于三大 org 或 jhfnetboy 的仓库
-  echo "$repo_dir|$remote|$last_commit"
-done | grep -E 'github\.com/(AAStarCommunity|MushroomDAO|AuraAIHQ|jhfnetboy)/'
+使用以下 Python 脚本扫描三个固定目录，构建 remote→本地路径映射表：
+
+```python
+import os, subprocess
+
+# 固定目录 → 组织映射
+ORG_DIRS = {
+    os.path.expanduser("~/Dev/aastar"):    "AAStarCommunity",
+    os.path.expanduser("~/Dev/auraai"):    "AuraAIHQ",
+    os.path.expanduser("~/Dev/mycelium"): "MushroomDAO",
+}
+
+found_repos = []  # [(local_path, remote_url, org, last_commit)]
+
+for base_dir, org in ORG_DIRS.items():
+    if not os.path.isdir(base_dir):
+        print(f"⚠️  目录不存在: {base_dir}")
+        continue
+    for name in sorted(os.listdir(base_dir)):
+        path = os.path.join(base_dir, name)
+        git_dir = os.path.join(path, ".git")
+        if not os.path.isdir(git_dir):
+            continue
+        # 获取 remote URL
+        r = subprocess.run(["git", "-C", path, "remote", "get-url", "origin"],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            continue
+        remote = r.stdout.strip()
+        # 标准化 URL
+        remote = remote.removesuffix(".git")
+        remote = remote.replace("git@github.com:", "https://github.com/")
+        # 仅保留三大 org 的仓库
+        if not any(f"github.com/{o}/" in remote for o in ORG_DIRS.values()):
+            continue
+        # 最近提交日期
+        r2 = subprocess.run(["git", "-C", path, "log", "-1", "--format=%ad", "--date=short"],
+                             capture_output=True, text=True)
+        last_commit = r2.stdout.strip() or "unknown"
+        found_repos.append((path, remote, org, last_commit))
+        print(f"  ✓ {org}/{name} | {last_commit}")
+
+print(f"\n✅ 三大目录共发现 {len(found_repos)} 个仓库")
 ```
 
-2. **读取 `$REPO_ROOT/docs/ECOSYSTEM_MAP.md`**，与扫描结果对比：
-   - 如果扫描到新仓库（地图中不存在），打印 `🆕 新发现: {path} → {remote}`
-   - 如果某仓库 last_commit 距今超过 12 个月且地图中标记为 Active，打印 `⚠️ 状态变更: {repo} 应标为 Dormant`
-   - 如果某地图条目的本地路径不存在，打印 `❓ 本地缺失: {repo}`（说明未 clone）
+将 `found_repos` 列表保留在内存中，后续步骤复用，避免重复扫描。
 
-3. **用 Edit 工具更新 ECOSYSTEM_MAP.md**（仅在有变化时）：
-   - 更新文件顶部的"最后更新"日期
-   - 对状态有变化的行，更新状态列（🟢/🟡/🔴）和最近提交列
-   - 对新发现的三大 org 仓库，在对应 org 区块末尾追加新行
+#### 步骤 0-2：与 ECOSYSTEM_MAP.md 对比，发现新增仓库
 
-4. 输出扫描摘要：
+读取 `$REPO_ROOT/docs/ECOSYSTEM_MAP.md`，提取其中已有的所有 GitHub URL（`github.com/ORG/REPO` 格式）。
+
+对每个在 `found_repos` 中但不在地图里的仓库：
+- 打印 `🆕 新发现: {path} → {remote}`
+- 标记为 `new_repos` 列表，进入步骤 0-3 处理
+
+对地图中存在但本地目录不存在的仓库：
+- 打印 `❓ 本地缺失: {repo}（尚未 clone）`
+
+#### 步骤 0-3：新仓库自动加入地图
+
+对每个新发现仓库，用 **Edit 工具**将其追加到 `ECOSYSTEM_MAP.md` 对应 org 区块的核心产品表格末尾：
+
+```markdown
+| **{RepoName}** | （待补充定位描述） | `../aastar/{RepoName}` 或 `../auraai/...` 或 `../mycelium/...` | [{Org}/{RepoName}]({remote_url}) | ✓ 已克隆 |
+```
+
+同时更新文件顶部"最后更新"日期为今天。
+
+#### 步骤 0-4：为新仓库匹配 backlog 任务，补全 references
+
+对每个新发现的仓库，在 backlog 任务中搜索可能关联的任务：
+
+```python
+import glob, re
+
+tasks_dir = os.path.join(REPO_ROOT, "backlog/tasks")
+repo_name = os.path.basename(new_repo_path).lower()
+
+for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
+    content = open(task_file).read()
+    # 检查任务是否已有 references 指向该 repo
+    if new_repo_remote in content:
+        continue  # 已存在，跳过
+    # 在任务标题、描述中搜索仓库名关键词（不区分大小写）
+    if repo_name in content.lower() or repo_name.replace("-", "") in content.lower():
+        # 提取 task ID 用于日志
+        tid = re.search(r'^id:\s*(.+)', content, re.M)
+        tid = tid.group(1).strip().strip("'\"") if tid else task_file
+        print(f"  🤖 任务匹配: {tid} ↔ {repo_name}（名称关键词匹配）")
+        # 检查 frontmatter references 字段
+        # 如果 references: [] 或不存在，追加新 URL
+        # (具体 Edit 操作见第一步·五的写入规则)
+```
+
+如果有匹配，用 **Edit 工具**按第一步·五的规则将新仓库 URL 写入任务 frontmatter 的 `references:` 字段。
+
+打印操作日志：
+```
+🤖 references 补全: TASK-XX ← https://github.com/MushroomDAO/NewRepo（仓库名关键词匹配）
+```
+
+#### 步骤 0-5：输出扫描摘要
+
 ```
 📡 生态地图扫描完成
-   本地已有仓库: {N} 个（三大 org + jhfnetboy）
-   新发现: {N} 个 | 状态变更: {N} 个 | 本地缺失: {N} 个
+   三大目录已有仓库: {N} 个
+     ~/Dev/aastar/:    {N} 个（AAStarCommunity）
+     ~/Dev/auraai/:    {N} 个（AuraAIHQ）
+     ~/Dev/mycelium/:  {N} 个（MushroomDAO）
+   🆕 新发现: {N} 个（已加入地图 + 搜索任务匹配）
+   ❓ 本地缺失: {N} 个（未 clone）
    地图已更新: docs/ECOSYSTEM_MAP.md
 ```
 
-**注意**：Phase 0 扫描结果的路径映射表在内存中保留，供第三步（定位本地仓库）直接使用，避免重复 find 扫描。
+**注意**：Phase 0 的 `found_repos` 列表在内存中保留，供**第三步（定位本地仓库）**直接使用，避免重复扫描。
 
 ---
 
@@ -141,27 +239,33 @@ done | grep -E 'github\.com/(AAStarCommunity|MushroomDAO|AuraAIHQ|jhfnetboy)/'
 
 ### 第三步：定位本地仓库
 
-在 `$SCAN_ROOT` 下扫描所有本地 git 仓库，构建 remote URL → 本地路径的映射：
-
-```bash
-find "$SCAN_ROOT" -maxdepth 4 -name ".git" -type d 2>/dev/null | while read gitdir; do
-  repo_dir=$(dirname "$gitdir")
-  remote=$(git -C "$repo_dir" remote get-url origin 2>/dev/null)
-  if [ -n "$remote" ]; then
-    echo "$repo_dir|$remote"
-  fi
-done
-```
+**优先**复用 Phase 0 已建立的 `found_repos` 映射表（`remote_url → local_path`），无需重复扫描。
 
 匹配规则：
 - 将 remote URL 标准化（去掉 `.git` 后缀，统一 `git@github.com:` 和 `https://github.com/` 格式）
-- 用任务 references 中的 `owner/repo` 去匹配
+- 用任务 references 中的 `owner/repo` 去匹配 `found_repos` 中的条目
 
-**如果本地未找到仓库**：
-```bash
-mkdir -p "$CLONE_DIR"
-git clone <github_url> "$CLONE_DIR/<repo_name>"
+```python
+# 从 Phase 0 的 found_repos 构建查找表
+url_to_path = {}
+for (path, remote, org, last_commit) in found_repos:
+    # 提取 owner/repo 作为 key
+    key = "/".join(remote.rstrip("/").split("/")[-2:]).lower()
+    url_to_path[key] = path
+
+# 匹配任务 reference
+def find_local_repo(github_url):
+    key = "/".join(github_url.rstrip("/").split("/")[-2:]).lower()
+    return url_to_path.get(key)
 ```
+
+**如果本地未找到仓库**（Phase 0 三大目录都没有）：
+```bash
+mkdir -p "$HOME/Dev/tmp"
+git clone <github_url> "$HOME/Dev/tmp/<repo_name>"
+```
+
+**注意**：三大固定目录 `~/Dev/aastar`、`~/Dev/auraai`、`~/Dev/mycelium` 覆盖了绝大多数情况；`tmp/` 仅用于不属于三大 org 的 jhfnetboy 个人仓库或外部仓库。
 
 ### 第四步：拉取最新代码并采集数据
 
