@@ -27,7 +27,7 @@ Provide users with free ENS subdomains (e.g., user.comet.eth) and internet domai
 
 ### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 65%** | 近 30 天 20+ 次提交，最近一次 2026-04-27（Apache 2.0 license badge），v0.5.0 里程碑完成
+**🚀 预估进度: 30%** | 近 30 天 20+ 次提交，最近一次 2026-04-27（Apache 2.0 license badge），v0.5.0 里程碑完成
 
 **✅ AC 完成情况**:
 - ✅ Deploy ENS resolver on Sepolia/OP — OPResolver + Bedrock 状态证明脚手架（C1/C2）已部署，签名/证明双模式

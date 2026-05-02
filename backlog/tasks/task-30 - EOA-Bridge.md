@@ -31,7 +31,7 @@ https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
 ### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由智能匹配自动补全
 
-**🚀 预估进度: 5%** | 近 30 天 20 次提交（共享 DSR repo），最近一次 2026-03-07
+**🚀 预估进度: 20%** | 近 30 天 20 次提交（共享 DSR repo），最近一次 2026-03-07
 
 **✅ AC 完成情况**:
 - ⬜ Paper6: Gasless EOA Bridge (7702) — progress.md 状态: "Not started"，DSR P1-P6 均未开始

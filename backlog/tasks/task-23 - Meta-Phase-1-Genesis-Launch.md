@@ -29,7 +29,7 @@ A meta-task to group all Genesis Launch activities.
 
 ### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 70%** | 近 30 天 20+ 次提交，最近一次 2026-04-26（roadshow prep）；launch 仓库新增 gasless GToken 购买页 + Cloudflare Worker relayer
+**🚀 预估进度: 65%** | 近 30 天 20+ 次提交，最近一次 2026-04-26（roadshow prep）；launch 仓库新增 gasless GToken 购买页 + Cloudflare Worker relayer
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成（C1-C11 合约 + F1-F8 前端 + W1-W5 Worker + Codex/Slither 安全审计）

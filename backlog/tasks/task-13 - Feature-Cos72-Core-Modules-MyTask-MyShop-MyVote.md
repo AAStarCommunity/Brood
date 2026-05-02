@@ -25,7 +25,7 @@ Implement the three core modules for Cos72 Chrome Plugin.
 
 ### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 30%** | MushroomDAO/MyTask 近期有新提交（license 合规 04-27），Sprint 1 核心功能已完成并 merge
+**🚀 预估进度: 35%** | MushroomDAO/MyTask 近期有新提交（license 合规 04-27），Sprint 1 核心功能已完成并 merge
 
 **✅ AC 完成情况**:
 - 🔧 #1 MyTask: Community tasks execution — **MushroomDAO/MyTask** Sprint 1 完成：x402/hono SDK 集成、EIP-3009 真实签名验证、Jury 合约（callback + gas 保护）、PR #5 + PR #4 合并，license 合规

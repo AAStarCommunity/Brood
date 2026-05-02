@@ -32,7 +32,7 @@ enhance a close integration with AAStar infrastructure.
 
 ### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
 
-**🚀 预估进度: 5%** | 近 30 天 0 次提交，最近一次 2023-02-21（约 3 年前）
+**🚀 预估进度: 20%** | 近 30 天 0 次提交，最近一次 2023-02-21（约 3 年前）
 
 **✅ AC 完成情况**:
 - ⬜ Accept standard ERC-4337 useroperation — 仓库 `jhfnetboy/bundler` 是 Alto bundler 的旧 fork，最后更新 2023-02-21

@@ -23,7 +23,7 @@ A protocol for viral community growth and member invitation tracking.
 
 ### 📊 进度报告 (2026-03-17 扫描)
 
-**🚀 预估进度: 5%** | 近 30 天 0 次提交，最近一次 2025-11-15（约 4 个月前）
+**🚀 预估进度: 15%** | 近 30 天 0 次提交，最近一次 2025-11-15（约 4 个月前）
 
 **✅ AC 完成情况**:
 - ⬜ #1 Implement invitation tracking, Reward viral spread, Integrate with Cos72 — 仓库 `MushroomDAO/Spores` 仅有 README 和 LICENSE，无任何功能实现

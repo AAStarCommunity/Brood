@@ -27,7 +27,7 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 
 ### 📊 进度报告 (2026-04-26 扫描)
 
-**🚀 预估进度: 35%** | 近 30 天以 Apache 2.0 license 为主，最近课程提交 2026-03-08（~7周前）
+**🚀 预估进度: 55%** | 近 30 天以 Apache 2.0 license 为主，最近课程提交 2026-03-08（~7周前）
 
 **✅ AC 完成情况**:
 - ✅ Course 0-4 内容框架 — `AuraAIHQ/courses` 5 门课程框架 + Google Slides 链接，Apache 2.0 license 合规

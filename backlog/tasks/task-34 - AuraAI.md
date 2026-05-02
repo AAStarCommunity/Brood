@@ -30,7 +30,7 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 
 ### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 35%** | 多仓库持续活跃：agent-speaker（group chat + TUI + SQLite 完成）、Agent-WeChat-SDK（@agent-wechat/core + CLI 启动）、relay（Docker 稳定）
+**🚀 预估进度: 40%** | 多仓库持续活跃：agent-speaker（group chat + TUI + SQLite 完成）、Agent-WeChat-SDK（@agent-wechat/core + CLI 启动）、relay（Docker 稳定）
 
 **✅ AC 完成情况**:
 - ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 全量合规

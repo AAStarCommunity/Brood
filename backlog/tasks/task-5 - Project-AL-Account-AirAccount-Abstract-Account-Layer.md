@@ -26,7 +26,7 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 ### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 20%** | 近 30 天仅 license 合规提交，最后真实功能提交 2025-10-23（guardian QR setup, on-chain recovery, tier security）
+**🚀 预估进度: 30%** | 近 30 天仅 license 合规提交，最后真实功能提交 2025-10-23（guardian QR setup, on-chain recovery, tier security）
 
 **✅ AC 完成情况**:
 - 🔧 #1 Support Social Login — WebAuthn passkey 框架存在，social login 集成未完成
