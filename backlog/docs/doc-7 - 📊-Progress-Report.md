@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-04-27 10:00'
+updated_date: '2026-05-03 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-04-27**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-03**.*
 
 ---
 
@@ -15,9 +15,9 @@ updated_date: '2026-04-27 10:00'
 
 | Phase | 加权进度 | 任务数 | 说明 |
 |:---|:---:|:---:|:---|
-| **Phase 1**: Genesis Launch | **59%** | 13个任务 | Done=5, In Progress=6, To Do=2 |
-| **Phase 2**: Community Expansion | **2%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
-| **Phase 3**: Ecosystem Maturity | **6%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
+| **Phase 1**: Genesis Launch | **65%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
+| **Phase 2**: Community Expansion | **4%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
+| **Phase 3**: Ecosystem Maturity | **8%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
 
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
 
@@ -29,22 +29,22 @@ updated_date: '2026-04-27 10:00'
 |:---|:---|:---:|:---|:---:|:---|
 | TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
 | TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
-| TASK-9 | CometENS 免费子域名 | **65%** | MushroomDAO/CometENS | 04-27 | v0.5.0 + D6 多根域名完成，活跃！ |
-| TASK-23 | Meta Phase 1 Genesis Launch | **70%** | MushroomDAO/launch | 04-26 | gasless GToken买页+Worker relayer，roadshow 5-18 |
-| TASK-12 | AirAccount 隐形账户 | **72%** | AirAccount | 04-15 | v0.16.8 稳定，Apache 2.0，无新功能 |
-| TASK-31 | Paper3: SuperPaymaster 论文 | **90%** | DSR-Research-Flow | 04-24 | v7.6 精简完成，待提交 Ledger/BRA |
-| TASK-32 | Paper7: CommunityFi 论文 | **85%** | DSR-Research-Flow | 04-24 | 投稿包就绪，待提交 JBBA |
-| TASK-34 | AuraAI | **35%** | AuraAIHQ + MushroomDAO | 04-27 | agent-speaker group chat 完成，WeChat SDK 启动 |
-| TASK-13 | Cos72 Core Modules | **30%** | MushroomDAO/MyTask | 04-27 | MyTask Sprint 1 merge，license 合规 |
-| TASK-35 | AuraAI Courses | **35%** | AuraAIHQ/courses | 04-15 | 5 门课程框架，近期无新内容 |
-| TASK-5 | AL Account (YetAnotherAA) | **20%** | AAStarCommunity/YetAnotherAA | 2025-10 | 框架存在，近6个月无功能提交 |
-| TASK-36 | Main Road Research | **10%** | zeroclaw（未本地化）| — | 持续研究追踪 |
-| TASK-2 | Cos72 Cards/Points/Perks | **10%** | AAStarCommunity/demo | 2025-10 | 基础框架，核心功能未实现 |
-| TASK-26 | Bundler | **5%** | jhfnetboy/bundler | 2023-02 | 基于废弃 Goerli，需重建 |
-| TASK-28 | OpenCrab Agent | **10%** | 无关联仓库 | — | 设计阶段（m-2） |
+| TASK-23 | Meta Phase 1 Genesis Launch | **75%** | MushroomDAO/launch | 05-02 | V2 stack上线，GToken余额显示，fork-Sepolia测试 |
+| TASK-31 | SuperPaymaster | **70%** | AAStarCommunity/SuperPaymaster | 05-02 | v5.3.0-dev，多角色+信用系统+BLS，20commits/30d |
+| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | v0.6.0 lazy KMS wallet，功能性进展 |
+| TASK-9 | CometENS 免费子域名 | **55%** | MushroomDAO/CometENS | 04-29 | 多签名者支持，breaking constructor change |
+| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 5门课程框架，8周无新内容 |
+| TASK-34 | AuraAI | **45%** | AuraAIHQ/Agent24 | 04-29 | Agent24 活跃，主要 license/chore commits |
+| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | MyTask 活跃，license 合规，功能进展待确认 |
+| TASK-32 | CommunityFi | **20%** | — | — | 无本地仓库数据 |
+| TASK-30 | EOA Bridge | **20%** | — | — | 无本地仓库数据 |
+| TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | 12commits，主为 license/chore |
+| TASK-36 | Main Road Research | **20%** | zeroclaw（未本地化）| — | 持续研究追踪 |
+| TASK-2 | Cos72 Cards/Points/Perks | **20%** | — | — | 无本地仓库数据 |
+| TASK-38 | Research Blog | **20%** | — | — | 设计阶段 |
+| TASK-26 | Bundler | **15%** | jhfnetboy/bundler | — | 无本地数据 |
+| TASK-28 | OpenCrab Agent | **15%** | 无关联仓库 | — | 设计阶段（m-2） |
 | TASK-29 | Asset3 Protocol | **10%** | 无活跃仓库 | — | 思考/设计阶段（m-3） |
-| TASK-30 | EOA Bridge (Paper6) | **5%** | DSR-Research-Flow | 04-24 | Paper6 未启动 |
-| TASK-19 | Spores SDK | **5%** | MushroomDAO/Spores | 2025-11 | 仅 README |
 
 ---
 
