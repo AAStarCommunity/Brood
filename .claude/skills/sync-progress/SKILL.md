@@ -323,14 +323,15 @@ git -C <repo_path> log <branch> -- --oneline --since="30 days ago" -50
 
 ### 第六步：更新任务文件
 
+> ⚠️ **"扫描"的定义：读取+分析+写入+验证，缺一不可。**
+> 只读取分析而不写入文件 = 没有扫描。写入文件而不验证 = 不知道是否真的写入。
+> **已发生事故（2026-05-02）**：一次 sync-progress 运行产生了终端输出，汇报"12 个任务已写入"，
+> 但实际上 Edit 工具没有被调用，文件内容没有变化，任务扫描日期停留在 4-27。
+> 根因：把"生成了分析文字"误当成"完成了写入"，且没有跑验证脚本。
+
 #### 6a. 回写预估进度到任务文件（关键！）
 
-**必须执行**：将评估得到的进度百分比回写到任务文件中的 `预估进度: N%` 标记。这是 build 脚本 `computeMilestoneProgress()` 计算首页进度条的数据源。
-
-```bash
-# 将任务文件中的 "预估进度: XX%" 替换为新值
-sed -i '' "s/预估进度: [0-9]*%/预估进度: ${NEW_PROGRESS}%/" "<task_file>"
-```
+**必须用 Edit 工具**（不是 sed，rtk hook 会拦截）将评估得到的进度百分比回写到任务文件中的 `预估进度: N%` 标记。这是 build 脚本 `computeMilestoneProgress()` 计算首页进度条的数据源。
 
 如果任务文件中没有 `预估进度:` 标记，在进度报告区块的第一行添加。
 
@@ -379,6 +380,43 @@ sed -i '' "s/预估进度: [0-9]*%/预估进度: ${NEW_PROGRESS}%/" "<task_file>
 | TASK-8 Paymaster V4 | 60% | SuperPaymaster | 今天 | V4.3 稳定币已合并 |
 | TASK-9 Comet ENS | — | 无关联仓库 | — | 跳过 |
 ```
+
+### 第七步·零：文件写入验证（强制，不可跳过）
+
+**在输出第七步汇总表之前，必须先跑以下验证脚本**，确认每个 In Progress 任务的扫描日期已变为今天。如果有任务日期未更新，说明第六步的 Edit 工具调用失败或被跳过，必须重新执行写入，直到全部日期为今天。
+
+```python
+import os, re, glob
+from datetime import date
+
+TODAY = str(date.today())
+tasks_dir = f'{REPO_ROOT}/backlog/tasks'
+fail = []
+
+for f in sorted(glob.glob(tasks_dir + '/*.md')):
+    content = open(f).read()
+    fm = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not fm: continue
+    status = re.search(r'^status:\s*(.+)', fm.group(1), re.M)
+    if not status or 'In Progress' not in status.group(1): continue
+    tid = re.search(r'^id:\s*(.+)', fm.group(1), re.M).group(1).strip().strip("'\"")
+    scan = re.search(r'进度报告\s*\((\d{4}-\d{2}-\d{2})\s*扫描\)', content)
+    date_in_file = scan.group(1) if scan else "无"
+    if date_in_file != TODAY:
+        fail.append(f'{tid}: {date_in_file}（应为 {TODAY}）')
+        print(f'❌ {tid}: 扫描日期未更新 ({date_in_file})')
+    else:
+        print(f'✅ {tid}: {date_in_file}')
+
+if fail:
+    print(f'\n⛔ {len(fail)} 个任务写入失败，必须重新执行第六步再继续：')
+    for f in fail: print(f'  {f}')
+    raise SystemExit('写入验证失败，禁止继续！')
+else:
+    print(f'\n✅ 所有 In Progress 任务扫描日期已更新为 {TODAY}，可继续第七步')
+```
+
+**只有验证全部通过（无 ❌）才能继续后续步骤。**
 
 ### 第七步·四：计算各 Phase 加权进度
 
