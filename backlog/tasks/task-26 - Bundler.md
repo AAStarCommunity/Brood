@@ -30,18 +30,19 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-03-17 扫描) 🤖 reference 由本地仓库名匹配补全
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 20%** | 近 30 天 0 次提交，最近一次 2023-02-21（约 3 年前）
+**🚀 预估进度: 15%** | 关联仓库 `jhfnetboy/bundler` 未本地克隆，无法分析近 30 天提交
 
 **✅ AC 完成情况**:
-- ⬜ Accept standard ERC-4337 useroperation — 仓库 `jhfnetboy/bundler` 是 Alto bundler 的旧 fork，最后更新 2023-02-21
-- ⬜ Accept aPNTs and ETH to pay the service — 未实现
-- ⬜ Accept EIP-7702 request — 未实现（EIP-7702 在 2023 年尚未提出）
+- ⬜ Accept standard ERC-4337 useroperation — 仓库未在本地找到，上次已知状态为 Alto bundler 旧 fork（最后更新 2023-02-21）
+- ⬜ Accept aPNTs and ETH to pay the service — 无数据
+- ⬜ Accept EIP-7702 request and be a relay server — 无数据
+- ⬜ Be any relay server with permission service — 无数据
 
-**📝 近期动态** (jhfnetboy/bundler - 该仓库无 CHANGELOG):
-- 2023-02-21: Update apprunner config for Eth Goerli network（最后一次提交，3 年前）
-- 仓库长期无活动，Goerli 网络已废弃
+**📝 近期动态**:
+- `jhfnetboy/bundler` 未本地克隆，无法获取近 30 天提交记录
+- 上次已知提交：2023-02-21（Goerli 网络配置，已废弃）
 
-💡 当前关联仓库极度过时（3年无更新，基于已废弃的 Goerli 网络）。任务描述提到基于 pimlico 的 Alto 修改版本，建议确认是否已在新仓库（如 AAStar/aNode 或其他）启动 Bundler 开发。
+💡 Bundler 仓库长期未活动（已知），无本地数据验证当前状态。建议 clone 后重新扫描，或确认是否已迁移至新仓库。
 <!-- SECTION:DESCRIPTION:END -->

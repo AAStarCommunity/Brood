@@ -28,22 +28,20 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-04-27 扫描)
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 40%** | 多仓库持续活跃：agent-speaker（group chat + TUI + SQLite 完成）、Agent-WeChat-SDK（@agent-wechat/core + CLI 启动）、relay（Docker 稳定）
+**🚀 预估进度: 45%** | AuraAIHQ/Agent24 近 30 天 20 次提交，最近一次 2026-04-29；以 license/chore 为主，框架持续稳定
 
 **✅ AC 完成情况**:
 - ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 全量合规
-- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** pluggable eval（codex/agent-speaker/dual）、MemPalace memory、/setup onboarding skill；近期以 license 合规为主
-- 🔧 Bot（WeChat 第二位）— **MushroomDAO/Agent-WeChat-SDK** @agent-wechat/core + CLI + simple-agent submodule 已实现，wechat-agent-bridge 设计文档完成
-- ✅ 通信基础设施 — **AuraAIHQ/agent-speaker**（group chat + TUI Bubble Tea + SQLite + NIP-44 加密，PR #3 merge）+ **MushroomDAO/agent-speaker-relay**（strfry Docker + restart.sh + Alpine/Ubuntu 双构建）完成度高
+- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** 20 次提交，近期以 license/chore 为主，pluggable eval 框架稳定
+- 🔧 Bot（WeChat）— 通信基础设施持续稳定，近期主要为合规提交
 - ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
 
-**📝 近期动态**:
-- 04-27: agent-speaker: fix(tui): send messages + close DB + bounds-check npub slices（PR review 修复）
-- 04-26: Agent-WeChat-SDK: feat: @agent-wechat/core + CLI + simple-agent submodule
-- 04-21: agent-speaker: group chat 全测试覆盖 + TUI Bubble Tea（feat merge）
-- 04-12: agent-speaker-relay: restart.sh + Alpine 构建优化 + OOM 修复
+**📝 近期动态** (AuraAIHQ/Agent24):
+- 近 30 天 20 次提交，最近一次 2026-04-29
+- 近期提交以 license/chore 为主（Apache 2.0 合规）
+- 框架已完整（pluggable eval + MemPalace + /setup skill），等待功能扩展
 
-💡 通信基础设施（Nostr relay + agent-speaker）趋于成熟，WeChat SDK 启动。Agent24 执行框架框架完整。剩余 65%：iDoris 三层（社区AI/大模型/训练服务）、Mycelium Network、AK47 工具库。
+💡 Agent24 框架稳定，通信基础设施成熟。近期活动以合规 chore 为主，feature 开发相对放缓。iDoris/AK47/Mycelium Network 三大模块仍未启动，是剩余 55% 的主要缺口。
 <!-- SECTION:DESCRIPTION:END -->

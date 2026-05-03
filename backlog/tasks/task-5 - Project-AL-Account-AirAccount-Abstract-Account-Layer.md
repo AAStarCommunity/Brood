@@ -24,21 +24,21 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-04-27 扫描)
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 30%** | 近 30 天仅 license 合规提交，最后真实功能提交 2025-10-23（guardian QR setup, on-chain recovery, tier security）
+**🚀 预估进度: 65%** | 近 30 天 20 次提交，最近一次 2026-04-29；v0.6.0 lazy KMS wallet creation 发布
 
 **✅ AC 完成情况**:
-- 🔧 #1 Support Social Login — WebAuthn passkey 框架存在，social login 集成未完成
-- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现，YetAnotherAA 层集成待完善
+- 🔧 #1 Support Social Login — WebAuthn passkey 框架存在，social login 集成进行中；v0.6.0 新增 lazy KMS 钱包创建
+- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现，YetAnotherAA 层持续推进
 - ⬜ Enable Cross-Chain Operations — 未启动
 
-**📝 近期动态** (jhfnetboy/YetAnotherAA，本地路径 /Dev/aastar/YetAnotherAA):
-- 04-15: chore: Apache 2.0 license（全量合规更新，跨仓库批量操作）
-- 10-23: Merge branch 'fanhousanbu:master'（最后一次功能性合并）
-- 10-17: feat: guardian QR setup, on-chain recovery, tier security（最后真实功能）
+**📝 近期动态** (AAStarCommunity/YetAnotherAA):
+- 近 30 天 20 次提交，含 license/CLA chore 及功能性更新
+- CHANGELOG v0.6.0: lazy KMS wallet creation（按需创建钱包，降低 onboarding 门槛）
+- 最近一次提交：2026-04-29
 
-💡 YetAnotherAA 作为 AirAccount 抽象层框架已有基础，但近 6 个月无新功能开发。主力开发在 airaccount-contract（TASK-10 Done）；本任务需要重启 AL Account 层与合约层的集成工作。
+💡 v0.6.0 lazy wallet 大幅改善 onboarding 体验，开发活跃。Cross-Chain Operations 仍未启动，是剩余主要缺口。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -29,19 +29,21 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-04-26 扫描)
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 70%** | 近 30 天 3 次提交，最近一次 2026-04-24（tokenomics 研究合并），Paper3 v7.6 精简中
+**🚀 预估进度: 70%** | 近 30 天 20 次提交，最近一次 2026-05-02；v5.3.0-dev 极度活跃，fee event 修复 + postOp invariant + BLS/DVT 角色工作
 
 **✅ AC 完成情况**:
-- ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，P7 Step 3 全部 P1/P2/P3 fixes 完成
-- ✅ v7.6 论文版本 — 精简至 BRA 目标页数（18-22页），Ledger 投稿包完备
-- 🔧 **投稿提交 (Step 4)** — v7.6 PDF 准备中，待最终提交到 Ledger/BRA 期刊系统
+- ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，v7.6 精简完毕，投稿包就绪
+- 🔧 合约实现 (v5.3.0-dev) — fee event 修复、postOp invariant 文档、BLS/DVT 多角色系统开发中
+- 🔧 **投稿提交 (Step 4)** — 论文投稿包就绪，待提交到 Ledger/BRA 期刊系统
 
-**📝 近期动态** (DSR-Research-Flow):
-- 04-24: merge: research/tokenomics branch → main（tokenomics 研究整合）
-- 04-10: docs: paper3 refine（内容精简）
-- 04-08: docs: paper3 v7.6 — major trim to 18-22 page BRA target
+**📝 近期动态** (AAStarCommunity/SuperPaymaster):
+- 2026-05-02: 最近一次提交（极度活跃）
+- fix: fee event fixes（费用事件修复）
+- docs: postOp invariant documentation
+- feat: BLS/DVT role work（多角色系统）
+- v5.3.0-dev 版本持续推进
 
-💡 Paper3 v7.6 已精简至目标页数，投稿包就绪。剩余 10% = 提交到期刊系统。Paper4/5/6 仍未启动。
+💡 SuperPaymaster 合约端（v5.3.0-dev）和论文端（v7.6）双线并行，均接近完成阶段。剩余 30% 为合约多角色系统完善 + 期刊正式投稿。
 <!-- SECTION:DESCRIPTION:END -->

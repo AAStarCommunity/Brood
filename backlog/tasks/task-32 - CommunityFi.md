@@ -28,18 +28,19 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-04-26 扫描)
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 15%** | 近 30 天 3 次提交，最近一次 2026-04-24（tokenomics 合并），Paper7 待提交
+**🚀 预估进度: 20%** | 关联仓库 `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法分析近 30 天提交
 
 **✅ AC 完成情况**:
-- ✅ Paper7: CommunityFi Reputation-Backed Credit — DSR P1-P6 全部 Done，P7 Step 3 审稿意见修复完毕
-- ✅ JBBA 投稿包完备 — 双盲格式 + British English + IEEE 引用 + Cover Letter + 31 处语言修复
+- ✅ Paper7: CommunityFi Reputation-Backed Credit — 上次已知状态（2026-04-24）：DSR P1-P6 Done，JBBA 投稿包完备
+- ✅ JBBA 投稿包完备 — 双盲格式 + British English + IEEE 引用 + Cover Letter
 - 🔧 **投稿提交** — 投稿包就绪，待最终提交到 JBBA 系统
 
-**📝 近期动态** (DSR-Research-Flow):
-- 04-24: merge: research/tokenomics branch → main（tokenomics 研究整合，可能增强 CommunityFi 理论部分）
-- 03-17: chore: paper7 JBBA citations + related work 更新（最后一次 paper7 专属提交）
+**📝 近期动态**:
+- `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法获取近 30 天提交记录
+- 上次已知提交：2026-04-24（tokenomics 研究合并）
+- Paper7 投稿包已就绪，等待正式提交
 
-💡 JBBA 投稿包已就绪逾一个月，建议优先完成实际提交（剩余 15%）。tokenomics 研究合并可能带来 paper7 理论补强机会。
+💡 CommunityFi JBBA 投稿包已就绪，实际提交是唯一剩余步骤。建议 clone DSR repo 以确认是否已有新进展。
 <!-- SECTION:DESCRIPTION:END -->
