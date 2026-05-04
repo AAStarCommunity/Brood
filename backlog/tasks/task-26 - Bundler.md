@@ -12,7 +12,6 @@ milestone: m-2
 dependencies: []
 references:
   - 'https://github.com/AAStarCommunity/UltraRelay-AAStar/tree/aastar-dev'
-  - 'https://github.com/jhfnetboy/bundler'
 priority: medium
 ordinal: 2000
 ---
