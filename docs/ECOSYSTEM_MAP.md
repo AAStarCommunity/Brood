@@ -51,7 +51,7 @@
 | **SuperRelay** | ERC-4337 企业级 bundler 网关·双签名 TEE 架构 | `../aastar/super-relay` | [AAStarCommunity/SuperRelay](https://github.com/AAStarCommunity/SuperRelay) | ✓ 已克隆 |
 | **AAStar SDK** | 封装 AirAccount+SuperPaymaster+CometENS 的开发者 SDK | `../aastar-sdk/AAStar_SDK` | [AAStarCommunity/AAStar_SDK](https://github.com/AAStarCommunity/aastar-sdk) | ✓ 已克隆 |
 | **YetAnotherAA-Validator** | BLS 签名聚合·ERC-4337 账户抽象验证合约 | `../aastar/YetAnotherAA-Validator` | [AAStarCommunity/YetAnotherAA-Validator](https://github.com/AAStarCommunity/YetAnotherAA-Validator) | ✗ 未克隆 |
-| **UltraRelay** | （描述待补充） | `../aastar/UltraRelay-AAStar` | [AAStarCommunity/UltraRelay-AAStar](https://github.com/AAStarCommunity/UltraRelay-AAStar) | ✗ 未克隆 |
+| **UltraRelay** | Alto fork·aastar-dev 自主分支·ERC-4337 bundler·长期跟踪上游 | `../aastar/UltraRelay-AAStar` | [AAStarCommunity/UltraRelay-AAStar](https://github.com/AAStarCommunity/UltraRelay-AAStar) (分支: `aastar-dev`) | ✓ 已克隆 |
 
 ### 活跃分支（近一年，GitHub 所有分支）
 

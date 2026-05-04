@@ -11,6 +11,7 @@ labels:
 milestone: m-2
 dependencies: []
 references:
+  - 'https://github.com/AAStarCommunity/UltraRelay-AAStar/tree/aastar-dev'
   - 'https://github.com/jhfnetboy/bundler'
 priority: medium
 ordinal: 2000
@@ -30,19 +31,22 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-04 扫描)
 
-**🚀 预估进度: 15%** | 关联仓库 `jhfnetboy/bundler` 未本地克隆，无法分析近 30 天提交
+**🚀 预估进度: 30%** | 主仓库 `AAStarCommunity/UltraRelay-AAStar` (aastar-dev 分支)，15 次提交，最近 2026-02-25
 
 **✅ AC 完成情况**:
-- ⬜ Accept standard ERC-4337 useroperation — 仓库未在本地找到，上次已知状态为 Alto bundler 旧 fork（最后更新 2023-02-21）
-- ⬜ Accept aPNTs and ETH to pay the service — 无数据
-- ⬜ Accept EIP-7702 request and be a relay server — 无数据
-- ⬜ Be any relay server with permission service — 无数据
+- 🔧 Accept standard ERC-4337 useroperation — UltraRelay 基于 Alto fork，aastar-dev 分支有 upstream merge + gas estimation 修复
+- ⬜ Accept aPNTs and ETH to pay the service — 未见相关实现
+- 🔧 Accept EIP-7702 request and be a relay server — feat: add authorizationList to estimateGas (PR #13)
+- ⬜ Be any relay server with permission service — 未见相关实现
+- 🔧 More feats inherited from ultrabundler — /wallets endpoint (#15), RPC basic auth (#14), structured JSON logging, CI/ECR push
 
-**📝 近期动态**:
-- `jhfnetboy/bundler` 未本地克隆，无法获取近 30 天提交记录
-- 上次已知提交：2023-02-21（Goerli 网络配置，已废弃）
+**📝 近期动态** (aastar-dev 分支):
+- 02-25: feat: /wallets endpoint + RPC basic auth support
+- 02-20: feat: authorizationList for EIP-7702 gas estimation
+- 02-15: upstream merge from alto (#5) + Biome formatting
+- 02-10: structured JSON logging + revert reason decoding
 
-💡 Bundler 仓库长期未活动（已知），无本地数据验证当前状态。建议 clone 后重新扫描，或确认是否已迁移至新仓库。
+💡 实际 bundler 开发已迁移到 UltraRelay-AAStar (aastar-dev)。基础 ERC-4337 能力已有，EIP-7702 初步支持。旧 jhfnetboy/bundler 已废弃。
 <!-- SECTION:DESCRIPTION:END -->
