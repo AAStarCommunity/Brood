@@ -11,7 +11,7 @@
 ### 1. AirAccount — 账户基础设施
 
 **仓库**: `github.com/AAStarCommunity/AirAccount`
-**版本**: v0.16.8（生产中）
+**版本**: v2025.09.29-kms-web-ui（git tag，KMS 分支生产中）
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
@@ -36,16 +36,30 @@
 ### 2. SuperPaymaster — Gas 抽象支付
 
 **仓库**: `github.com/AAStarCommunity/SuperPaymaster`
-**版本**: v4.4.0（含 UUPS 升级，Sepolia 已部署）
+**版本**: v5.3.0-dev（git tag，含 UUPS 升级，Sepolia 已部署）
+
+**核心接口（ERC-4337 标准层）**
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
 | `validatePaymasterUserOp` | Solidity | ERC-4337 Paymaster 验证 UserOperation |
 | `postOp` | Solidity | 操作后结算（扣积分/代币） |
-| `deposit` | Solidity | 运营商 ETH 存款 |
-| `addStake` | Solidity | 运营商质押 |
-| `burnTicket` | Solidity | 用户消耗 Ticket（付 Gas） |
-| `lockStakeWithTicket` | Solidity | 运营商通过 Ticket 质押 |
+| `deposit` / `depositFor` | Solidity | 运营商 ETH 存款 |
+| `addStake` / `withdrawStake` | Solidity | 运营商质押/取回 |
+| `withdraw` / `withdrawTo` | Solidity | 余额提取 |
+
+**v5.x 新增接口分组（v4→v5 主要扩展）**
+
+| 分组 | 核心函数 | 说明 |
+|-----|---------|------|
+| 角色体系 | `registerRole`, `configureRole`, `exitRole`, `hasRole`, `ROLE_*` | 多角色（ANODE/DVT/KMS/Community/EndUser）权限管理 |
+| 社区管理 | `leaveCommunity`, `deactivateMembership`, `transferCommunityOwnership` | 社区生命周期 |
+| 信用/债务 | `recordDebt`, `repayDebt`, `clearPendingDebt`, `getCreditLimit`, `getDebt` | 链上信用额度系统 |
+| Agent 注册 | `registerAgent`, `revokeAgent`, `isRegisteredAgent`, `setAgentPolicies` | Agent 白名单与策略 |
+| BLS 聚合签名 | `registerBLSPublicKey`, `executeSlashWithBLS`, `setBLSAggregator` | BLS 签名聚合 + 惩罚机制 |
+| SBT 声誉 | `safeMint`, `burnSBT`, `getUserSBT`, `setReputation` | 链上声誉 SBT（不可转让） |
+| 代币操作 | `mint`, `burn`, `burnFromWithOpHash`, `faucet`, `transferAndCall` | xPNTs 代币扩展 |
+| 价格预言机 | `updatePrice`, `getRealtimeTokenCost`, `calculateCost` | 实时 Gas 成本计算 |
 
 **集成方式**：
 - 作为 ERC-4337 Paymaster 合约部署
@@ -53,10 +67,11 @@
 - 支持社区积分（xPNTs）替代 ETH 付 Gas
 
 **关键特性**：
+- 多角色体系（v5 新增）：ANODE / DVT / KMS / Community / EndUser
+- 链上信用系统（v5 新增）：无需预付 Gas 的 Agent 赞助
+- BLS 聚合签名 + 惩罚机制（v5 新增）
 - 社区代币付 Gas（任意 ERC-20 稳定币 + 社区积分）
-- UUPS 可升级合约
-- x402 微支付标准（submodule 引入，实现中）
-- 支持 7 条链稳定币
+- UUPS 可升级合约 | 支持 7 条链稳定币
 
 ---
 

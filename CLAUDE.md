@@ -71,9 +71,14 @@ The injected fetch interceptor in `index.html` automatically appends `.json` to 
 
 扫描所有 "In Progress" 任务，通过本地 git commit 历史和 CHANGELOG 分析开发进度，估算完成百分比并更新任务文件。
 
-- 任务需要在 `references:` frontmatter 中包含 `github.com` URL（通过 web 界面 Add References 添加）
-- 纯本地操作：自动在 `/Users/jason/Dev/` 下查找匹配的本地仓库，找不到则 clone 到 `/Users/jason/Dev/tmp/`
-- 进度写入任务文件的 `## Progress Report` 区域（`<!-- SECTION:PROGRESS:BEGIN/END -->` 标记）
+- 任务需要在 `references:` frontmatter 中包含 `github.com` URL
+- **本地目录约定**（固定映射，所有生态仓库必须按此存放）：
+  - `~/Dev/aastar/` → `AAStarCommunity` 旗下所有仓库
+  - `~/Dev/auraai/` → `AuraAIHQ` 旗下所有仓库
+  - `~/Dev/mycelium/` → `MushroomDAO` 旗下所有仓库
+  - `~/Dev/tmp/` → 不属于三大 org 的临时 clone
+- Phase 0 扫描三大目录，自动发现新 clone 的仓库并更新 `docs/ECOSYSTEM_MAP.md`，同时为匹配的 backlog 任务补全 `references:` 字段
+- 进度写入任务文件的 Description section（`<!-- SECTION:DESCRIPTION:BEGIN/END -->` 标记内）
 
 Skill 定义: `.claude/skills/sync-progress/SKILL.md`
 
@@ -119,6 +124,19 @@ BroodBrain 本身是 Mycelium Protocol 的神经系统。本仓库存放三层�
 **其他 repo 如何引入本仓库的生态上下文**：见 `CONTEXT-INHERIT.md`
 
 **仓库级生态地图**（含本地路径 + 状态）：`docs/ECOSYSTEM_MAP.md`
+
+## 本地仓库目录约定 / Local Repo Directory Convention
+
+所有生态仓库按组织存放在固定目录下（**必须遵守**，sync-progress 等 skill 依赖此约定）：
+
+| 本地目录 | GitHub 组织 |
+|:---|:---|
+| `~/Dev/aastar/` | `AAStarCommunity` |
+| `~/Dev/auraai/` | `AuraAIHQ` |
+| `~/Dev/mycelium/` | `MushroomDAO` |
+| `~/Dev/tmp/` | 临时 clone（非三大 org） |
+
+新建仓库 clone 示例：`git clone git@github.com:MushroomDAO/NewRepo.git ~/Dev/mycelium/NewRepo`
 
 ## Git Workflow
 

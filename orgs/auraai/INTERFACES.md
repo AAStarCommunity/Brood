@@ -35,6 +35,7 @@
 ### 3. agent-speaker — Nostr 通信层
 
 **仓库**: `github.com/AuraAIHQ/agent-speaker`
+**版本**: v0.25.0
 **状态**: 活跃（NIP-44 加密 + TUI + SQLite）
 
 | 接口 | 说明 |

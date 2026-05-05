@@ -26,19 +26,18 @@ demo先设计和完成，给社区用户体验，给sdk和airaccount集成提供
   1. cos72.mushroom.dev，在线demo 0.1版本，演示demo+真实注册可用（可docker自部署）🚧
 5. sp提供社区面板，改进registry repo；🚧
 
-### 📊 进度报告 (2026-03-17 扫描)
+### 📊 进度报告 (2026-05-03 扫描)
 
-**🚀 预估进度: 10%** | 近 30 天 0 次提交，最近一次 2025-10-10（约 5 个月前）
+**🚀 预估进度: 20%** | 近 30 天 0 次提交，关联仓库 `AAStarCommunity/Cos72` 未本地克隆，无法分析
 
 **✅ AC 完成情况**:
-- ⬜ #1 Define Card structure, Implement Points system, Develop Perks distribution — 关联仓库 `AAStarCommunity/demo` 是 SuperPaymaster Demo Playground，实现的是 ERC-4337 AA 账户创建和 gasless 演示，Cards/Points/Perks 功能标注为 "Coming Soon"
+- ⬜ #1 Define Card structure, Implement Points system, Develop Perks distribution — `AAStarCommunity/Cos72` 未在本地找到；`AAStarCommunity/demo` 仍为 AA/gasless 演示，Cards/Points/Perks 标注 "Coming Soon"
 
-**📝 近期动态** (本地 git log，该仓库无 CHANGELOG):
-- 2025-10-10: feat: demo end user ok（最后一次提交，5 个月前）
-- 2025-10-09: fix: use personal_sign (signMessage) instead of eth_sign
-- 2025-10-08: feat: update to SimpleAccountFactoryV2
+**📝 近期动态**:
+- Cos72/demo 仓库未本地克隆，无法获取近期提交记录
+- 上次已知提交：2025-10-10（demo end user ok）
 
-💡 Demo 基础框架（AA 账户创建、gasless 演示）已完成，但 Cards/Points/Perks 核心功能尚未实现。仓库近 5 个月无活动，建议确认是否有其他活跃开发仓库。
+💡 核心 Cards/Points/Perks 功能尚未实现，Cos72 主仓库无本地数据。建议 clone AAStarCommunity/Cos72 以获取完整进度。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
