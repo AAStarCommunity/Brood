@@ -117,6 +117,13 @@ BroodBrain 是 Mycelium Protocol 的神经系统，通过三层上下文实现�
 
 详见 `CONTEXT-INHERIT.md`。
 
+### 分支说明
+
+| 分支 | 用途 | 说明 |
+|:---|:---|:---|
+| `main` | 工作主分支 | 所有开发、任务更新、文档变更直接提交到此分支 |
+| `cla-signatures` | CLA 签名存储 | **Orphan 分支，不可删除。** CLA Assistant bot (`contributor-assistant/github-action`) 自动将贡献者签名写入此分支的 `signatures/cla.json`。当外部贡献者提交 PR 时，bot 检查此文件判断是否已签署 CLA，未签署则拦截 PR 要求签名。此分支无代码内容，与 main 无共同历史。配置见 `.github/workflows/cla.yml`。 |
+
 ---
 
 ## Local plist
