@@ -1,6 +1,6 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-05-02
+> 最后更新: 2026-05-07
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
 > 数据来源：gh CLI 扫描 GitHub 所有分支 + 本地 repo 检查
 
@@ -33,6 +33,7 @@
 | **iDoris** | AuraAI | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 |
 | **Agent24-Desktop** | AuraAI | 跨平台 Electron 框架·可插拔能力模块·AI 解耦适配 |
 | **CityOS** | MushroomDAO | AI + Blockchain 城市操作系统 |
+| **Listener** | MushroomDAO | AI Native Entrance·组织/个人的 AI 原生入口工具 |
 
 ---
 
@@ -143,6 +144,7 @@ git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packag
 | **MyShop** | 社区商店/积分兑换模块 | `../mycelium/MyShop` | [MushroomDAO/MyShop](https://github.com/MushroomDAO/MyShop) | ✗ 未克隆 |
 | **Asset3** | （资产协议，设计阶段） | `../mycelium/Asset3` | [MushroomDAO/Asset3](https://github.com/MushroomDAO/Asset3) | ✗ 未克隆 |
 | **Expresser** | 记录瞬间·生成诗歌·个人表达工具 | `../mycelium/Expresser` | [MushroomDAO/Expresser](https://github.com/MushroomDAO/Expresser) | ✓ 已克隆 |
+| **Listener** | AI Native Entrance·组织/个人 AI 原生入口 | `../mycelium/Listener` | [MushroomDAO/Listener](https://github.com/MushroomDAO/Listener) | ✓ 已克隆 |
 
 ### 基础协议 repos
 
@@ -162,6 +164,7 @@ git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packag
 | MyVote | 2026-02-19 |
 | MyShop | 2026-02-15 |
 | Asset3 | 2026-03-07 |
+| Listener | 2026-05-07 |
 
 ### 克隆命令
 
@@ -174,6 +177,7 @@ git clone git@github.com:MushroomDAO/MyShop.git           ../mycelium/MyShop
 git clone git@github.com:MushroomDAO/Asset3.git           ../mycelium/Asset3
 git clone git@github.com:AAStarCommunity/Cos72.git        ../Community/Cos72
 git clone git@github.com:MushroomDAO/Expresser.git        ../mycelium/Expresser
+git clone git@github.com:MushroomDAO/Listener.git         ../mycelium/Listener
 ```
 
 ---
