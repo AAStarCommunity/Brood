@@ -27,20 +27,20 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 75%** | 近 30 天 20 次提交，最近一次 2026-05-02；V2 stack 前端集成 + GToken 余额展示 + fork-Sepolia 测试
+**🚀 预估进度: 80%** | 近 30 天 15 次提交，最近一次 2026-05-07；SaleContractV2 部署 + V2 stack + 5-18 PPT v3 准备就绪
 
 **✅ AC 完成情况**:
-- ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成（C1-C11 合约 + F1-F8 前端 + W1-W5 Worker + 安全审计）
-- 🔧 GToken launch contract — GToken 余额展示上线，V2 stack 前端集成，fork-Sepolia 测试运行中，sale path status 跟踪
+- ✅ Shop contract and web interface — SaleContractV2 已部署，角色/票价配置完成
+- ✅ GToken launch contract — GToken 余额展示+复制按钮+自动刷新，Join nav 全站上线
+- 🔧 5-18 Hangzhou roadshow — PPT v3 + 产品路线图已准备，sale path 状态跟踪中
 
 **📝 近期动态** (MushroomDAO/launch):
-- 2026-05-02: 最近一次提交（非常活跃）
-- feat: GToken balance display（余额展示上线）
-- feat: V2 stack frontend integration（前端与 V2 合约栈对接）
-- test: fork-Sepolia tests（Sepolia fork 测试）
-- feat: sale path status tracking
+- 05-07: feat: GToken balance + copy-address + auto-refresh
+- 05-06: feat: SaleContractV2 deployed + roles ticket prices
+- 05-06: feat: site switch to V2 stack + fork-Sepolia integration tests
+- 05-05: prep(5-18): consolidated PPT v3 + product roadmap
 
-💡 launch 仓库极度活跃（最近提交 2026-05-02），GToken 功能快速推进。剩余 25% 主要为合约主网部署 + Hangzhou roadshow 5-18 验收。
+💡 SaleContractV2 部署是重要里程碑，前端已完整对接 V2 合约栈。剩余 20% 主要为 5-18 roadshow 验收 + gasless 最终集成。
 <!-- SECTION:DESCRIPTION:END -->

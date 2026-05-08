@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-05-03 10:00'
+updated_date: '2026-05-08 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-03**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-08**.*
 
 ---
 
@@ -15,8 +15,8 @@ updated_date: '2026-05-03 10:00'
 
 | Phase | 加权进度 | 任务数 | 说明 |
 |:---|:---:|:---:|:---|
-| **Phase 1**: Genesis Launch | **65%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
-| **Phase 2**: Community Expansion | **4%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
+| **Phase 1**: Genesis Launch | **67%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
+| **Phase 2**: Community Expansion | **6%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
 | **Phase 3**: Ecosystem Maturity | **8%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
 
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
@@ -29,22 +29,22 @@ updated_date: '2026-05-03 10:00'
 |:---|:---|:---:|:---|:---:|:---|
 | TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
 | TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
-| TASK-23 | Meta Phase 1 Genesis Launch | **75%** | MushroomDAO/launch | 05-02 | V2 stack上线，GToken余额显示，fork-Sepolia测试 |
-| TASK-31 | SuperPaymaster | **70%** | AAStarCommunity/SuperPaymaster | 05-02 | v5.3.0-dev，多角色+信用系统+BLS，20commits/30d |
-| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | v0.6.0 lazy KMS wallet，功能性进展 |
-| TASK-9 | CometENS 免费子域名 | **55%** | MushroomDAO/CometENS | 04-29 | 多签名者支持，breaking constructor change |
-| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 5门课程框架，8周无新内容 |
-| TASK-34 | AuraAI | **45%** | AuraAIHQ/Agent24 | 04-29 | Agent24 活跃，主要 license/chore commits |
-| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | MyTask 活跃，license 合规，功能进展待确认 |
-| TASK-32 | CommunityFi | **20%** | — | — | 无本地仓库数据 |
-| TASK-30 | EOA Bridge | **20%** | — | — | 无本地仓库数据 |
-| TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | 12commits，主为 license/chore |
-| TASK-36 | Main Road Research | **20%** | zeroclaw（未本地化）| — | 持续研究追踪 |
-| TASK-2 | Cos72 Cards/Points/Perks | **20%** | — | — | 无本地仓库数据 |
-| TASK-38 | Research Blog | **20%** | — | — | 设计阶段 |
-| TASK-26 | Bundler | **15%** | jhfnetboy/bundler | — | 无本地数据 |
-| TASK-28 | OpenCrab Agent | **15%** | 无关联仓库 | — | 设计阶段（m-2） |
-| TASK-29 | Asset3 Protocol | **10%** | 无活跃仓库 | — | 思考/设计阶段（m-3） |
+| TASK-23 | Meta Phase 1 Genesis Launch | **80%** | MushroomDAO/launch | 05-07 | SaleContractV2 部署，V2 stack，PPT v3，5-18 准备 |
+| TASK-31 | SuperPaymaster | **75%** | AAStarCommunity/SuperPaymaster | 05-07 | v5.3.2，P1/P2 15个修复，exit fee sync，cooldown |
+| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | 30天仅 license/chore，功能进度维持 |
+| TASK-9 | CometENS 免费子域名 | **70%** | MushroomDAO/CometENS | 05-03 | Milestone C CCIP-Read end-to-end PASS ✅ |
+| TASK-38 | Research Blog | **50%** | MushroomDAO/blog | 05-07 | 30天内发布 10 篇文章，活跃 |
+| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 30天仅 license/chore，课程无更新 |
+| TASK-34 | AuraAI | **45%** | AuraAIHQ/Agent24 | 04-29 | agent-speaker 4个bugfix，Agent24 仅license |
+| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | 30天仅 license/chore |
+| TASK-26 | Bundler | **35%** | UltraRelay-AAStar/aastar-dev | 05-06 | userOpHash修复，retry+gas values |
+| TASK-32 | CommunityFi | **20%** | — | — | DSR research，无法评估功能 |
+| TASK-30 | EOA Bridge | **20%** | — | — | DSR research，无法评估功能 |
+| TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | 30天仅 license/chore |
+| TASK-36 | Main Road Research | **20%** | zeroclaw（外部）| — | 持续研究追踪 |
+| TASK-2 | Cos72 Cards/Points/Perks | **20%** | — | — | demo repo 未克隆 |
+| TASK-28 | OpenCrab Agent | **15%** | AuraAIHQ/OpenCrab | 04-29 | 30天仅 license/chore |
+| TASK-29 | Asset3 Protocol | **10%** | MushroomDAO/Asset3 | 04-29 | README 初稿，无功能代码 |
 
 ---
 
@@ -139,6 +139,7 @@ updated_date: '2026-05-03 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
+| 2026-05-08 | **67%** | **6%** | **8%** | TASK-9 70%（Milestone C CCIP-Read PASS）；TASK-23 80%（SaleContractV2部署）；TASK-31 75%（v5.3.2 P1/P2修复）；TASK-38 50%（blog 10篇文章）；TASK-26 35%（userOpHash修复） |
 | 2026-04-27 | **59%** | **2%** | **6%** | TASK-9 65%（CometENS v0.5.0 活跃）；TASK-23 70%（gasless GToken 购买页）；TASK-5 20%（新加入）；TASK-34 35%；TASK-13 30% |
 | 2026-04-26 | **52%** | **2%** | **5%** | TASK-10+TASK-4 标记 Done（Phase 1 +5%）；TASK-13 25%（MyTask重启）；TASK-34 30%（Agent24+agent-speaker+WeChat-SDK） |
 | 2026-04-05 | **53%** | **5%** | **8%** | TASK-10↑92% M7完成; TASK-4↑60% V5.3 agent; TASK-23↑75% MyShop极度活跃; TASK-31↑95% |

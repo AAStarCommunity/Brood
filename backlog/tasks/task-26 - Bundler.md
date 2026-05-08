@@ -30,22 +30,21 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-05-04 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 30%** | 主仓库 `AAStarCommunity/UltraRelay-AAStar` (aastar-dev 分支)，15 次提交，最近 2026-02-25
+**🚀 预估进度: 35%** | aastar-dev 分支新增核心修复，最近提交 2026-05-06
 
 **✅ AC 完成情况**:
-- 🔧 Accept standard ERC-4337 useroperation — UltraRelay 基于 Alto fork，aastar-dev 分支有 upstream merge + gas estimation 修复
+- 🔧 Accept standard ERC-4337 useroperation — fix: compute real userOpHash in binary search for executeUserOp calls (#22)
 - ⬜ Accept aPNTs and ETH to pay the service — 未见相关实现
-- 🔧 Accept EIP-7702 request and be a relay server — feat: add authorizationList to estimateGas (PR #13)
+- 🔧 Accept EIP-7702 request and be a relay server — 持续迭代中
 - ⬜ Be any relay server with permission service — 未见相关实现
-- 🔧 More feats inherited from ultrabundler — /wallets endpoint (#15), RPC basic auth (#14), structured JSON logging, CI/ECR push
+- 🔧 More feats inherited — feat: included retry attempts + gas values in event message (#25)
 
 **📝 近期动态** (aastar-dev 分支):
-- 02-25: feat: /wallets endpoint + RPC basic auth support
-- 02-20: feat: authorizationList for EIP-7702 gas estimation
-- 02-15: upstream merge from alto (#5) + Biome formatting
-- 02-10: structured JSON logging + revert reason decoding
+- 05-06: feat: retry attempts + gas values in event message (#25)
+- 05-06: fix: compute real userOpHash in binary search (#22)
+- 04-29: chore: add Mycelium Protocol CLAUDE.md context
 
-💡 实际 bundler 开发已迁移到 UltraRelay-AAStar (aastar-dev)。基础 ERC-4337 能力已有，EIP-7702 初步支持。旧 jhfnetboy/bundler 已废弃。
+💡 核心 userOpHash 计算修复是重要质量提升。aastar-dev 持续活跃，基础 ERC-4337 能力稳步完善。
 <!-- SECTION:DESCRIPTION:END -->

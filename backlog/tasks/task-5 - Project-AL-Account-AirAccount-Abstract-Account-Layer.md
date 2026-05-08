@@ -24,21 +24,9 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 65%** | 近 30 天 20 次提交，最近一次 2026-04-29；v0.6.0 lazy KMS wallet creation 发布
-
-**✅ AC 完成情况**:
-- 🔧 #1 Support Social Login — WebAuthn passkey 框架存在，social login 集成进行中；v0.6.0 新增 lazy KMS 钱包创建
-- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现，YetAnotherAA 层持续推进
-- ⬜ Enable Cross-Chain Operations — 未启动
-
-**📝 近期动态** (AAStarCommunity/YetAnotherAA):
-- 近 30 天 20 次提交，含 license/CLA chore 及功能性更新
-- CHANGELOG v0.6.0: lazy KMS wallet creation（按需创建钱包，降低 onboarding 门槛）
-- 最近一次提交：2026-04-29
-
-💡 v0.6.0 lazy wallet 大幅改善 onboarding 体验，开发活跃。Cross-Chain Operations 仍未启动，是剩余主要缺口。
+**🚀 预估进度: 65%** | 30天仅 license/chore，无功能提交，进度维持
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

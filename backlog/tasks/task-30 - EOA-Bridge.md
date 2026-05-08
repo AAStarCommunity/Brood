@@ -29,17 +29,7 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 20%** | 关联仓库 `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法分析近 30 天提交
-
-**✅ AC 完成情况**:
-- ⬜ Paper6: Gasless EOA Bridge (7702) — 上次已知状态（2026-03-07）："Not started"，DSR P1-P6 均未开始
-- DSR repo 资源集中于 Paper3（SuperPaymaster）和 Paper7（CommunityFi）
-
-**📝 近期动态**:
-- `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法获取近 30 天提交记录
-- Paper6 排队待启动，Paper3/7 投稿准备为当前优先级
-
-💡 EOA Bridge (Paper6) 仍在队列中等待启动。DSR repo 活跃但资源聚焦于 Paper3/7 投稿。建议 clone DSR repo 以获取最新状态。
+**🚀 预估进度: 20%** | DSR research repo，无法评估功能进度
 <!-- SECTION:DESCRIPTION:END -->

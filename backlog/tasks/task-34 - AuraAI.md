@@ -28,20 +28,7 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 45%** | AuraAIHQ/Agent24 近 30 天 20 次提交，最近一次 2026-04-29；以 license/chore 为主，框架持续稳定
-
-**✅ AC 完成情况**:
-- ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 全量合规
-- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** 20 次提交，近期以 license/chore 为主，pluggable eval 框架稳定
-- 🔧 Bot（WeChat）— 通信基础设施持续稳定，近期主要为合规提交
-- ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
-
-**📝 近期动态** (AuraAIHQ/Agent24):
-- 近 30 天 20 次提交，最近一次 2026-04-29
-- 近期提交以 license/chore 为主（Apache 2.0 合规）
-- 框架已完整（pluggable eval + MemPalace + /setup skill），等待功能扩展
-
-💡 Agent24 框架稳定，通信基础设施成熟。近期活动以合规 chore 为主，feature 开发相对放缓。iDoris/AK47/Mycelium Network 三大模块仍未启动，是剩余 55% 的主要缺口。
+**🚀 预估进度: 45%** | agent-speaker 有 4 个 bug fix，Agent24 仅 license
 <!-- SECTION:DESCRIPTION:END -->

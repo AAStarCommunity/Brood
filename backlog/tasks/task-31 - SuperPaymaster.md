@@ -29,21 +29,21 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-08 扫描)
 
-**🚀 预估进度: 70%** | 近 30 天 20 次提交，最近一次 2026-05-02；v5.3.0-dev 极度活跃，fee event 修复 + postOp invariant + BLS/DVT 角色工作
+**🚀 预估进度: 75%** | 近 30 天 15 次提交，最近一次 2026-05-07；v5.3.2 测试通过，P1/P2 大量 bug fix 合并
 
 **✅ AC 完成情况**:
-- ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，v7.6 精简完毕，投稿包就绪
-- 🔧 合约实现 (v5.3.0-dev) — fee event 修复、postOp invariant 文档、BLS/DVT 多角色系统开发中
-- 🔧 **投稿提交 (Step 4)** — 论文投稿包就绪，待提交到 Ledger/BRA 期刊系统
+- ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，论文投稿包就绪
+- 🔧 合约实现 (v5.3.2) — P1/P2 修复密集合并：exit fee sync、decode panic guard、custom errors、cooldown、bounds check
+- 🔧 **投稿提交** — 合约测试 v5.3.2 验证通过，期刊投稿进行中
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-05-02: 最近一次提交（极度活跃）
-- fix: fee event fixes（费用事件修复）
-- docs: postOp invariant documentation
-- feat: BLS/DVT role work（多角色系统）
-- v5.3.0-dev 版本持续推进
+- 05-07: test: update Registry version to 5.3.2（测试版本验证）
+- 05-07: fix(p1-28): auto-sync exit fees + enrich ExitFeeSyncFailed event
+- 05-06: fix(p1-22): guard abi.decode + replace string reverts with custom errors
+- 05-05: fix(p2): add closedChannels guard to prevent voucher replay
+- 05-05: fix(p1-14): add 1-hour cooldown to xPNTsToken.updateExchangeRate
 
-💡 SuperPaymaster 合约端（v5.3.0-dev）和论文端（v7.6）双线并行，均接近完成阶段。剩余 30% 为合约多角色系统完善 + 期刊正式投稿。
+💡 v5.3.2 是重要质量里程碑，P1/P2 安全修复密集落地。合约端成熟度显著提升，剩余 25% 为多角色系统最终审计 + 论文正式投稿。
 <!-- SECTION:DESCRIPTION:END -->
