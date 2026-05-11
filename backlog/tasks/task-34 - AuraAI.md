@@ -28,20 +28,23 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 45%** | AuraAIHQ/Agent24 近 30 天 20 次提交，最近一次 2026-04-29；以 license/chore 为主，框架持续稳定
+**🚀 预估进度: 50%** | 5 个关联仓库共 129 次提交，最近 Agent24-Desktop 2026-05-11；agent-speaker 持续吸收 upstream + Agent-WeChat-SDK 初代核心已发布
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — `jhfnetboy/AuraAI` + `AuraAIHQ` org 建立，Apache 2.0 license 全量合规
-- 🔧 OpenCrab/Agent24 PC 版 — **AuraAIHQ/Agent24** 20 次提交，近期以 license/chore 为主，pluggable eval 框架稳定
-- 🔧 Bot（WeChat）— 通信基础设施持续稳定，近期主要为合规提交
+- ✅ Aura 建立 — `AuraAIHQ` org 全量建立，Apache 2.0 license 五件套合规
+- 🔧 OpenCrab/Agent24 PC 版 — Agent24 框架稳定（pluggable eval + MemPalace），Agent24-Desktop 持续迭代
+- 🔧 Bot（WeChat）— `@agent-wechat/core` + `@agent-wechat/cli` 已发布，wechat-agent-bridge 子模块就位
+- 🔧 Nostr 通信层 — agent-speaker 吸收 upstream 多项 fix（blossom decode/nsite path traversal/publish nil panic），relay 端 X-Real-IP hack 修复
+- 🔧 simple-agent (Level 1 agent) — `@aura/simple-agent` + StorageAgent 初版
 - ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
 
-**📝 近期动态** (AuraAIHQ/Agent24):
-- 近 30 天 20 次提交，最近一次 2026-04-29
-- 近期提交以 license/chore 为主（Apache 2.0 合规）
-- 框架已完整（pluggable eval + MemPalace + /setup skill），等待功能扩展
+**📝 近期动态** (5 仓库聚合):
+- Agent24-Desktop 2026-05-11、agent-speaker/Agent24/OpenCrab 2026-04-29
+- Agent-WeChat-SDK: 实现 `@agent-wechat/core` + `@agent-wechat/cli`，pnpm workspace + 设计文档
+- simple-agent: 初代 StorageAgent 落地
+- agent-speaker: 多项安全 fix 与 PR 合入
 
-💡 Agent24 框架稳定，通信基础设施成熟。近期活动以合规 chore 为主，feature 开发相对放缓。iDoris/AK47/Mycelium Network 三大模块仍未启动，是剩余 55% 的主要缺口。
+💡 通信层 + WeChat 桥 + Nostr relay 三件套已成型，Agent-WeChat-SDK 核心可用。剩余 50% 的主要缺口仍是 iDoris/Mycelium Network/AK47。
 <!-- SECTION:DESCRIPTION:END -->

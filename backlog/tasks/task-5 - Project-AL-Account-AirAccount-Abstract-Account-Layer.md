@@ -24,21 +24,21 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 65%** | 近 30 天 20 次提交，最近一次 2026-04-29；v0.6.0 lazy KMS wallet creation 发布
+**🚀 预估进度: 65%** | 近 30 天 17 次提交，最近一次 2026-04-29；本期主要为 license 合规清理 + CLA workflow
 
 **✅ AC 完成情况**:
-- 🔧 #1 Support Social Login — WebAuthn passkey 框架存在，social login 集成进行中；v0.6.0 新增 lazy KMS 钱包创建
-- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现，YetAnotherAA 层持续推进
+- 🔧 #1 Support Social Login — WebAuthn passkey 框架 + v0.6.0 lazy KMS 钱包创建（前期已完成）
+- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现
 - ⬜ Enable Cross-Chain Operations — 未启动
 
 **📝 近期动态** (AAStarCommunity/YetAnotherAA):
-- 近 30 天 20 次提交，含 license/CLA chore 及功能性更新
-- CHANGELOG v0.6.0: lazy KMS wallet creation（按需创建钱包，降低 onboarding 门槛）
-- 最近一次提交：2026-04-29
+- 2026-04-29: 最近一次提交
+- 17 次提交以 Apache 2.0 五件套合规为主（NOTICE bilingual、TRADEMARK-zh、CLA workflow #299）
+- 功能层面无新增，等待 onboarding 流程联调
 
-💡 v0.6.0 lazy wallet 大幅改善 onboarding 体验，开发活跃。Cross-Chain Operations 仍未启动，是剩余主要缺口。
+💡 v0.6.0 lazy wallet 已稳定，本期工作集中在合规清理。Cross-Chain Operations 仍是剩余 35% 的主要缺口。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

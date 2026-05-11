@@ -29,21 +29,23 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 70%** | 近 30 天 20 次提交，最近一次 2026-05-02；v5.3.0-dev 极度活跃，fee event 修复 + postOp invariant + BLS/DVT 角色工作
+**🚀 预估进度: 85%** | 近 30 天 50 次提交，最近一次 2026-05-11；v5.3.2 已部署 Sepolia + UUPS 升级脚本完成 + Registry hasRole 不变量修复
 
 **✅ AC 完成情况**:
 - ✅ Paper3: SuperPaymaster AOA in ERC-4337 — DSR P1-P6 全部 Done，v7.6 精简完毕，投稿包就绪
-- 🔧 合约实现 (v5.3.0-dev) — fee event 修复、postOp invariant 文档、BLS/DVT 多角色系统开发中
+- ✅ 合约实现 (v5.3.2) — Sepolia 配置刷新、UUPS 升级脚本就绪、hasRole 自动撤销逻辑回滚并记录教训
 - 🔧 **投稿提交 (Step 4)** — 论文投稿包就绪，待提交到 Ledger/BRA 期刊系统
+- 🔧 v5.4 路线图 — 已编写 TODO carryover 文档
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-05-02: 最近一次提交（极度活跃）
-- fix: fee event fixes（费用事件修复）
-- docs: postOp invariant documentation
-- feat: BLS/DVT role work（多角色系统）
-- v5.3.0-dev 版本持续推进
+- 2026-05-11: 最近一次提交（持续高频迭代）
+- v5.3.2 部署：UUPS upgrade script + Sepolia config refresh + auto-patch
+- v5.3.2 launch & operations guide + v5.4 TODO 文档
+- fix: hasRole invariant 修复 + factory guard
+- revert: Fix-1 hasRole auto-revoke（记录失败教训）
+- Multiple PR merges: #181/#182/#183/#185 进入主线
 
-💡 SuperPaymaster 合约端（v5.3.0-dev）和论文端（v7.6）双线并行，均接近完成阶段。剩余 30% 为合约多角色系统完善 + 期刊正式投稿。
+💡 v5.3.2 已上线 Sepolia 并产出运维指南，合约端基本就位。剩余 15% 为 v5.4 路线图执行 + 期刊正式投稿。
 <!-- SECTION:DESCRIPTION:END -->

@@ -20,17 +20,17 @@ Keep on tracing the Ethereum roadmap and techs.
 
 May use this: https://github.com/zeroclaw-labs/zeroclaw
 
-### 📊 进度报告 (2026-05-03 扫描)
+### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 20%** | 关联仓库 `zeroclaw-labs/zeroclaw` 未本地克隆，无法分析近 30 天提交
+**🚀 预估进度: 20%** | 关联仓库 `zeroclaw-labs/zeroclaw` 已本地 clone 于 ~/Dev/tmp/，近 30 天 0 次提交，最近一次 2026-04-05
 
 **✅ AC 完成情况**:
-- ⬜ 追踪 Ethereum roadmap — 任务性质为持续研究追踪；zeroclaw 是候选工具（"May use this"），尚未确认使用
-- 研究产出（论文/文档）难以通过 commit 量化
+- ⬜ 追踪 Ethereum roadmap — 持续研究追踪性质，研究产出难以通过 commit 量化
+- zeroclaw 作为候选工具仓库已 clone 但近 30 天无活跃迭代
 
 **📝 近期动态**:
-- `zeroclaw-labs/zeroclaw` 未本地克隆，无法获取近 30 天提交记录
-- 任务无明确代码产出，进度主要依赖研究文档
+- 2026-04-05: zeroclaw 最近一次提交（mcp-setup 文档相关 PR merge）
+- 任务无明确代码产出，进度依赖研究文档/笔记
 
-💡 持续性研究追踪任务，zeroclaw 为候选辅助工具。建议 clone zeroclaw 或明确研究产出形式（文档/实验）以便量化进度。
+💡 持续性研究任务，zeroclaw 工具已就位但无新进展。建议明确研究产出形式（论文/Brood research 文档）以便量化进度。
 <!-- SECTION:DESCRIPTION:END -->
