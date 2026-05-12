@@ -137,24 +137,30 @@ async function exportStaticBacklog() {
       let js = await fs.readFile(jsPath, 'utf-8');
       let patched = false;
 
-      // Patch 1: Kanban column progress bar (J0 component)
-      const OLD1 = 'let s0=m0.total>0?Math.round(m0.doneCount/m0.total*100):0,';
-      const NEW1 = 'let s0=window.__milestoneProgress&&window.__milestoneProgress[m0.key]!==undefined?window.__milestoneProgress[m0.key]:(m0.total>0?Math.round(m0.doneCount/m0.total*100):0),';
-      if (js.includes(OLD1)) {
-        js = js.replace(OLD1, NEW1);
+      // Patch 1: Kanban column progress bar — regex matches any minified variable names.
+      // Pattern: `let X=Y.total>0?Math.round(Y.doneCount/Y.total*100):0,`
+      const RE1 = /let (\w+)=(\w+)\.total>0\?Math\.round\(\2\.doneCount\/\2\.total\*100\):0,/;
+      const m1 = js.match(RE1);
+      if (m1) {
+        const [full, x, y] = m1;
+        const replacement = `let ${x}=window.__milestoneProgress&&window.__milestoneProgress[${y}.key]!==undefined?window.__milestoneProgress[${y}.key]:(${y}.total>0?Math.round(${y}.doneCount/${y}.total*100):0),`;
+        js = js.replace(full, replacement);
         patched = true;
-        console.log(`✅ Patched Kanban column progress formula in ${asset}`);
+        console.log(`✅ Patched Kanban column progress formula in ${asset} (vars: ${x},${y})`);
       } else {
         console.warn(`⚠️  Could not find Kanban column progress formula in ${asset}`);
       }
 
-      // Patch 2: Right-side milestone panel (a function in task list view)
-      const OLD2 = 'a=(H0)=>{let B0=p(H0);if(B0===0)return 0;let U0=n(H0);return Math.round(U0/B0*100)},G0=N5.useMemo';
-      const NEW2 = 'a=(H0)=>{if(window.__milestoneProgress&&window.__milestoneProgress[H0]!==undefined)return window.__milestoneProgress[H0];let B0=p(H0);if(B0===0)return 0;let U0=n(H0);return Math.round(U0/B0*100)},G0=N5.useMemo';
-      if (js.includes(OLD2)) {
-        js = js.replace(OLD2, NEW2);
+      // Patch 2: Right-side milestone panel — regex captures minified callbacks.
+      // Pattern: `a=(H0)=>{let B0=p(H0);if(B0===0)return 0;let U0=n(H0);return Math.round(U0/B0*100)},G0=...useMemo`
+      const RE2 = /(\w+)=\((\w+)\)=>\{let (\w+)=(\w+)\(\2\);if\(\3===0\)return 0;let (\w+)=(\w+)\(\2\);return Math\.round\(\5\/\3\*100\)\}/;
+      const m2 = js.match(RE2);
+      if (m2) {
+        const [full, a, arg, b, p, u, n] = m2;
+        const replacement = `${a}=(${arg})=>{if(window.__milestoneProgress&&window.__milestoneProgress[${arg}]!==undefined)return window.__milestoneProgress[${arg}];let ${b}=${p}(${arg});if(${b}===0)return 0;let ${u}=${n}(${arg});return Math.round(${u}/${b}*100)}`;
+        js = js.replace(full, replacement);
         patched = true;
-        console.log(`✅ Patched right-panel milestone progress formula in ${asset}`);
+        console.log(`✅ Patched right-panel milestone progress formula in ${asset} (vars: ${a},${arg},${b},${p},${u},${n})`);
       } else {
         console.warn(`⚠️  Could not find right-panel milestone progress formula in ${asset}`);
       }
