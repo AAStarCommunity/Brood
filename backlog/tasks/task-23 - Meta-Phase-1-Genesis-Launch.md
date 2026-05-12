@@ -27,7 +27,7 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 80%** | 近 30 天 50 次提交，最近一次 2026-05-02；SaleContractV2 已部署 + GToken 双重功能定义（票据 + 治理）+ Join 余额展示与一键复制
 

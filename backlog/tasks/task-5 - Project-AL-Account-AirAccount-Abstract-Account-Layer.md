@@ -24,7 +24,7 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 65%** | 近 30 天 17 次提交，最近一次 2026-04-29；本期主要为 license 合规清理 + CLA workflow
 

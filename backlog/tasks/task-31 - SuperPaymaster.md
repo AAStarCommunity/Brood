@@ -29,7 +29,7 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 85%** | 近 30 天 50 次提交，最近一次 2026-05-11；v5.3.2 已部署 Sepolia + UUPS 升级脚本完成 + Registry hasRole 不变量修复
 

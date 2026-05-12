@@ -26,7 +26,7 @@ demo先设计和完成，给社区用户体验，给sdk和airaccount集成提供
   1. cos72.mushroom.dev，在线demo 0.1版本，演示demo+真实注册可用（可docker自部署）🚧
 5. sp提供社区面板，改进registry repo；🚧
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 20%** | 关联仓库 `AAStarCommunity/Cos72`（`~/Dev/Community/Cos72`）近 30 天 18 次提交，最近一次 2026-04-29；以 license 合规为主，feature 进展放缓
 

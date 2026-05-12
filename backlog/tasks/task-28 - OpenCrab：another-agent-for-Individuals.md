@@ -24,7 +24,7 @@ based on OpenFang Agent framework
 
 https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 15%** | 关联仓库 `AuraAIHQ/OpenCrab`，近 30 天 14 次提交，最近一次 2026-04-29；全部为 license/合规提交
 

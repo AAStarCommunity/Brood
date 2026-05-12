@@ -21,7 +21,7 @@ Daily news
 Experiment
 and more
 
-### 📊 进度报告 (2026-05-07 扫描)
+### 📊 进度报告 (2026-05-12 扫描)
 
 **🚀 预估进度: 50%** | 关联仓库 `MushroomDAO/blog`，近 30 天 50 次提交，最近一次 2026-05-09；blog publisher skill 优化 + 高质量内容持续输出
 
