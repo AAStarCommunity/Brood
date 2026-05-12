@@ -27,17 +27,5 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 
 ### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 50%** | 近 30 天 10 次提交，最近一次 2026-04-29；以 license/chore 为主，无新课程内容
-
-**✅ AC 完成情况**:
-- ✅ Course 0-4 内容框架 — `AuraAIHQ/courses` 5 门课程框架 + Google Slides 链接，Apache 2.0 license 合规
-- 🔧 课程知识库建设 — CS/AI 关键人物知识库已建立，近期无新增内容
-- ⬜ 更多课程贡献 — Course 5+ 未开始
-
-**📝 近期动态** (AuraAIHQ/courses):
-- 近 30 天 10 次提交，最近一次 2026-04-29
-- 近期提交以 license/chore 为主（Apache 2.0 合规）
-- 最近一次课程内容提交：2026-03-08（~8 周前）
-
-💡 Courses 框架稳定（5 门课程 + Google Slides），持续有提交但无课程内容更新。建议在 Agent24/AuraAI 主模块稳定后同步推进 Course 5+。
+**🚀 预估进度: 50%** | 30天仅 license/chore，课程内容未更新
 <!-- SECTION:DESCRIPTION:END -->

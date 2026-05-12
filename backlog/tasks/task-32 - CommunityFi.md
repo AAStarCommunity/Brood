@@ -30,17 +30,5 @@ https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
 ### 📊 进度报告 (2026-05-07 扫描)
 
-**🚀 预估进度: 20%** | 关联仓库 `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法分析近 30 天提交
-
-**✅ AC 完成情况**:
-- ✅ Paper7: CommunityFi Reputation-Backed Credit — 上次已知状态（2026-04-24）：DSR P1-P6 Done，JBBA 投稿包完备
-- ✅ JBBA 投稿包完备 — 双盲格式 + British English + IEEE 引用 + Cover Letter
-- 🔧 **投稿提交** — 投稿包就绪，待最终提交到 JBBA 系统
-
-**📝 近期动态**:
-- `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法获取近 30 天提交记录
-- 上次已知提交：2026-04-24（tokenomics 研究合并）
-- Paper7 投稿包已就绪，等待正式提交
-
-💡 CommunityFi JBBA 投稿包已就绪，实际提交是唯一剩余步骤。建议 clone DSR repo 以确认是否已有新进展。
+**🚀 预估进度: 20%** | DSR research repo，无法评估功能进度
 <!-- SECTION:DESCRIPTION:END -->
