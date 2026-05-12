@@ -566,21 +566,65 @@ cd "$REPO_ROOT" && pnpm run deploy:cf || (sleep 5 && pnpm run deploy:cf)
 
 注意事项：
 - `pnpm run build` 需要约 30-60 秒（启动本地 backlog server → 抓取 → 生成 dist/），Bash 工具设置 `timeout: 120000`
-- `pnpm run deploy:cf` 可能因网络问题失败，失败后等 5 秒重试一次
+- **build 输出必须出现两个 ✅**：`Patched Kanban column progress formula` 和 `Patched right-panel milestone progress formula`。任一缺失说明 backlog.md 升级后 JS minified 名变了，build 脚本应已自动抛错；如果 build 通过但缺少 patch 日志，说明脚本被绕过，**禁止继续部署**。
+- `pnpm run deploy:cf` 可能因 proxy 卡住或网络问题失败：先尝试 `unset http_proxy https_proxy all_proxy && pnpm run deploy:cf`；超过 3 分钟无输出视为挂死，`kill` 掉 wrangler 进程后重试一次
 - 如果二次重试仍失败，打印失败信息但不中断流程，告知用户手动执行 `pnpm run deploy:cf`
+
+### 第八步·四：线上验证（强制，不可跳过）
+
+> ⚠️ **事故教训（2026-05-12）**：build 脚本里的 JS patch 字符串被 backlog.md v1.45 minified 变量名变更破坏，patch 静默失败但 build 仍成功输出 dist/。CF 部署也成功，但页面 Phase 进度回退到 `doneCount/total` 简单计数（46/0/0 而不是 67/7/9）。用户访问 kanban 才发现错误。
+> 教训：commit + deploy 成功 ≠ 上线数据正确。**必须 fetch 部署 URL 并断言关键数据正确**。
+
+完成第八步部署后，立刻 fetch 线上 URL 验证三件事：
+
+```bash
+# 拿到部署 URL（从 deploy:cf 输出中提取）— 也可以直接用主域 https://kanban.mushroom.cv/
+DEPLOY_URL="https://kanban.mushroom.cv/"
+
+# 验证 1：__milestoneProgress 数据存在且与本地计算的 Phase 进度一致
+curl -sf "$DEPLOY_URL" | grep -oE "__milestoneProgress[^;]{0,300}"
+# 预期输出：__milestoneProgress = {"m-1":N,"lane:milestone:m-1":N,"m-2":N,...}
+# 如果没有输出或值是 {}，说明 index.html 没有注入 milestone 数据 → build 失败或部署未刷新
+
+# 验证 2：JS bundle 中存在 patch 后的 milestoneProgress 引用
+JS_URL=$(curl -sf "$DEPLOY_URL" | grep -oE "chunk-[a-z0-9]+\.js" | head -1)
+curl -sf "${DEPLOY_URL}${JS_URL}" | grep -c "__milestoneProgress"
+# 预期 >= 2（kanban patch + right-panel patch 各引用一次）
+# 如果是 0，说明 JS bundle patch 没生效，UI 会回退到错误的简单计数
+
+# 验证 3：抽查一个 In Progress 任务的进度报告扫描日期是今天
+TODAY=$(date +%Y-%m-%d)
+curl -sf "${DEPLOY_URL}api/tasks.json" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+tasks = data.get('tasks', data) if isinstance(data, dict) else data
+ip = [t for t in tasks if t.get('status') == 'In Progress']
+print(f'In Progress tasks online: {len(ip)}')
+if ip:
+    print(f'Sample task: {ip[0].get(\"id\")}: {ip[0].get(\"title\", \"\")[:40]}')
+"
+```
+
+**强制断言**：
+- [ ] `__milestoneProgress` 在 index.html 中存在且至少包含 `m-1` / `m-2` / `m-3` 三个键
+- [ ] JS chunk 中 `__milestoneProgress` 引用 >= 2
+- [ ] api/tasks.json 中 In Progress 任务数与本地一致
+
+**任一断言失败时**：必须在终端用红色文字明确告警，列出失败项，并提示「请检查 build 输出 / 重新 deploy / 等待 CF 缓存刷新（最多 30 秒）」。**不要假装成功**。
 
 **验证清单**（完成后逐项确认，必须全部打勾才算完成）：
 - [ ] `backlog/tasks/` 中的任务文件已更新（包含 `### 📊 进度报告` 和 `预估进度: N%`）
 - [ ] `backlog/docs/doc-7 - 📊-Progress-Report.md` 的 Phase 进度表和总览表已更新
 - [ ] `docs/ECOSYSTEM_MAP.md` 的状态和日期已更新
-- [ ] `dist/` 重新生成，含最新内容（`pnpm run build` 成功）
+- [ ] `dist/` 重新生成，含最新内容（`pnpm run build` 成功，**包含两个 ✅ Patched 日志**）
 - [ ] `update-task.sh` commit + push 成功
 - [ ] Cloudflare Pages 部署成功，输出 deployment URL（或提示用户手动重试）
-- [ ] 在终端确认：打开 CF 部署 URL，检查任意一个任务的进度报告日期是今天
+- [ ] **线上验证（8·四）三项断言全部通过**：`__milestoneProgress` 存在 + JS bundle 含 patch + tasks.json 数据对齐
 
 ## 重要注意事项
 
 - **第八步不可跳过**：写入任务文件 ≠ 上线。必须 `pnpm run build` → `update-task.sh` → `pnpm run deploy:cf` 三步全部完成，内容才会在线上可见。漏掉任意一步，用户看到的仍是上次 build 的旧数据。（2026-05-02 事故教训）
+- **第八步·四线上验证不可跳过**：deploy 成功 ≠ 上线数据正确。backlog.md CLI 升级可能让 build 脚本里的 JS patch 静默失败（minified 变量名变了），dist/ 仍能生成但 kanban UI 上 Phase 进度会错（回退到 doneCount/total 简单计数）。必须 fetch 部署 URL 断言 `__milestoneProgress` 存在 + JS bundle 含 patch 引用。（2026-05-12 事故教训）
 - **严格本地优先**：先 `git pull`/`git fetch` 将远程同步到本地，之后所有分析（git log、读文件等）只使用本地分支和本地文件，禁止使用 `origin/` 前缀的远程引用。不调用 GitHub API。
 - `git pull` 失败不要中断流程，改用 `git fetch` 然后继续分析本地已有数据
 - `git log` 使用本地分支名（不加 `origin/` 前缀），用 `--all` 参数确保覆盖所有本地分支

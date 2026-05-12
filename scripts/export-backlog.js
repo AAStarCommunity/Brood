@@ -132,6 +132,13 @@ async function exportStaticBacklog() {
     }
 
     // Patch JS bundle: replace doneCount/total formula with weighted progress lookup
+    // Both patches MUST apply, otherwise the kanban UI falls back to simple doneCount/total
+    // counting and Phase progress on the live site will be wrong (e.g. 46/0/0 instead of 67/7/9).
+    // See 2026-05-12 incident: backlog.md v1.45 changed minified variable names and the
+    // literal-string patches silently failed, displaying wrong progress until manually noticed.
+    let kanbanPatched = false;
+    let rightPanelPatched = false;
+
     for (const asset of assets.filter(a => a.endsWith('.js'))) {
       const jsPath = path.join(distDir, asset);
       let js = await fs.readFile(jsPath, 'utf-8');
@@ -146,9 +153,8 @@ async function exportStaticBacklog() {
         const replacement = `let ${x}=window.__milestoneProgress&&window.__milestoneProgress[${y}.key]!==undefined?window.__milestoneProgress[${y}.key]:(${y}.total>0?Math.round(${y}.doneCount/${y}.total*100):0),`;
         js = js.replace(full, replacement);
         patched = true;
+        kanbanPatched = true;
         console.log(`✅ Patched Kanban column progress formula in ${asset} (vars: ${x},${y})`);
-      } else {
-        console.warn(`⚠️  Could not find Kanban column progress formula in ${asset}`);
       }
 
       // Patch 2: Right-side milestone panel — regex captures minified callbacks.
@@ -160,14 +166,26 @@ async function exportStaticBacklog() {
         const replacement = `${a}=(${arg})=>{if(window.__milestoneProgress&&window.__milestoneProgress[${arg}]!==undefined)return window.__milestoneProgress[${arg}];let ${b}=${p}(${arg});if(${b}===0)return 0;let ${u}=${n}(${arg});return Math.round(${u}/${b}*100)}`;
         js = js.replace(full, replacement);
         patched = true;
+        rightPanelPatched = true;
         console.log(`✅ Patched right-panel milestone progress formula in ${asset} (vars: ${a},${arg},${b},${p},${u},${n})`);
-      } else {
-        console.warn(`⚠️  Could not find right-panel milestone progress formula in ${asset}`);
       }
 
       if (patched) {
         await fs.writeFile(jsPath, js);
       }
+    }
+
+    // Fail the build if either patch didn't apply — silent failures here caused the
+    // 2026-05-12 incident where kanban displayed 46/0/0 instead of the real 67/7/9.
+    if (!kanbanPatched || !rightPanelPatched) {
+      const missing = [];
+      if (!kanbanPatched) missing.push('Kanban column progress formula');
+      if (!rightPanelPatched) missing.push('right-panel milestone progress formula');
+      console.error(`\n❌ BUILD ABORTED: failed to patch ${missing.join(' + ')} in JS bundle.`);
+      console.error(`   This means backlog.md changed its minified output and our regex patterns no longer match.`);
+      console.error(`   Without these patches, kanban progress bars fall back to doneCount/total simple counting.`);
+      console.error(`   Inspect the JS chunk in dist/ and update the regex patterns in scripts/export-backlog.js.\n`);
+      throw new Error(`Patch failure: ${missing.join(', ')}`);
     }
 
     // Rewrite index.html to inject Read-Only interception logic
