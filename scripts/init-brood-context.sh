@@ -66,6 +66,7 @@ SNIPPET="## Mycelium Protocol 生态上下文
 > 上下文来源: github.com/AAStarCommunity/Brood — 更新时自动同步
 
 @${BROOD_ROOT}/protocol/MISSION.md
+@${BROOD_ROOT}/protocol/PGL/CONTEXT.md
 @${BROOD_ROOT}/orgs/${ORG_ID}/PROFILE.md"
 
 if $HAS_INTERFACES; then
