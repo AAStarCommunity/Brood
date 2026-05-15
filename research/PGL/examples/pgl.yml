@@ -1,0 +1,105 @@
+# PGL Manifest 完整示例
+# 假想项目：Awesome PDF Scanner — 把扫描件 PDF 一键转 Markdown
+# 这是一个真实接入「数字 Agent 商店」所需的最全配置
+
+pgl_version: "0.1"
+
+# ===== 作品基本信息 =====
+work:
+  name: "Awesome PDF Scanner"
+  slug: "awesome-pdf-scanner"
+  type: "agent"
+  category: ["productivity", "ocr", "document"]
+  description_zh: "把扫描件 PDF 一键转 Markdown，离线运行"
+  description_en: "Convert scanned PDFs to Markdown in one click, offline"
+  base_license: "Apache-2.0"
+  homepage: "https://github.com/alice/awesome-pdf-scanner"
+
+# ===== 数字公共物品公约签署 =====
+charter:
+  signed: true
+  version: "0.1"
+  signed_at: "2026-05-15T10:00:00Z"
+  signed_by:
+    name: "Alice Wang"
+    airaccount: "0xa11ceA11ceA11ceA11ceA11ceA11ceA11ceA11c"
+    ens: "alice.pgl.eth"
+  signature: "0x4f3e2d1c0b9a8d7e6f5c4b3a2918e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6"
+
+# ===== 收益路由（响应公约第三条）=====
+royalty:
+  contract: "0xPGLR0uter5ePo11aTBDtbdTBDtbdTBDtbdTBDtbd"
+
+  authors:
+    - airaccount: "0xa11ceA11ceA11ceA11ceA11ceA11ceA11ceA11c"
+      percent: 65
+      display_name: "Alice"
+    - airaccount: "0xB0bB0bB0bB0bB0bB0bB0bB0bB0bB0bB0bB0bB0b"
+      percent: 5
+      display_name: "Bob (co-author, OCR contributor)"
+
+  upstreams:
+    - work_slug: "marker-pdf-core"
+      airaccount: "0xMa72erMa72erMa72erMa72erMa72erMa72erMa72"
+      percent: 15
+      note: "PDF 解析底层框架"
+    - work_slug: "surya-ocr-base"
+      airaccount: "0x5UryA5UryA5UryA5UryA5UryA5UryA5UryA5Ury"
+      percent: 5
+      note: "OCR 模型基座"
+
+  channel:
+    name: "AgentStore for Public Goods"
+    percent: 10
+
+  # ✓ 65 + 5 + 15 + 5 + 10 = 100
+
+# ===== 接入方式：Docker =====
+integration:
+  type: "docker"
+  docker:
+    image: "ghcr.io/alice/awesome-pdf-scanner:v1.2.0"
+    expose_port: 7860
+    healthcheck_path: "/health"
+    api_path: "/api/v1"
+    resources:
+      cpu: "1.0"
+      memory: "2Gi"
+      gpu: "optional"
+
+# ===== 分发与定价 =====
+distribution:
+  tiers:
+    - tier: "free"
+      enabled: true
+      limits:
+        max_pages_per_doc: 5
+        max_docs_per_day: 3
+      reputation_reward: true
+
+    - tier: "paid"
+      enabled: true
+      price_pnts: 50          # 50 xPNTs ≈ $0.50
+      price_usd_equivalent: 0.50
+      billing: "per-document"
+      unlocks:
+        max_pages_per_doc: "unlimited"
+        max_docs_per_day: "unlimited"
+        priority_queue: true
+
+  end_user_friendly: true
+  requires_user_setup: false
+
+# ===== 合规与隐私 =====
+compliance:
+  privacy_policy_url: "https://github.com/alice/awesome-pdf-scanner/blob/main/PRIVACY.md"
+  data_processed: ["pdf-files"]
+  data_retention: "session"     # 处理完即删除
+  prohibited_uses: ["military", "mass-surveillance"]
+
+# ===== 验证与扩展 =====
+verification:
+  github_repo: "alice/awesome-pdf-scanner"
+  proof_of_open_source: "https://github.com/alice/awesome-pdf-scanner/blob/main/LICENSE"
+  audit_reports: []
+  manifest_checksum: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
