@@ -1,8 +1,9 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-05-07
+> 最后更新: 2026-05-15
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
-> 数据来源：gh CLI 扫描 GitHub 所有分支 + 本地 repo 检查
+> 数据来源：与 GitHub 三个 org（AAStarCommunity / AuraAIHQ / MushroomDAO）的线上 repo 完成同步
+> **不追踪**：jhfnetboy 个人仓库（个人 fork/草稿不进生态地图）
 
 ---
 
@@ -10,7 +11,7 @@
 
 ```
                     🍄 Mycelium Protocol
-                  Park · Spores · OpenNest
+                  Park · Spores · OpenPNTs
                       MushroomDAO 治理
                            │
           ┌────────────────┼────────────────┐
@@ -21,6 +22,22 @@
 
 ---
 
+## 本地仓库目录约定
+
+固定映射（**必须遵守**，sync-progress 等 skill 依赖）：
+
+| 本地目录 | GitHub 组织 | 仓库数 |
+|:---|:---|:---:|
+| `~/Dev/aastar/` | `AAStarCommunity` | 26 |
+| `~/Dev/auraai/` | `AuraAIHQ` | 12 |
+| `~/Dev/mycelium/` | `MushroomDAO` | 26 |
+| `~/Dev/backup/` | 已删除/转移/重复的归档 | — |
+
+**特殊路径**：
+- `~/Dev/Brood/` —— 本仓库（协议神经系统，launchd 依赖此路径，不放在 aastar/）
+
+---
+
 ## 核心产品速览 / Product Overview
 
 | 产品 | 组织 | 十词定位 |
@@ -28,123 +45,116 @@
 | **SuperPaymaster** | AAstar | Gasless transactions and micropayments for Web3 agents |
 | **AirAccount** | AAstar | Your daily Web3 account: fingerprint login, no ETH needed |
 | **SuperRelay** | AAstar | ERC-4337 企业级 bundler 网关·双签名 TEE 零入侵架构 |
+| **UltraRelay-AAStar** | AAstar | Alto fork · aastar-dev 自主分支 · 长期跟踪上游 |
 | **Cos72** | MushroomDAO | 社区操作系统：Onboarding + 正反馈激励 + 治理 |
 | **Sin90** | MushroomDAO | 个人操作系统：表达者·创作者·建设者的数字自我 |
 | **iDoris** | AuraAI | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 |
-| **Agent24-Desktop** | AuraAI | 跨平台 Electron 框架·可插拔能力模块·AI 解耦适配 |
+| **Agent24** | AuraAI | 个人 AI Agent 框架 · **AgentStore 承载平台**（PGL）|
 | **CityOS** | MushroomDAO | AI + Blockchain 城市操作系统 |
 | **Listener** | MushroomDAO | AI Native Entrance·组织/个人的 AI 原生入口工具 |
 
 ---
 
-## AAstar — 区块链基础设施
+## AAStarCommunity — 区块链基础设施
 
 **GitHub Org**: https://github.com/AAStarCommunity
-**路径约定**: `../aastar/` (相对 Brood)
+**本地路径**: `~/Dev/aastar/`
 
-### 核心产品
+### 全部仓库（26 个）
 
-| 产品 | 十词定位 | 相对路径 | GitHub | 本地状态 |
-|-----|---------|---------|--------|---------|
-| **SuperPaymaster** | Gasless transactions and micropayments for Web3 agents | `../aastar/SuperPaymaster` | [AAStarCommunity/SuperPaymaster](https://github.com/AAStarCommunity/SuperPaymaster) | ✓ 已克隆 |
-| **AirAccount** | Your daily Web3 account: fingerprint login, no ETH needed | `../aastar/AirAccount` | [AAStarCommunity/AirAccount](https://github.com/AAStarCommunity/AirAccount) | ✓ 已克隆 |
-| **airaccount-contract** | AirAccount 核心智能合约·M5完成·M6进行中 | `../aastar/airaccount-contract` | [AAStarCommunity/airaccount-contract](https://github.com/AAStarCommunity/airaccount-contract) | ✗ 未克隆 |
-| **SuperRelay** | ERC-4337 企业级 bundler 网关·双签名 TEE 架构 | `../aastar/super-relay` | [AAStarCommunity/SuperRelay](https://github.com/AAStarCommunity/SuperRelay) | ✓ 已克隆 |
-| **AAStar SDK** | 封装 AirAccount+SuperPaymaster+CometENS 的开发者 SDK | `../aastar-sdk/AAStar_SDK` | [AAStarCommunity/AAStar_SDK](https://github.com/AAStarCommunity/aastar-sdk) | ✓ 已克隆 |
-| **YetAnotherAA-Validator** | BLS 签名聚合·ERC-4337 账户抽象验证合约 | `../aastar/YetAnotherAA-Validator` | [AAStarCommunity/YetAnotherAA-Validator](https://github.com/AAStarCommunity/YetAnotherAA-Validator) | ✗ 未克隆 |
-| **UltraRelay** | Alto fork·aastar-dev 自主分支·ERC-4337 bundler·长期跟踪上游 | `../aastar/UltraRelay-AAStar` | [AAStarCommunity/UltraRelay-AAStar](https://github.com/AAStarCommunity/UltraRelay-AAStar) (分支: `aastar-dev`) | ✓ 已克隆 |
+| 仓库 | 本地路径 | 最近提交 | 性质 |
+|-----|---------|---------|------|
+| AirAccount | aastar/AirAccount | 2026-04-29 | 核心产品（账户基础设施）|
+| airaccount-contract | aastar/airaccount-contract | 2026-05-02 | AirAccount 合约 |
+| AirAccountEmailAdapter | aastar/AirAccountEmailAdapter | 2026-04-15 | 邮箱登录适配 |
+| AirAccountGateway | aastar/AirAccountGateway | 2026-04-15 | 入口网关 |
+| AirAccountSmsAdapter | aastar/AirAccountSmsAdapter | 2026-04-15 | 短信登录适配 |
+| SuperPaymaster | aastar/SuperPaymaster | 2026-05-14 | 核心产品（Gas 抽象）|
+| SuperRelay | aastar/super-relay | 2026-04-29 | 核心产品（Bundler 网关）|
+| UltraRelay-AAStar | aastar/UltraRelay-AAStar | 2026-05-06 | Bundler（Alto fork, aastar-dev）|
+| YetAnotherAA | aastar/YetAnotherAA | 2026-04-29 | AL Account |
+| YetAnotherAA-Validator | aastar/YetAnotherAA-Validator | 2026-04-29 | BLS 验证合约 |
+| Cos72 | aastar/Cos72 | 2026-04-29 | 社区 OS（关联 MushroomDAO）|
+| aastar-sdk | aastar/aastar-sdk | 2026-05-12 | 开发者 SDK |
+| aastar.io | aastar/aastar.io | 2026-04-15 | 主站 |
+| aastar-docs | （未克隆，网络卡 - 待手动重试）| — | 文档站 |
+| .github | aastar/.github | 2026-04-15 | Org profile |
+| SDSS | aastar/SDSS | 2025-05-27 | （静默）|
+| WhiteList | aastar/WhiteList | 2026-04-15 | 白名单 |
+| XSchedule | aastar/XSchedule | 2026-04-15 | 调度服务 |
+| captcha-bot | aastar/captcha-bot | 2024-09-09 | Captcha |
+| coinJar | aastar/coinJar | 2026-04-15 | （早期试验）|
+| create-cos72-dapp | aastar/create-cos72-dapp | 2026-04-15 | Cos72 脚手架 |
+| demo | aastar/demo | 2025-10-10 | 演示项目 |
+| dvt | aastar/dvt | 2026-04-15 | DVT 节点 |
+| me | aastar/me | 2026-05-08 | Personal page |
+| registry | aastar/registry | 2026-04-15 | 注册表 |
+| research | aastar/research | 2026-04-15 | 研究记录 |
+| zu.coffee | aastar/zu.coffee | 2026-04-15 | （社区站点）|
 
-### 活跃分支（近一年，GitHub 所有分支）
-
-| repo | 活跃分支 | 最近推送 | 提交数/年 |
-|-----|---------|---------|---------|
-| AirAccount | `KMS`(主力), `KMS-stm32`, `feat/passkey` | 11天前 | 161 |
-| airaccount-contract | `M6`(主力), `M7`(预研), `main` | 3天前 | — |
-| SuperPaymaster | `main`, `feature/uups-migration` | 3天前 | 603 |
-| super-relay | `main`, `relay-dev`, `feat/web-interface-EP0.6` | 7个月前 | 144 |
-| YetAnotherAA | `main` | 5天前 | 88 |
-| YetAnotherAA-Validator | `main` | 10天前 | — |
-| InnovateCrab | `main` | 5天前 | 156 |
-
-### 克隆命令（按约定路径）
-
-```bash
-git clone git@github.com:AAStarCommunity/AirAccount.git              ../aastar/AirAccount
-git clone git@github.com:AAStarCommunity/airaccount-contract.git     ../aastar/airaccount-contract
-git clone git@github.com:AAStarCommunity/SuperPaymaster.git           ../aastar/SuperPaymaster
-git clone git@github.com:AAStarCommunity/SuperRelay.git               ../aastar/super-relay
-git clone git@github.com:AAStarCommunity/AAStar_SDK.git               ../aastar-sdk/AAStar_SDK
-git clone git@github.com:AAStarCommunity/YetAnotherAA-Validator.git  ../aastar/YetAnotherAA-Validator
-git clone git@github.com:AAStarCommunity/UltraRelay-AAStar.git        ../aastar/UltraRelay-AAStar
-```
+> 已归档的旧仓库（在 GitHub 标记 archived）：Adapters, Gateway, AnotherAirAccountCommunityNode —— 不本地化。
 
 ---
 
-## AuraAI — AI 基础设施
+## AuraAIHQ — AI 基础设施
 
 **GitHub Org**: https://github.com/AuraAIHQ
-**路径约定**: `../AuraAI/` (相对 Brood)
+**本地路径**: `~/Dev/auraai/`
 
-### 核心产品
+### 全部仓库（12 个）
 
-| 产品 | 定位 | 相对路径 | GitHub | 本地状态 |
-|-----|------|---------|--------|---------|
-| **iDoris** | 隐私优先·Token Free·边缘计算·多端自进化开源 AI 模型 | `../auraai/iDoris` | [AuraAIHQ/iDoris](https://github.com/AuraAIHQ/iDoris) | ✓ 已克隆 |
-| **iDoris-SDK** | 微信桥接 SDK·任意 Agent 接入个人微信号（前 MushroomDAO/Agent-WeChat-SDK） | `../auraai/iDoris-SDK` | [AuraAIHQ/iDoris-SDK](https://github.com/AuraAIHQ/iDoris-SDK) | ✗ 未克隆 |
-| **Agent24** | 自进化 Claude Code Skills 系统（Personal Agent for me and all） | `../auraai/Agent24` | [AuraAIHQ/Agent24](https://github.com/AuraAIHQ/Agent24) | ✓ 已克隆 |
-| **Agent24-Desktop** | 跨平台 Electron 框架·可插拔能力模块·应用方 fork 起点 | `../auraai/Agent24-Desktop` | [AuraAIHQ/Agent24-Desktop](https://github.com/AuraAIHQ/Agent24-Desktop) | ✓ 已克隆 |
-| **agent-speaker** | Nostr-based 跨 agent 通信·NIP-44 加密·MCP 集成 | `../auraai/agent-speaker` | [AuraAIHQ/agent-speaker](https://github.com/AuraAIHQ/agent-speaker) | ✓ 已克隆 |
-| **simple-agent** | 微信场景 Level 1 agent（StorageAgent 等） | `../auraai/simple-agent` | [AuraAIHQ/simple-agent](https://github.com/AuraAIHQ/simple-agent) | ✗ 未克隆 |
-| **OpenCrab** | A Crab work for community（社区信息爬虫/代理） | `../auraai/OpenCrab` | [AuraAIHQ/OpenCrab](https://github.com/AuraAIHQ/OpenCrab) | ✗ 未克隆 |
-| **AuraAI** | AI assistant for community and individuals（知识库+能力基础） | `../auraai/AuraAI` | [AuraAIHQ/AuraAI](https://github.com/AuraAIHQ/AuraAI) | ✗ 未克隆 |
-| **courses** | AI/编程教育课程（面向儿童，5门） | `../auraai/courses` | [AuraAIHQ/courses](https://github.com/AuraAIHQ/courses) | ✓ 已克隆 |
-| **auraai-packages** | AuraAI 共享包/工具库 | `../auraai/auraai-packages` | [AuraAIHQ/auraai-packages](https://github.com/AuraAIHQ/auraai-packages) | ✓ 已克隆 |
-
-### 活跃分支
-
-| repo | 最近推送 |
-|-----|---------|
-| OpenCrab | 2026-03-08 |
-| Agent24 | 2026-03-08 |
-| courses | 2026-03-08 |
-| AuraAI | 2026-03-04 |
-| iDoris | 2026-03-13 |
-
-### 克隆命令
-
-```bash
-git clone git@github.com:AuraAIHQ/iDoris.git           ../auraai/iDoris
-git clone git@github.com:AuraAIHQ/iDoris-SDK.git       ../auraai/iDoris-SDK
-git clone git@github.com:AuraAIHQ/Agent24.git          ../auraai/Agent24
-git clone git@github.com:AuraAIHQ/Agent24-Desktop.git  ../auraai/Agent24-Desktop
-git clone git@github.com:AuraAIHQ/agent-speaker.git    ../auraai/agent-speaker
-git clone git@github.com:AuraAIHQ/simple-agent.git     ../auraai/simple-agent
-git clone git@github.com:AuraAIHQ/OpenCrab.git         ../auraai/OpenCrab
-git clone git@github.com:AuraAIHQ/AuraAI.git           ../auraai/AuraAI
-git clone git@github.com:AuraAIHQ/courses.git            ../auraai/courses
-git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packages
-```
+| 仓库 | 本地路径 | 最近提交 | 性质 |
+|-----|---------|---------|------|
+| Agent24 | auraai/Agent24 | 2026-05-15 | **AgentStore 承载平台**（PGL）|
+| iDoris | auraai/iDoris | 2026-04-29 | 隐私优先 AI 模型 |
+| iDoris-SDK | auraai/iDoris-SDK | 2026-04-29 | 微信 Agent SDK（含 wechat-agent-bridge submodule）|
+| AuraAI | auraai/AuraAI | 2026-04-29 | AI 知识库 |
+| OpenCrab | auraai/OpenCrab | 2026-04-29 | 个人 Agent 框架（设计阶段）|
+| simple-agent | auraai/simple-agent | 2026-04-29 | Level 1 agent（StorageAgent）|
+| agent-speaker | auraai/agent-speaker | 2026-05-15 | Nostr 通信层 |
+| agent-speaker-relay | auraai/agent-speaker-relay | 2026-04-12 | Nostr relay |
+| auraai-packages | auraai/auraai-packages | 2026-05-15 | 共享包 |
+| courses | auraai/courses | 2026-04-29 | AI/编程教育课程 |
+| AI_Beginner_Courses | auraai/AI_Beginner_Courses | 2026-04-15 | 入门课程 |
+| infoCrab | auraai/infoCrab | 2026-04-15 | 信息爬虫 |
 
 ---
 
 ## MushroomDAO — 社区 + 个人 + 城市操作系统
 
 **GitHub Org**: https://github.com/MushroomDAO
-**路径约定**: `../mycelium/` (相对 Brood)
+**本地路径**: `~/Dev/mycelium/`
 
-### 核心产品
+### 全部仓库（26 个）
 
-| 产品 | 定位 | 相对路径 | GitHub | 本地状态 |
-|-----|------|---------|--------|---------|
-| **Sin90** | 个人操作系统（OS for Individual） | `../mycelium/Sin90` | [MushroomDAO/Sin90](https://github.com/MushroomDAO/Sin90) | ✗ 未克隆 |
-| **Cos72** | 社区操作系统（MyTask+MyVote+MyShop） | `../Community/Cos72` | [AAStarCommunity/Cos72](https://github.com/AAStarCommunity/Cos72) | ✓ 已克隆 |
-| **CityOS** | AI + Blockchain 城市操作系统 | `../mycelium/CityOS` | [MushroomDAO/CityOS](https://github.com/MushroomDAO/CityOS) | ✗ 未克隆 |
-| **MyTask** | 社区任务协调模块 | `../mycelium/MyTask` | [MushroomDAO/MyTask](https://github.com/MushroomDAO/MyTask) | ✗ 未克隆 |
-| **MyVote** | 社区治理投票模块 | `../mycelium/MyVote` | [MushroomDAO/MyVote](https://github.com/MushroomDAO/MyVote) | ✗ 未克隆 |
-| **MyShop** | 社区商店/积分兑换模块 | `../mycelium/MyShop` | [MushroomDAO/MyShop](https://github.com/MushroomDAO/MyShop) | ✗ 未克隆 |
-| **Asset3** | （资产协议，设计阶段） | `../mycelium/Asset3` | [MushroomDAO/Asset3](https://github.com/MushroomDAO/Asset3) | ✗ 未克隆 |
-| **Expresser** | 记录瞬间·生成诗歌·个人表达工具 | `../mycelium/Expresser` | [MushroomDAO/Expresser](https://github.com/MushroomDAO/Expresser) | ✓ 已克隆 |
-| **Listener** | AI Native Entrance·组织/个人 AI 原生入口 | `../mycelium/Listener` | [MushroomDAO/Listener](https://github.com/MushroomDAO/Listener) | ✓ 已克隆 |
+| 仓库 | 本地路径 | 最近提交 | 性质 |
+|-----|---------|---------|------|
+| launch | mycelium/launch | 2026-05-14 | **Phase 1 Genesis Launch** |
+| blog | mycelium/blog | 2026-05-13 | 研究博客 |
+| Sin90 | mycelium/Sin90 | 2026-04-29 | 核心产品（个人 OS）|
+| Cos72 | mycelium/Cos72 | 2026-04-15 | 核心产品（社区 OS）|
+| CityOS | mycelium/CityOS | 2026-04-29 | 核心产品（城市 OS）|
+| CometENS | mycelium/CometENS | 2026-05-03 | 免费子域名服务 |
+| Listener | mycelium/Listener | 2026-05-07 | AI Native Entrance |
+| Expresser | mycelium/Expresser | 2026-05-05 | 个人表达工具 |
+| Xiaoheishu | mycelium/Xiaoheishu | 2026-04-29 | （内容工具）|
+| MyShop | mycelium/MyShop | 2026-04-29 | 社区商店 |
+| MyTask | mycelium/MyTask | 2026-04-29 | 社区任务 |
+| MyVote | mycelium/MyVote | 2026-05-02 | 社区治理投票 |
+| MyNFT | mycelium/MyNFT | 2026-04-15 | NFT 模块 |
+| Asset3 | mycelium/Asset3 | 2026-04-29 | 资产协议（设计阶段）|
+| Park | mycelium/Park | 2026-04-29 | 数字公物协议（Public Goods Garden）|
+| Spores | mycelium/Spores | 2026-04-29 | 可持续协作协议 |
+| OpenPNTs | mycelium/OpenPNTs | 2026-04-29 | 积分协议 |
+| YetAnotherAA | mycelium/YetAnotherAA | 2026-03-02 | （MushroomDAO 镜像）|
+| All-You-Should-Know-Today | mycelium/All-You-Should-Know-Today | 2026-05-03 | 资讯 |
+| Doris | mycelium/Doris | 2026-04-15 | （早期 iDoris）|
+| docs | mycelium/docs | 2025-07-15 | 文档 |
+| mycelium-protocol | mycelium/mycelium-protocol | 2026-04-29 | 协议研究 |
+| mushroomdao.github.io | mycelium/mushroomdao.github.io | 2026-04-15 | 主站 |
+| whitelist | mycelium/whitelist | 2026-04-15 | 白名单 |
+| .github | mycelium/.github | 2026-04-15 | Org profile |
+| demo-repository | mycelium/demo-repository | 2026-04-15 | 模板 |
 
 ### 基础协议 repos
 
@@ -153,32 +163,7 @@ git clone git@github.com:AuraAIHQ/auraai-packages.git    ../auraai/auraai-packag
 | Park | 数字公共物品 | [MushroomDAO/Park-PublicGoodsGarden](https://github.com/MushroomDAO/Park-PublicGoodsGarden) |
 | Spores | 可持续协作 | [MushroomDAO/Spores](https://github.com/MushroomDAO/Spores) |
 | OpenPNTs | 积分协议 | [MushroomDAO/OpenPNTs](https://github.com/MushroomDAO/OpenPNTs) |
-
-### 活跃分支
-
-| repo | 最近推送 |
-|-----|---------|
-| Sin90 | 2026-02-20 |
-| CityOS | 2026-03-11 |
-| MyTask | 2026-02-26 |
-| MyVote | 2026-02-19 |
-| MyShop | 2026-02-15 |
-| Asset3 | 2026-03-07 |
-| Listener | 2026-05-07 |
-
-### 克隆命令
-
-```bash
-git clone git@github.com:MushroomDAO/Sin90.git               ../mycelium/Sin90
-git clone git@github.com:MushroomDAO/CityOS.git       ../mycelium/CityOS
-git clone git@github.com:MushroomDAO/MyTask.git           ../mycelium/MyTask
-git clone git@github.com:MushroomDAO/MyVote.git           ../mycelium/MyVote
-git clone git@github.com:MushroomDAO/MyShop.git           ../mycelium/MyShop
-git clone git@github.com:MushroomDAO/Asset3.git           ../mycelium/Asset3
-git clone git@github.com:AAStarCommunity/Cos72.git        ../Community/Cos72
-git clone git@github.com:MushroomDAO/Expresser.git        ../mycelium/Expresser
-git clone git@github.com:MushroomDAO/Listener.git         ../mycelium/Listener
-```
+| **PGL** | 数字公共物品公约 | [本仓库 protocol/PGL/](../protocol/PGL/) |
 
 ---
 
@@ -187,20 +172,36 @@ git clone git@github.com:MushroomDAO/Listener.git         ../mycelium/Listener
 ```
 airaccount-contract ←── AirAccount (TEE 调用合约)
 SuperRelay ──TEE签名──► AirAccount
-SuperPaymaster ──bundler──► SuperRelay
+SuperPaymaster ──bundler──► SuperRelay / UltraRelay
 SuperPaymaster ──账户验证──► AirAccount + airaccount-contract
-AAStar_SDK ──封装──► SuperPaymaster + AirAccount + CometENS
-Cos72 ──使用──► AAStar_SDK (Gasless + 账户 + 积分)
-Sin90 ──使用──► AAStar_SDK + Agent24 + iDoris
+aastar-sdk ──封装──► SuperPaymaster + AirAccount + CometENS
+Cos72 ──使用──► aastar-sdk (Gasless + 账户 + 积分)
+Sin90 ──使用──► aastar-sdk + Agent24 + iDoris
 iDoris ──结算──► SuperPaymaster (AI 服务激励)
 iDoris ──身份──► AirAccount (隐私保护)
+iDoris-SDK ──桥接──► WeChat (iLink 协议，mason0510/wechat-agent-bridge submodule)
 CityOS ──依赖──► Cos72 + Sin90 + iDoris
+Agent24 ──承载──► PGL AgentStore (数字 Agent 商店)
+PGL ──复用──► SuperPaymaster v5 角色 + AirAccount + OpenPNTs + CometENS
 ```
 
 ---
 
-## 本仓库（BroodBrain）
+## 本仓库（Brood）
 
 **相对路径**: `.`（即当前仓库）
 **GitHub**: https://github.com/AAStarCommunity/Brood
-**定位**: 协议神经系统，任务管理 + 上下文发布 + 生态透明化
+**定位**: 协议神经系统 —— 任务管理 + L0/L1/L2 上下文发布 + 生态透明化 + **PGL 公约 L0**
+
+不放在 `~/Dev/aastar/Brood`（launchd plist 依赖固定路径 `~/Dev/Brood`）。
+
+---
+
+## 同步历史
+
+| 日期 | 事件 |
+|:---|:---|
+| 2026-05-15 | 全量同步三个 org 与本地：移走 12 个已删除/转移/重复仓库到 backup；新增 clone 28 个；停止追踪 jhfnetboy 个人仓库 |
+| 2026-05-07 | 加入 Listener |
+| 2026-05-02 | 加入 UltraRelay-AAStar aastar-dev 分支说明 |
+| 2026-04-30 | 三大目录约定建立 |

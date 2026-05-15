@@ -18,7 +18,7 @@ provides:
     repo: github.com/MushroomDAO/Agent-WeChat-SDK
   - capability: ai-knowledge-base
     interface: Web3 + AI 领域知识库（Markdown，可作 RAG 数据源）
-    repo: github.com/jhfnetboy/AuraAI
+    repo: github.com/AuraAIHQ/AuraAI
   - capability: ai-education
     interface: AI/编程教育课程内容（面向儿童，5门，Apache 2.0）
     repo: github.com/AuraAIHQ/courses
@@ -56,7 +56,7 @@ AuraAI 是 Mycelium Protocol 生态中的 **AI 能力层**，专注于构建面�
 
 - **对开发者**: Agent24 框架 + agent-speaker 通信库，快速构建 AI 代理
 - **对用户**: 通过熟悉渠道（微信）与 AI 代理交互，无需切换工具
-- **对生态**: AI 知识库（jhfnetboy/AuraAI）作为共享知识资产
+- **对生态**: AI 知识库（AuraAIHQ/AuraAI）作为共享知识资产
 
 ## 我们需要什么
 

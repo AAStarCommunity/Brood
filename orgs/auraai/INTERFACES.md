@@ -10,7 +10,7 @@
 
 ### 1. AuraAI Knowledge Base — AI 知识库
 
-**仓库**: `github.com/jhfnetboy/AuraAI`（Apache 2.0）
+**仓库**: `github.com/AuraAIHQ/AuraAI`（Apache 2.0）
 **状态**: 活跃（In Progress, 35%）
 
 知识库内容：Web3 + AI 领域研究，面向 Mycelium Protocol 生态
