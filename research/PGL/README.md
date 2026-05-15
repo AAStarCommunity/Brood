@@ -38,8 +38,9 @@
 | [`CHARTER.md`](./CHARTER.md) | 公约正文（中英双语，五条承诺，~500 字） |
 | [`MANIFEST_SPEC.md`](./MANIFEST_SPEC.md) | `pgl.yml` 完整 schema + 字段规则 + 签名机制 |
 | [`REVENUE_MODEL.md`](./REVENUE_MODEL.md) | 70/20/10 分配模型 + 链上合约接口 + 税务建议 |
-| [`ONBOARDING.md`](./ONBOARDING.md) | 接入指南：四种接入方式 + 最小示例 + FAQ |
+| [`ONBOARDING.md`](./ONBOARDING.md) | 接入指南 + 四种接入方式 + **「妈妈测试」上架硬门槛** + FAQ |
 | [`UI_MODULE_SPEC_v0.1.md`](./UI_MODULE_SPEC_v0.1.md) | UI 模块接入规范（早期草稿，会随实际反馈演进） |
+| [`CITY_REP.md`](./CITY_REP.md) | **城市声誉网络（RFC）** —— AgentStore 之上的下游网络层，"虚拟股东"机制 |
 | [`examples/pgl.yml`](./examples/pgl.yml) | 完整 manifest 示例（假想项目 Awesome PDF Scanner） |
 | [`DISCUSSION.md`](./DISCUSSION.md) | 决策过程、备选方案、前置参考 |
 
