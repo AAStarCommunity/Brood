@@ -6,7 +6,11 @@
 
 ## 一句话定位
 
+> **数字 Agent 商店是普通人能用、本地优先、原作者拿大头的 AI 应用商店。**
+
 让开源贡献者通过签署 **数字公共物品公约**，把自己的工作上架到 **数字 Agent 商店（AgentStore for Public Goods）**，获得用户、声誉与销售分成，同时阻止信息差套利者抹署名牟利。
+
+→ 完整价值定位见 [`VALUE.md`](./VALUE.md)
 
 ---
 
@@ -30,6 +34,7 @@
 
 | 文件 | 内容 |
 |:---|:---|
+| [`VALUE.md`](./VALUE.md) | **核心价值定位** —— 三大用户支柱 + 三大用户层级 + 竞品对比（营销/PR 取词处）|
 | [`CHARTER.md`](./CHARTER.md) | 公约正文（中英双语，五条承诺，~500 字） |
 | [`MANIFEST_SPEC.md`](./MANIFEST_SPEC.md) | `pgl.yml` 完整 schema + 字段规则 + 签名机制 |
 | [`REVENUE_MODEL.md`](./REVENUE_MODEL.md) | 70/20/10 分配模型 + 链上合约接口 + 税务建议 |
