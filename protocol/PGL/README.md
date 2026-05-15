@@ -1,6 +1,8 @@
 # PGL · 数字公共物品公约 / Digital Public Goods Charter
 
 > **状态**：Phase 1 规范草稿（v0.1） · 最后更新：2026-05-15
+> **位置**：本目录已从 `research/PGL/` 升级为 `protocol/PGL/`，正式作为 Mycelium L0 全局上下文层。
+> **L0 入口**：`protocol/PGL/CONTEXT.md` 被所有生态 repo 的 `CLAUDE.md` 通过 @-include 自动加载。
 
 ---
 
@@ -34,10 +36,11 @@
 
 | 文件 | 内容 |
 |:---|:---|
+| [`CONTEXT.md`](./CONTEXT.md) | ⭐ **全局上下文 @-include 载荷**（所有生态 repo 自动引用此文件）|
 | [`VALUE.md`](./VALUE.md) | **核心价值定位** —— 三大用户支柱 + 三大用户层级 + 竞品对比（营销/PR 取词处）|
 | [`CHARTER.md`](./CHARTER.md) | 公约正文（中英双语，五条承诺，~500 字） |
 | [`MANIFEST_SPEC.md`](./MANIFEST_SPEC.md) | `pgl.yml` 完整 schema + 字段规则 + 签名机制 |
-| [`REVENUE_MODEL.md`](./REVENUE_MODEL.md) | 70/20/10 分配模型 + 链上合约接口 + 税务建议 |
+| [`REVENUE_MODEL.md`](./REVENUE_MODEL.md) | 三角色弹性区间分配（Supplier 50-90% / Wrapper 0-40% / Seller 10%）+ 链上合约接口 + 税务建议 |
 | [`ONBOARDING.md`](./ONBOARDING.md) | 接入指南 + 四种接入方式 + **「妈妈测试」上架硬门槛** + FAQ |
 | [`UI_MODULE_SPEC_v0.1.md`](./UI_MODULE_SPEC_v0.1.md) | UI 模块接入规范（早期草稿，会随实际反馈演进） |
 | [`CITY_REP.md`](./CITY_REP.md) | **城市声誉网络（RFC）** —— AgentStore 之上的下游网络层，"虚拟股东"机制 |
@@ -55,9 +58,13 @@
 | 3 | **双轨分发**：独立 web Store + Agent24 内嵌 | |
 | 4 | **强制链上结算** | 复用 SuperPaymaster + AirAccount |
 | 5 | Phase 1 = 先做规范（本目录） | |
-| 6 | 默认分配 **作者 70% / 上游 20% / 渠道 10%** | manifest 内可调整 |
+| 6 | **三角色弹性区间** Supplier 50-90% / Wrapper 0-40% / Seller 固定 10% | 主动发起方区间内提议，签字方接受 |
 | 7 | **避免 "share" 等证券化词汇** | 改用「销售分成 / 版税 / 贡献记录」 |
-| 8 | 四种接入：Docker / Service / Agent24 / UI-module | |
+| 8 | 四种接入：Docker / Service / Agent24 / UI-module | 与分账模型正交 |
+| 9 | **多 Wrapper = 多产品** | 不在 Wrapper 之间分账，市场竞争 |
+| 10 | **复用 SuperPaymaster v5** 角色体系 | 零新合约，新增 3 个角色 |
+| 11 | **Agent24 = AgentStore 主承载平台** | Agent24 本身不签 PGL |
+| 12 | **「妈妈测试」上架硬门槛** | 5 项验收必须全过 |
 
 ---
 

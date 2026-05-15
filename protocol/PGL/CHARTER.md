@@ -31,7 +31,15 @@
 任何对我工作的再分发、再封装、再销售，必须在显著位置保留我的署名和原始仓库链接。这也是 Apache 2.0、MIT 等开源协议的既有要求，本公约重申并通过分发渠道予以强化。
 
 **第三条 · 公允版税回流**
-对我工作的商业化销售，应通过本公约的 `pgl.yml` 文件声明分配比例，并通过链上路由合约自动结算。默认建议：**作者 70% / 上游依赖 20% / 分发渠道 10%**，可在 `pgl.yml` 中调整。
+对我工作的商业化销售，应通过本公约的 `pgl.yml` 文件声明分配比例，并通过链上路由合约自动结算。
+
+采用**三角色弹性区间模型**：
+
+- **Supplier**（原作者）：**50%-90%**，默认 70%
+- **Wrapper**（UX 适配者，可选）：**0%-40%**，默认 20%
+- **Seller**（分发渠道）：**固定 10%**
+
+硬约束：Supplier 永远不低于 50%；Seller 永远 10%。作品已用户友好不需要 Wrapper 时：Supplier 90%、Seller 10%。上游 OSS 依赖的回流由 Supplier 在自己份额内部自愿分配。
 
 **第四条 · 拒绝信息差套利**
 我不会以「自己原创」的名义出售明显基于他人公约作品的封装产品；我也理解，如果我违反此条，将失去「数字 Agent 商店」的推荐位与分账资格。
@@ -82,7 +90,15 @@ I commit to providing a reasonable path for non-technical users to benefit from 
 Any redistribution, repackaging or resale of my work must prominently preserve my attribution and a link back to the original repository. This is already required by Apache 2.0, MIT and similar licenses; this Charter restates the requirement and enforces it through the distribution channel.
 
 **Article 3 · Fair Royalty Routing**
-Commercial sales of my work must declare a split through the `pgl.yml` file and settle automatically through the on-chain royalty router. Default suggestion: **Author 70% / Upstream Dependencies 20% / Distribution Channel 10%**, adjustable via `pgl.yml`.
+Commercial sales of my work must declare a split through the `pgl.yml` file and settle automatically through the on-chain royalty router.
+
+The model is a **three-role elastic-range split**:
+
+- **Supplier** (original creator): **50%–90%**, default 70%
+- **Wrapper** (UX adapter, optional): **0%–40%**, default 20%
+- **Seller** (distribution channel): **fixed 10%**
+
+Hard constraints: Supplier never below 50%; Seller always 10%. If the work is already user-friendly and no Wrapper is needed: Supplier 90%, Seller 10%. Upstream OSS dependency royalties are allocated voluntarily inside the Supplier's share.
 
 **Article 4 · No Information-Asymmetry Arbitrage**
 I will not sell repackaged products that are obviously derived from others' Charter-signed work under the claim of "original authorship". I understand that violating this clause will cost me my placement and royalty rights in the AgentStore.
