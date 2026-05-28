@@ -21,7 +21,7 @@ priority: low
 <!-- SECTION:DESCRIPTION:BEGIN -->
 A protocol for viral community growth and member invitation tracking.
 
-### 📊 进度报告 (2026-05-12 扫描)
+### 📊 进度报告 (2026-05-28 扫描)
 
 **🚀 预估进度: 20%** | 30天仅 license/chore，Spores SDK 未见功能进展
 <!-- SECTION:DESCRIPTION:END -->

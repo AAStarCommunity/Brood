@@ -28,9 +28,9 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-05-12 扫描)
+### 📊 进度报告 (2026-05-28 扫描)
 
-**🚀 预估进度: 50%** | 5 个关联仓库共 129 次提交，最近 Agent24-Desktop 2026-05-11；agent-speaker 持续吸收 upstream + Agent-WeChat-SDK 初代核心已发布
+**🚀 预估进度: 55%** | 5 个关联仓库共 74 次提交，最近 Agent24 2026-05-15；Agent24 = AgentStore 承载平台（PGL 集成）+ iDoris-SDK (前 Agent-WeChat-SDK) 已迁移到 AuraAIHQ + newsletter system 规划完成
 
 **✅ AC 完成情况**:
 - ✅ Aura 建立 — `AuraAIHQ` org 全量建立，Apache 2.0 license 五件套合规

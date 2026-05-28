@@ -1,17 +1,18 @@
 ---
 id: TASK-38
 title: Research Blog
-status: In Progress
+status: Done
 assignee:
   - jhfnetboy
 created_date: '2026-04-27 00:18'
+updated_date: '2026-05-20 13:00'
 labels:
   - Daily
 milestone: m-r
 dependencies: []
-priority: medium
 references:
-  - https://github.com/MushroomDAO/blog
+  - 'https://github.com/MushroomDAO/blog'
+priority: medium
 ---
 
 ## Description

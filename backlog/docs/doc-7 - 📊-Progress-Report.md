@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-05-12 10:00'
+updated_date: '2026-05-28 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-12**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-28**.*
 
 ---
 
@@ -18,6 +18,7 @@ updated_date: '2026-05-12 10:00'
 | **Phase 1**: Genesis Launch | **67%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
 | **Phase 2**: Community Expansion | **7%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
 | **Phase 3**: Ecosystem Maturity | **9%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
+| **Research**: Papers + Experiments | **44%** | 7个任务 | Done=1, In Progress=5, To Do=1 |
 
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
 
@@ -29,16 +30,15 @@ updated_date: '2026-05-12 10:00'
 |:---|:---|:---:|:---|:---:|:---|
 | TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
 | TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
-| TASK-31 | SuperPaymaster | **85%** | AAStarCommunity/SuperPaymaster | 05-11 | **v5.3.2 Sepolia 部署 + UUPS 升级脚本** |
-| TASK-23 | Meta Phase 1 Genesis Launch | **80%** | MushroomDAO/launch | 05-02 | SaleContractV2 部署 + Join 余额 + 5-18 PPT v3 |
-| TASK-9 | CometENS 免费子域名 | **70%** | MushroomDAO/CometENS | 05-03 | **Milestone C CCIP-Read 端到端 PASS** |
-| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | license 合规为主，功能层稳定 |
-| TASK-38 | Research Blog | **50%** | MushroomDAO/blog | 05-09 | **50commits 高频发布 + publisher skill** |
-| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | license 合规为主 |
-| TASK-34 | AuraAI | **50%** | 5 repos | 05-11 | @agent-wechat/core + simple-agent 发布 |
-| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 05-06 | viem bump + EP deposit + 多 PR 合入 |
-| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | license 合规为主 |
-| TASK-32 | CommunityFi | **20%** | DSR-Research-Flow (未 clone) | — | Paper7 投稿包就绪待提交 |
+| TASK-31 | SuperPaymaster | **90%** | AAStarCommunity/SuperPaymaster | 05-28 | **Paper3 已投稿 BRA** + v5.3.2 全测 + GToken v2.2.0 |
+| TASK-23 | Meta Phase 1 Genesis Launch | **85%** | MushroomDAO/launch | 05-26 | 5-18 路演完成 + ACN-Agent on Pi 工程化研究 |
+| TASK-9 | CometENS 免费子域名 | **70%** | MushroomDAO/CometENS | 05-03 | Milestone C CCIP-Read 端到端 PASS（无新进展） |
+| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | 本期无显著功能进展 |
+| TASK-34 | AuraAI | **55%** | 5 repos | 05-15 | Agent24 = AgentStore 承载 + iDoris-SDK 迁移 |
+| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 无新进展 |
+| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 05-06 | upstream merge + Mycelium @-include |
+| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | 无新进展 |
+| TASK-32 | CommunityFi | **25%** | DSR-Research-Flow (未 clone) | — | **Paper7 第二版数据收集中** |
 | TASK-30 | EOA Bridge | **20%** | DSR-Research-Flow (未 clone) | — | Paper6 未启动 |
 | TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | license 合规 |
 | TASK-36 | Main Road Research | **20%** | zeroclaw-labs/zeroclaw | 04-05 | 无新进展 |
@@ -139,6 +139,8 @@ updated_date: '2026-05-12 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
+| 2026-05-28 | **67%** | **7%** | **9%** | **TASK-31 ↑90%（Paper3 投稿 BRA + v5.3.2 全测 + GToken v2.2.0）**；TASK-23 ↑85%（5-18 路演完成 + ACN-Agent on Pi 工程化）；TASK-34 ↑55%（74 commits 5 仓库）；TASK-32 ↑25%（Paper7 第二版数据收集中） |
+| 2026-05-12 | **67%** | **7%** | **9%** | TASK-31 85%、TASK-23 80%、TASK-9 70%、TASK-34 50% |
 | 2026-05-07 | **67%** | **7%** | **9%** | TASK-31↑85%（v5.3.2 Sepolia）；TASK-9↑70%（CCIP-Read 端到端 PASS）；TASK-26↑40%（UltraRelay aastar-dev 活跃）；TASK-38↑50%（blog 高频发布）；TASK-23↑80%（SaleV2 部署） |
 | 2026-05-03 | **65%** | **4%** | **8%** | TASK-23 75%；TASK-31 70%；TASK-9 55%；TASK-34 45% |
 | 2026-04-27 | **59%** | **2%** | **6%** | TASK-9 65%（CometENS v0.5.0 活跃）；TASK-23 70%（gasless GToken 购买页）；TASK-5 20%（新加入）；TASK-34 35%；TASK-13 30% |

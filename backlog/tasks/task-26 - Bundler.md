@@ -30,9 +30,9 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-05-12 扫描)
+### 📊 进度报告 (2026-05-28 扫描)
 
-**🚀 预估进度: 40%** | 主仓库 `AAStarCommunity/UltraRelay-AAStar` (aastar-dev 分支)，近 30 天 31 次提交，最近 2026-05-06
+**🚀 预估进度: 40%** | 主仓库 `AAStarCommunity/UltraRelay-AAStar` (aastar-dev 分支)，近 30 天 24 次提交，最近 2026-05-06；本期主要为 upstream merge + Mycelium @-include
 
 **✅ AC 完成情况**:
 - ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定，多个 fix 入主线（PR #26 entry point deposit）
