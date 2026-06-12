@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-05-28 10:00'
+updated_date: '2026-06-12 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-05-28**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-06-12**.*
 
 ---
 
@@ -15,10 +15,10 @@ updated_date: '2026-05-28 10:00'
 
 | Phase | 加权进度 | 任务数 | 说明 |
 |:---|:---:|:---:|:---|
-| **Phase 1**: Genesis Launch | **67%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
+| **Phase 1**: Genesis Launch | **68%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
 | **Phase 2**: Community Expansion | **7%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
-| **Phase 3**: Ecosystem Maturity | **9%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
-| **Research**: Papers + Experiments | **44%** | 7个任务 | Done=1, In Progress=5, To Do=1 |
+| **Phase 3**: Ecosystem Maturity | **11%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
+| **Research**: Papers + Experiments | **45%** | 7个任务 | Done=1, In Progress=5, To Do=1 |
 
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
 
@@ -30,15 +30,15 @@ updated_date: '2026-05-28 10:00'
 |:---|:---|:---:|:---|:---:|:---|
 | TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
 | TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
-| TASK-31 | SuperPaymaster | **90%** | AAStarCommunity/SuperPaymaster | 05-28 | **Paper3 已投稿 BRA** + v5.3.2 全测 + GToken v2.2.0 |
-| TASK-23 | Meta Phase 1 Genesis Launch | **85%** | MushroomDAO/launch | 05-26 | 5-18 路演完成 + ACN-Agent on Pi 工程化研究 |
-| TASK-9 | CometENS 免费子域名 | **70%** | MushroomDAO/CometENS | 05-03 | Milestone C CCIP-Read 端到端 PASS（无新进展） |
-| TASK-5 | AL Account (YetAnotherAA) | **65%** | AAStarCommunity/YetAnotherAA | 04-29 | 本期无显著功能进展 |
-| TASK-34 | AuraAI | **55%** | 5 repos | 05-15 | Agent24 = AgentStore 承载 + iDoris-SDK 迁移 |
+| TASK-31 | SuperPaymaster | **92%** | AAStarCommunity/SuperPaymaster | 06-03 | **v5.3.3-beta.2 发布** + 18 个 v5.4 issue 拆分（#201-#218） |
+| TASK-23 | Meta Phase 1 Genesis Launch | **90%** | MushroomDAO/launch | 06-07 | **EIP-7702 gasless 3-flow UX** + E2E RUNBOOK |
+| TASK-9 | CometENS 免费子域名 | **75%** | MushroomDAO/CometENS | 06-09 | **生产化重启** + 安全 fail-closed + KV bindings |
+| TASK-5 | AirAccount | **70%** | AAStarCommunity/AirAccount | 06-11 | **2026-06-11 审计 P0+High 全修** + MX93 + 备份系统 |
+| TASK-34 | AuraAI | **65%** | 6 repos | 05-29 | iDoris-SDK M2-M5 全完成 + **AgentSocial 新仓库** |
 | TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 无新进展 |
-| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 05-06 | upstream merge + Mycelium @-include |
+| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 05-06 | 无新进展 |
 | TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/MyTask | 04-29 | 无新进展 |
-| TASK-32 | CommunityFi | **25%** | DSR-Research-Flow (未 clone) | — | **Paper7 第二版数据收集中** |
+| TASK-32 | CommunityFi | **30%** | aastar-sdk/community/research | 06-08 | **Paper7 v7 long-horizon + Sankey + 可复现 artifacts** |
 | TASK-30 | EOA Bridge | **20%** | DSR-Research-Flow (未 clone) | — | Paper6 未启动 |
 | TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | license 合规 |
 | TASK-36 | Main Road Research | **20%** | zeroclaw-labs/zeroclaw | 04-05 | 无新进展 |
@@ -139,6 +139,7 @@ updated_date: '2026-05-28 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
+| 2026-06-12 | **68%** | **7%** | **11%** | **TASK-31 ↑92%（v5.3.3-beta.2 发布 + 18 v5.4 issues）**；**TASK-5 ↑70%（AirAccount 全量安全审计 P0+High 修复 + MX93）**；TASK-23 ↑90%（EIP-7702 gasless 3-flow UX 上线）；TASK-34 ↑65%（iDoris-SDK M2-M5 完成 + AgentSocial 新仓库）；TASK-9 ↑75%（生产化重启）；TASK-32 ↑30%（Paper7 v7 + 可复现 artifacts） |
 | 2026-05-28 | **67%** | **7%** | **9%** | **TASK-31 ↑90%（Paper3 投稿 BRA + v5.3.2 全测 + GToken v2.2.0）**；TASK-23 ↑85%（5-18 路演完成 + ACN-Agent on Pi 工程化）；TASK-34 ↑55%（74 commits 5 仓库）；TASK-32 ↑25%（Paper7 第二版数据收集中） |
 | 2026-05-12 | **67%** | **7%** | **9%** | TASK-31 85%、TASK-23 80%、TASK-9 70%、TASK-34 50% |
 | 2026-05-07 | **67%** | **7%** | **9%** | TASK-31↑85%（v5.3.2 Sepolia）；TASK-9↑70%（CCIP-Read 端到端 PASS）；TASK-26↑40%（UltraRelay aastar-dev 活跃）；TASK-38↑50%（blog 高频发布）；TASK-23↑80%（SaleV2 部署） |

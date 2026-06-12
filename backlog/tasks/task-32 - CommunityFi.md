@@ -28,19 +28,21 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-28 扫描)
+### 📊 进度报告 (2026-06-12 扫描)
 
-**🚀 预估进度: 25%** | DSR Research Flow 仓库未本地 clone；**Paper7 第二版正在写（数据收集中）**
+**🚀 预估进度: 30%** | aastar-sdk 仓库 community/research 子目录有 Paper7 实质性进展：**v7 long-horizon dynamics** + **Sankey budget-flow 可视化** + 可复现 artifacts
 
 **✅ AC 完成情况**:
 - ✅ Paper7 第一版：CommunityFi DSR P1-P6 全部 Done，JBBA 投稿包就绪
-- 🔧 **Paper7 第二版：数据收集阶段进行中**（用户 2026-05-28 反馈）
-- 🔧 投稿：JBBA 投稿包已就绪，等待第二版完成后正式提交
-- ⬜ 链上信用系统合约：SuperPaymaster v5.x 中已部分实现（recordDebt/repayDebt/Credit Limit），剩余 v5.4 整合
+- 🔧 **Paper7 第二版（v7）数据收集**：long-horizon dynamics (churn / burnout / recruitment) 已建模
+- ✅ **Paper7 可复现 artifacts** 已建立
+- ✅ **Sankey budget-flow 可视化** 已成型
+- 🔧 投稿：JBBA 投稿包等待第二版数据完成后正式提交
+- ⬜ 链上信用系统合约：等 SuperPaymaster v5.4 issue 推进（#215 P1-35 recordDebt cumulative cap + TTL）
 
-**📝 近期动态**:
-- 2026-05-28: Paper7 v2 数据收集进行中
-- 2026-05-13: SuperPaymaster v5.3.2 pre-deployment security scan（含 xPNTs/debt 系统）
-- 2026-05-12 之后：v5.4 路线图待拆分（影响 Paper7 信用系统合约工程化）
+**📝 近期动态** (AAStarCommunity/aastar-sdk community/research):
+- 2026-06-08: feat(CommunityFi): v7 long-horizon dynamics - churn, burnout, recruitment
+- 2026-06-05: feat(community/research): add Sankey budget-flow visualization for paper7
+- 2026-06-03: feat(community/research): add CommunityFi paper7 reproducible artifacts
 
-💡 Paper7 第二版数据收集是当前唯一阻塞点。完成后即可投稿 JBBA，预计 2 周内可推到 40%。
+💡 Paper7 第二版工程化推进顺利（v7 动力学 + 可视化 + 可复现），剩余 70% 主要为期刊投稿提交 + v5.4 链上信用系统整合。

@@ -28,23 +28,26 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-05-28 扫描)
+### 📊 进度报告 (2026-06-12 扫描)
 
-**🚀 预估进度: 55%** | 5 个关联仓库共 74 次提交，最近 Agent24 2026-05-15；Agent24 = AgentStore 承载平台（PGL 集成）+ iDoris-SDK (前 Agent-WeChat-SDK) 已迁移到 AuraAIHQ + newsletter system 规划完成
+**🚀 预估进度: 65%** | 5 个关联仓库共 35 次提交（30 天）；**iDoris-SDK M2-M5 全部完成** + 新增 **AgentSocial** 仓库（Paper3 设计） + auraai-packages 全面结构化
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — `AuraAIHQ` org 全量建立，Apache 2.0 license 五件套合规
-- 🔧 OpenCrab/Agent24 PC 版 — Agent24 框架稳定（pluggable eval + MemPalace），Agent24-Desktop 持续迭代
-- 🔧 Bot（WeChat）— `@agent-wechat/core` + `@agent-wechat/cli` 已发布，wechat-agent-bridge 子模块就位
-- 🔧 Nostr 通信层 — agent-speaker 吸收 upstream 多项 fix（blossom decode/nsite path traversal/publish nil panic），relay 端 X-Real-IP hack 修复
-- 🔧 simple-agent (Level 1 agent) — `@aura/simple-agent` + StorageAgent 初版
-- ⬜ iDoris 三层结构、Mycelium Network、AK47 — 未启动
+- ✅ Aura 建立 — `AuraAIHQ` org 全量建立
+- ✅ Agent24 = AgentStore 承载平台 — BoxLite service container (M3+M4) 完成
+- ✅ **iDoris-SDK M2/M3/M4/M5 全部完成**：WeChatBridge + InboxAgent + CLI + 集成验证
+- ✅ **包重命名整合**：@auraai/ai-bridge → @auraaihq/idoris（AI gateway 产品定位）
+- ✅ Nostr 通信层：agent-speaker TUI Bubble Tea 完成 + v0.25.0 agent profile + auto-reply daemon
+- 🔧 **AgentSocial 新仓库**（2026-05-29 起）：Paper3 设计决策 + milestone plan + 13-report survey + Agentic Design Patterns 框架综述
+- ⬜ iDoris 三层结构（云端大模型 + 训练服务）、Mycelium Network、AK47 — 未启动
 
-**📝 近期动态** (5 仓库聚合):
-- Agent24-Desktop 2026-05-11、agent-speaker/Agent24/OpenCrab 2026-04-29
-- Agent-WeChat-SDK: 实现 `@agent-wechat/core` + `@agent-wechat/cli`，pnpm workspace + 设计文档
-- simple-agent: 初代 StorageAgent 落地
-- agent-speaker: 多项安全 fix 与 PR 合入
+**📝 近期动态** (6 仓库聚合):
+- AgentSocial 2026-05-29: Paper3 design-decision doc + milestone plan + 21-pattern taxonomy + RAG deep-dive
+- iDoris-SDK 2026-05-21: AiToEarn 平台研究报告 (M6 bridge roadmap) + M5 InboxAgent session lifecycle 验证
+- iDoris-SDK 2026-05-15: M4 @idoris/cli + M2/M3 WeChatBridge + InboxAgent
+- auraai-packages 2026-05-29: BoxLite OCI client 提取 + ModuleManifest Agent24 runtime 字段
+- Agent24 2026-05-15: BoxLite service container 运行时 + M3 community installer + newsletter system (Listmonk)
+- agent-speaker 2026-05-13: TUI chat 完整版 + 安全 fix（npub bounds check）
 
-💡 通信层 + WeChat 桥 + Nostr relay 三件套已成型，Agent-WeChat-SDK 核心可用。剩余 50% 的主要缺口仍是 iDoris/Mycelium Network/AK47。
+💡 iDoris-SDK 已经从 M2 走到 M5，从 SDK → CLI → 实际集成验证全链路打通。AgentSocial 是 Paper3 工程化的新落点。剩余 35% 主要为 iDoris 云端三层结构 + Mycelium Network 启动。
 <!-- SECTION:DESCRIPTION:END -->

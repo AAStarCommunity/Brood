@@ -29,7 +29,7 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-05-28 扫描)
+### 📊 进度报告 (2026-06-12 扫描)
 
 **🚀 预估进度: 20%** | 关联仓库 `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法分析近 30 天提交
 

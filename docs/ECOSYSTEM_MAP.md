@@ -1,6 +1,6 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-05-15
+> 最后更新: 2026-06-12
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
 > 数据来源：与 GitHub 三个 org（AAStarCommunity / AuraAIHQ / MushroomDAO）的线上 repo 完成同步
 > **不追踪**：jhfnetboy 个人仓库（个人 fork/草稿不进生态地图）
@@ -117,6 +117,7 @@
 | courses | auraai/courses | 2026-04-29 | AI/编程教育课程 |
 | AI_Beginner_Courses | auraai/AI_Beginner_Courses | 2026-04-15 | 入门课程 |
 | infoCrab | auraai/infoCrab | 2026-04-15 | 信息爬虫 |
+| AgentSocial | auraai/AgentSocial | 2026-05-29 | 🆕 Paper3 设计决策 + milestone（Codex 协作） |
 
 ---
 

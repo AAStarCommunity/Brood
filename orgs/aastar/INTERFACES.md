@@ -1,7 +1,7 @@
 # AAstar — 对外接口规范
 
 > 文档类型：接口契约（Interface Contracts）
-> 维护者：jason | 最后更新：2026-04-27
+> 维护者：jason | 最后更新：2026-05-30
 > 关联：`orgs/aastar/PROFILE.md`
 
 ---
@@ -96,8 +96,9 @@
 
 ### 4. AAStar SDK — 开发者集成包
 
-**仓库**: `github.com/AAStarCommunity/AAStar_SDK`
-**包名**: `@aastar/sdk`（npm）
+**仓库**: `github.com/AAStarCommunity/aastar-sdk`（monorepo，pnpm workspace）
+**版本**: v0.18.0（`@aastar/monorepo`）
+**Sub-packages**: `core` / `sdk` / `dapp` / `enduser` / `operator` / `paymaster` / `identity` / `data` / `tokens` / `x402`
 
 ```typescript
 import { AirAccount, SuperPaymaster, CometENS } from '@aastar/sdk';
@@ -114,6 +115,8 @@ const tx = await SuperPaymaster.sendGasless({
 ```
 
 **封装能力**：AirAccount + SuperPaymaster + CometENS + OpenPNTs
+
+> ⚠️ 旧仓库 `jhfnetboy/AAStar_SDK`（注意:owner 是个人账号，不是 AAStarCommunity）已 **archived**，仅作历史 backup 保留。所有新集成请用上方 `AAStarCommunity/aastar-sdk` monorepo。
 
 ---
 

@@ -20,7 +20,7 @@ Keep on tracing the Ethereum roadmap and techs.
 
 May use this: https://github.com/zeroclaw-labs/zeroclaw
 
-### 📊 进度报告 (2026-05-28 扫描)
+### 📊 进度报告 (2026-06-12 扫描)
 
 **🚀 预估进度: 20%** | 关联仓库 `zeroclaw-labs/zeroclaw` 已本地 clone 于 ~/Dev/tmp/，近 30 天 0 次提交，最近一次 2026-04-05
 

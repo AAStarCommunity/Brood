@@ -27,26 +27,25 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-05-28 扫描)
+### 📊 进度报告 (2026-06-12 扫描)
 
-**🚀 预估进度: 85%** | 近 30 天 50 次提交，最近一次 2026-05-26；5-18 Hangzhou 路演已完成 + 进入 ACN-Agent / Pi 架构延伸研究
+**🚀 预估进度: 90%** | 近 30 天 30 次提交，最近一次 2026-06-07；**gasless EIP-7702 三流 UX 上线** + relayer v2 chainId/buyer 校验
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成
 - ✅ GToken launch contract — SaleContractV2 已部署、roles ticket prices 配置完成
-- ✅ 前端 / V2 stack 集成完成
-- ✅ **5-18 Hangzhou roadshow 完成**
+- ✅ 5-18 Hangzhou roadshow 完成
+- ✅ **gasless EIP-7702 三流 UX**：join-gasless.html (P3, on top of #8) 上线
+- ✅ **gasless-eoa-enhance** 分支 E2E 测试 + RUNBOOK + ACCEPTANCE 全套就绪
 - 🔧 主网部署 — 待执行
-- 🔧 ACN-Agent on Pi 技术规划 — Paper3 后续工程化（4+1 milestones 已规划）
+- 🔧 ACN-Agent on Pi 技术规划 — Paper3 后续工程化进行中
 
 **📝 近期动态** (MushroomDAO/launch):
-- 2026-05-26: feat(zuaec/paper3): ACN-Agent technical plan on Pi base
-- 2026-05-25: feat(zuaec/paper3): Pi (pi-mono) architecture research findings
-- 2026-05-22: feat(zuaec/paper3): feature requirements — Paper1/2/3 mapped to engineering items
-- 2026-05-20: refactor(zuaec): organize into paper1/ paper2/ paper3/ directories
-- 2026-05-18: feat(zuaec): §9 local-optimum + directional guidance principle
-- 2026-05-15: feat(zuaec): relay data retention policy (3 个月自动清理)
-- 2026-05-14: feat(zuaec): §8 ACN security baseline
+- 2026-06-07: feat(gasless-e2e): rebase E2E tests + RUNBOOK + ACCEPTANCE onto gasless-eoa-enhance
+- 2026-06-03: feat(site): join-gasless.html — 3-flow EIP-7702 gasless UX (P3) (#9)
+- 2026-05-30: fix(relayer/v2): validate chainId + buyer address before rate limit
+- 2026-05-26: ACN-Agent technical plan on Pi base
+- 2026-05-25: Pi (pi-mono) architecture research findings
 
-💡 5-18 路演已过，进入 Paper3 工程化阶段（ACN-Agent on Pi）。剩余 15% 为主网部署 + Paper1/2/3 持续映射。
+💡 EIP-7702 gasless 三流 UX 完成 + E2E 体系就绪，是 5-18 路演后的重要工程化收尾。剩余 10% 为主网部署执行。
 <!-- SECTION:DESCRIPTION:END -->
