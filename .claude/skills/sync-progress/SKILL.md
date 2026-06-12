@@ -195,6 +195,21 @@ for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
 
 **注意**：Phase 0 的 `found_repos` 列表在内存中保留，供**第三步（定位本地仓库）**直接使用，避免重复扫描。
 
+#### 步骤 0-6：生成 repo 视角全量状态表（新增）
+
+跑 `scripts/scan-repo-status.py` 生成 `docs/REPO_STATUS.md`，这张表与 task 视角的 doc-7 互补，覆盖**所有** 65 个仓库（含 dormant / 候选启动 / 边缘仓库）：
+
+```bash
+python3 ${REPO_ROOT}/scripts/scan-repo-status.py
+```
+
+输出：
+- 每个仓库的 branch / 本地→远端 / 未提交 / 最近提交 / 距今天数 / tag / 静默标记（🟢🟡🔴💤）
+- 健康度统计
+- 关注列表（静默 / 未提交 ≥3 / 本地与远端不同步的仓库）
+
+**这一步让 orchestrator 拥有 repo-centric 视野**：不仅看到 In Progress 任务关联的仓库，还能识别长期静默 / 待激活 / 漂移的仓库，是 Brood 作为生态大脑的关键摘要数据源。
+
 ---
 
 ### 第一步：收集进行中的任务

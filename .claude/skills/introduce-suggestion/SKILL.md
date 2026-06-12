@@ -114,24 +114,36 @@ Brood 是 Mycelium Protocol 的「神经系统」—— 协议神经层 +
 ## 执行注意事项
 
 1. **数据来源优先级**：
-   - `backlog/docs/doc-7 - 📊-Progress-Report.md`（最权威，含 Phase 加权）
+   - `backlog/docs/doc-7 - 📊-Progress-Report.md`（**task 视角**，含 Phase 加权）
+   - `docs/REPO_STATUS.md`（**repo 视角**，全 65 仓库健康度 + 关注列表）
    - `backlog/tasks/*.md`（单任务详情 + 预估进度）
-   - `docs/ECOSYSTEM_MAP.md`（仓库活跃度信号）
+   - `docs/ECOSYSTEM_MAP.md`（仓库地图）
+   - `docs/DEPENDENCY_GRAPH.md`（依赖关系，回答"改 X 会影响谁"）
 
-2. **如果 doc-7 数据陈旧（> 7 天前）**：
+2. **task 视角 + repo 视角双读**：
+   - doc-7 告诉你「In Progress 任务现在多少%」
+   - REPO_STATUS.md 告诉你「65 个仓库中有几个长期静默 / 待激活」
+   - 两份合起来才完整，**仅靠 doc-7 会漏掉 dormant 仓库的提醒**
+
+3. **如果 doc-7 / REPO_STATUS 数据陈旧（> 7 天前）**：
    - 在输出中标注「数据来自 N 天前的扫描，建议先跑 /sync-progress」
    - 不要自动跑 sync-progress（耗时长），只提示
 
-3. **不要堆砌信息**：
+4. **关注静默仓库**：
+   - REPO_STATUS.md 的「关注列表」中 🔴/💤 仓库要主动评估
+   - 不一定每次都建议激活，但如果用户的季度/年度目标依赖某个静默仓库，必须明确提醒
+   - 例：「TASK-13 Cos72 Core 35%，但 mycelium/MyVote 静默 44 天，本季要完成 Phase 1 需要本周激活 MyVote」
+
+5. **不要堆砌信息**：
    - 介绍段 ≤ 200 字
    - 进度段 ≤ 一张表 + 5 个 bullet
    - 建议段每项 ≤ 5 行
 
-4. **诚实**：
+6. **诚实**：
    - 如果某些任务 Wrapper 没活跃 commit，说"近期无明显进展"
    - 如果某个建议本质上还有 50% 工作量，**不要**说"2 周到 90%"，改说"4 周到 90%"
 
-5. **聚焦交付**：
+7. **聚焦交付**：
    - 优先建议「能上线/能发布/能演示」的事
    - 避免建议纯内部重构 / 文档清理（除非用户问）
 

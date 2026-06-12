@@ -2,6 +2,64 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## 🧠 本仓库的角色：生态 Orchestrator（生态大脑）
+
+Brood 是 Mycelium Protocol 的**生态调度者**，不是普通 repo。在 `~/Dev/Brood/` 启动 Claude Code，**有责任也有能力**读三个 sibling org 目录（`~/Dev/aastar/`、`~/Dev/auraai/`、`~/Dev/mycelium/`）下的所有仓库。
+
+### 三层生态结构（必读）
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  愿景层 / Vision     Mycelium = 协作网络 + 数字公共物品      │
+│  ────────────       让普通人享受数字基础设施带来的福祉       │
+├─────────────────────────────────────────────────────────────┤
+│  基础设施层 / Infra  AAstar    = Web3 账户/支付/Gas 抽象      │
+│  ────────────       AuraAI    = AI agent/skill/通信层        │
+├─────────────────────────────────────────────────────────────┤
+│  协议/网络层         MushroomDAO = 治理、协议、社区/城市 OS    │
+│  Protocol & Network  Park / Spores / OpenPNTs / PGL          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**叙事接口**：通过「数字公共物品」与现实世界对接。开源免费的工具 + 低成本的产品化封装 → 让普通人无门槛使用。
+
+**两层成本**（决定生态可持续性）：
+1. **运营成本**：gasless 垫付、域名/服务器/CDN、维护性投入 → 需要协议层收取最低运营费维持
+2. **商业规模成本**：扩大协作网络帮助更多人 → 需要 HyperCapital 这类合规商业实体承担
+
+详见 `protocol/MISSION.md`。
+
+### Orchestrator 的五项核心职责
+
+1. **状态把脉**（task + repo 双视角）—— 知道每个仓库在做什么，哪些活跃、哪些静默
+2. **节奏感**（季度 → 周）—— 提醒"这个仓库本周必须启动，否则 Q3 目标兜不住"
+3. **里程碑依赖识别** —— 业务里程碑依赖哪些工具，工具未启动要预警
+4. **跨仓库分析与对比** —— 接口变更影响范围、技术栈冲突、重复造轮子
+5. **探索性思考** —— 不只汇报，要主动指出"现在最划算的事是什么"
+
+### 三层调度纪律（不可破）
+
+| 层 | 总是 OK | 严格禁止 |
+|:---|:---|:---|
+| **地图层** | 读本仓库的 `docs/ECOSYSTEM_MAP.md`、`protocol/MISSION.md`、`orgs/*/PROFILE.md`、`orgs/*/INTERFACES.md` | — |
+| **摘要层** | 读 `docs/REPO_STATUS.md`、`backlog/docs/doc-7`、各 sibling repo 的 `CLAUDE.md` / `README.md`（一页内）| — |
+| **委派层** | 跨多文件追代码 → **派 Explore subagent** 指向 sibling repo 绝对路径，只接摘要 | ❌ 主对话内 grep 整个 org 目录 / Read 大量源码 / 循环读几十个 CLAUDE.md |
+
+**例行扫描**：用 Python/Bash 脚本（如 `sync-progress`、`scan-repo-status.sh`），脚本压缩输出再喂回主对话；**禁止主对话内循环 Read**。
+
+### 何时主动追问
+
+当用户问任意「项目」「进度」「状态」「下一步」「该做什么」时：
+
+1. 先读 `docs/REPO_STATUS.md` + `backlog/docs/doc-7`
+2. 用 `introduce-suggestion` skill 三段式响应（介绍 → review → focus 建议）
+3. 用「季度目标 ⇄ 仓库激活时机」推导出 1-3 个本周/本两周可显著推进的点
+4. 主动指出**静默超 30/90/365 天**的仓库与目标的关系
+
+---
+
 ## Project Overview
 
 BroodBrain is a static, read-only project backlog publishing system for the Mycelium Protocol ecosystem. It uses the `backlog` CLI (via npx) to manage tasks/docs/decisions as markdown files, then exports them as a fully static SPA with JSON API files. There is no backend — the deployed site is pure HTML/CSS/JS/JSON served from CDN.
