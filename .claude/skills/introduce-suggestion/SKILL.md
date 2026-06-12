@@ -114,6 +114,7 @@ Brood 是 Mycelium Protocol 的「神经系统」—— 协议神经层 +
 ## 执行注意事项
 
 1. **数据来源优先级**：
+   - `protocol/GOALS.md`（**OKR 视角**，半年期目标 + 节奏感 + 比赛时间表 + orchestrator 提醒规则）
    - `backlog/docs/doc-7 - 📊-Progress-Report.md`（**task 视角**，含 Phase 加权）
    - `docs/REPO_STATUS.md`（**repo 视角**，全 65 仓库健康度 + 关注列表）
    - `backlog/tasks/*.md`（单任务详情 + 预估进度）
@@ -133,6 +134,11 @@ Brood 是 Mycelium Protocol 的「神经系统」—— 协议神经层 +
    - REPO_STATUS.md 的「关注列表」中 🔴/💤 仓库要主动评估
    - 不一定每次都建议激活，但如果用户的季度/年度目标依赖某个静默仓库，必须明确提醒
    - 例：「TASK-13 Cos72 Core 35%，但 mycelium/MyVote 静默 44 天，本季要完成 Phase 1 需要本周激活 MyVote」
+
+4.5. **执行 GOALS.md 中的 orchestrator 提醒规则**（强制）：
+   - GOALS.md 中明文写了若干「时间 + 条件 = 必须提醒」的规则（如 ZUAEC 8-31 报名、AgentSocial 静默警报）
+   - 每次响应前，对照今天日期检查每条规则，触发的条件必须**用红字 / 警示 emoji 主动提示**
+   - 不可省略，即使用户没问 —— 这是 orchestrator 的主动职责
 
 5. **不要堆砌信息**：
    - 介绍段 ≤ 200 字

@@ -7,9 +7,9 @@
 
 ## 健康度统计
 
-- 🟢 活跃（≤30 天）：**12** 个
+- 🟢 活跃（≤30 天）：**13** 个
 - 🟡 减速（31-90 天）：**48** 个
-- 🔴 静默（91-365 天）：**3** 个
+- 🔴 静默（91-365 天）：**2** 个
 - 💤 长期静默（>365 天）：**2** 个
 - 总计：65 个仓库
 
@@ -21,28 +21,28 @@
 | 🟢 | `aastar-sdk` | feat/paper7-communityfi-abm | 0→0 | ⚠️ 9 | 2026-06-08 | 4d | v0.16.23 |
 | 🟢 | `SuperPaymaster` | main | 0→0 | ⚠️ 9 | 2026-06-03 | 9d | v5.3.3-beta.2 |
 | 🟢 | `airaccount-contract` | main | 0→0 | ⚠️ 1 | 2026-06-03 | 9d | v0.17.2-beta.2 |
-| 🟡 | `me` | main | 0→0 | ⚠️ 1 | 2026-05-08 | 35d | — |
+| 🟡 | `me` | main | 0→0 | — | 2026-05-08 | 35d | — |
 | 🟡 | `UltraRelay-AAStar` | m1/acceptance-and-planning | 0→0 | ⚠️ 1 | 2026-05-06 | 37d | @pimlico/alto@0.0.18 |
-| 🟡 | `Cos72` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `YetAnotherAA` | master | 1→0 | ⚠️ 3 | 2026-04-29 | 44d | v0.4.0 |
-| 🟡 | `YetAnotherAA-Validator` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `super-relay` | chore/license-compliance | 0→0 | ⚠️ 8 | 2026-04-29 | 44d | v0.8.2 |
+| 🟡 | `Cos72` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `YetAnotherAA` | master | 1→0 | ⚠️ 2 | 2026-04-29 | 44d | v0.4.0 |
+| 🟡 | `YetAnotherAA-Validator` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `super-relay` | chore/license-compliance | 0→0 | ⚠️ 7 | 2026-04-29 | 44d | v0.8.2 |
 | 🟡 | `.github` | main | 0→0 | — | 2026-04-15 | 58d | — |
-| 🟡 | `AirAccountEmailAdapter` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `AirAccountGateway` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `AirAccountSmsAdapter` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `WhiteList` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `XSchedule` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `aastar.io` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
+| 🟡 | `AirAccountEmailAdapter` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `AirAccountGateway` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `AirAccountSmsAdapter` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `WhiteList` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `XSchedule` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `aastar.io` | main | 0→0 | — | 2026-04-15 | 58d | — |
 | 🟡 | `coinJar` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `create-cos72-dapp` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `dvt` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `registry` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | v2.4.0-airdrop-fix |
-| 🟡 | `research` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `zu.coffee` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🔴 | `demo` | main | 0→0 | ⚠️ 1 | 2025-10-10 | 245d | v0.3.1 |
-| 💤 | `SDSS` | main | 0→0 | ⚠️ 1 | 2025-05-27 | 381d | — |
-| 💤 | `captcha-bot` | master | 0→0 | ⚠️ 1 | 2024-09-09 | 641d | — |
+| 🟡 | `create-cos72-dapp` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `dvt` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `registry` | main | 0→0 | — | 2026-04-15 | 58d | v2.4.0-airdrop-fix |
+| 🟡 | `research` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `zu.coffee` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🔴 | `demo` | main | 0→0 | — | 2025-10-10 | 245d | v0.3.1 |
+| 💤 | `SDSS` | main | 0→0 | — | 2025-05-27 | 381d | — |
+| 💤 | `captcha-bot` | master | 0→0 | — | 2024-09-09 | 641d | — |
 
 ## AuraAIHQ (13 个仓库)
 
@@ -53,45 +53,50 @@
 | 🟢 | `iDoris-SDK` | feat/multi-platform-arch | — | ⚠️ 6 | 2026-05-21 | 22d | — |
 | 🟢 | `Agent24` | migration/consume-packages | 2→0 | ⚠️ 1 | 2026-05-15 | 28d | pre-migration-2026-05-15 |
 | 🟢 | `agent-speaker` | feat-tui-rebased | — | — | 2026-05-13 | 30d | v0.22.0 |
-| 🟡 | `AuraAI` | chore/license-compliance | 0→0 | ⚠️ 3 | 2026-04-29 | 44d | — |
-| 🟡 | `OpenCrab` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `courses` | chore/license-compliance | 0→0 | ⚠️ 2 | 2026-04-29 | 44d | — |
-| 🟡 | `iDoris` | test/cla-action-check | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `simple-agent` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `AI_Beginner_Courses` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `infoCrab` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `agent-speaker-relay` | agent-speaker | 0→0 | ⚠️ 1 | 2026-04-12 | 61d | 1.1.0 |
+| 🟡 | `AuraAI` | chore/license-compliance | 0→0 | ⚠️ 2 | 2026-04-29 | 44d | — |
+| 🟡 | `OpenCrab` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `courses` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
+| 🟡 | `iDoris` | test/cla-action-check | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `simple-agent` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `AI_Beginner_Courses` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `infoCrab` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `agent-speaker-relay` | agent-speaker | 0→0 | — | 2026-04-12 | 61d | 1.1.0 |
 
-## MushroomDAO (26 个仓库)
+## MushroomDAO (25 个仓库)
 
 | Flag | Repo | Branch | 本地→远端 | 未提交 | 最近提交 | 距今 | Tag |
 |:----:|:-----|:-------|:---------:|:------:|:--------:|:----:|:----|
 | 🟢 | `blog` | dailyblog | 0→0 | ⚠️ 10 | 2026-06-11 | 1d | v1.3.0 |
 | 🟢 | `CometENS` | feat/d6-multi-root | 1→0 | — | 2026-06-09 | 3d | v0.6.0-proof-test |
 | 🟢 | `launch` | feat/gasless-e2e-launch-rebased | — | ⚠️ 4 | 2026-06-07 | 5d | v0.4.0-site |
-| 🟡 | `Listener` | main | 0→0 | ⚠️ 1 | 2026-05-07 | 36d | — |
-| 🟡 | `Expresser` | main | 0→0 | ⚠️ 1 | 2026-05-05 | 38d | — |
-| 🟡 | `All-You-Should-Know-Today` | main | 0→0 | ⚠️ 1 | 2026-05-03 | 40d | — |
+| 🟡 | `Listener` | main | 0→0 | — | 2026-05-07 | 36d | — |
+| 🟡 | `Expresser` | main | 0→0 | — | 2026-05-05 | 38d | — |
+| 🟡 | `All-You-Should-Know-Today` | main | 0→0 | — | 2026-05-03 | 40d | — |
 | 🟡 | `MyVote` | main | 2→0 | ⚠️ 1 | 2026-05-02 | 41d | init-sx |
-| 🟡 | `Asset3` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `CityOS` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `MyShop` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
+| 🟡 | `Asset3` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `CityOS` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `MyShop` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
 | 🟡 | `MyTask` | chore/license-compliance | 0→0 | ⚠️ 3 | 2026-04-29 | 44d | v0.2.0 |
-| 🟡 | `OpenPNTs` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `Park` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `Sin90` | main | 1→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `Spores` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `Xiaoheishu` | chore/license-compliance | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
-| 🟡 | `mycelium-protocol` | test/cla-check | 0→0 | ⚠️ 2 | 2026-04-29 | 44d | — |
+| 🟡 | `OpenPNTs` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `Park` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `Sin90` | main | 1→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `Spores` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `Xiaoheishu` | chore/license-compliance | 0→0 | — | 2026-04-29 | 44d | — |
+| 🟡 | `mycelium-protocol` | test/cla-check | 0→0 | ⚠️ 1 | 2026-04-29 | 44d | — |
 | 🟡 | `.github` | main | 0→0 | — | 2026-04-15 | 58d | — |
-| 🟡 | `Cos72` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `Doris` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `MyNFT` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
+| 🟡 | `Cos72` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `Doris` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `MyNFT` | main | 0→0 | — | 2026-04-15 | 58d | — |
 | 🟡 | `demo-repository` | main | 0→0 | — | 2026-04-15 | 58d | — |
-| 🟡 | `mushroomdao.github.io` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🟡 | `whitelist` | main | 0→0 | ⚠️ 1 | 2026-04-15 | 58d | — |
-| 🔴 | `YetAnotherAA` | master | 0→0 | ⚠️ 1 | 2026-03-02 | 102d | — |
-| 🔴 | `docs` | main | 0→0 | ⚠️ 1 | 2025-07-15 | 332d | — |
+| 🟡 | `mushroomdao.github.io` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🟡 | `whitelist` | main | 0→0 | — | 2026-04-15 | 58d | — |
+| 🔴 | `docs` | main | 0→0 | — | 2025-07-15 | 332d | — |
+
+## jhfnetboy (个人/研究 — 仅 watched) (1 个仓库)
+
+| Flag | Repo | Branch | 本地→远端 | 未提交 | 最近提交 | 距今 | Tag |
+|:----:|:-----|:-------|:---------:|:------:|:--------:|:----:|:----|
+| 🟢 | `DSR-Research-Flow`<br>📝 DSR 论文（H2 OKR KR1） | paper7 | 0→0 | ⚠️ 2 | 2026-06-08 | 4d | paper3-bra-final-v7.9 |
 
 ## ⚠️ 关注列表
 
@@ -100,23 +105,21 @@
 | Flag | Repo | 关注原因 |
 |:----:|:-----|:---------|
 | 🟢 | `aastar/AirAccount` | 未提交 7 文件 |
-| 💤 | `aastar/SDSS` | 静默 381 天 · 未提交 1 文件 |
+| 💤 | `aastar/SDSS` | 静默 381 天 |
 | 🟢 | `aastar/SuperPaymaster` | 未提交 9 文件 |
-| 🟡 | `aastar/YetAnotherAA` | 未提交 3 文件 · 本地↔远端 1→0 |
+| 🟡 | `aastar/YetAnotherAA` | 未提交 2 文件 · 本地↔远端 1→0 |
 | 🟢 | `aastar/aastar-sdk` | 未提交 9 文件 |
-| 💤 | `aastar/captcha-bot` | 静默 641 天 · 未提交 1 文件 |
-| 🔴 | `aastar/demo` | 静默 245 天 · 未提交 1 文件 |
-| 🟡 | `aastar/super-relay` | 未提交 8 文件 |
+| 💤 | `aastar/captcha-bot` | 静默 641 天 |
+| 🔴 | `aastar/demo` | 静默 245 天 |
+| 🟡 | `aastar/super-relay` | 未提交 7 文件 |
 | 🟢 | `auraai/Agent24` | 未提交 1 文件 · 本地↔远端 2→0 |
-| 🟡 | `auraai/AuraAI` | 未提交 3 文件 |
 | 🟢 | `auraai/iDoris-SDK` | 未提交 6 文件 |
 | 🟢 | `mycelium/CometENS` | 本地↔远端 1→0 |
 | 🟡 | `mycelium/MyTask` | 未提交 3 文件 |
 | 🟡 | `mycelium/MyVote` | 未提交 1 文件 · 本地↔远端 2→0 |
-| 🟡 | `mycelium/Sin90` | 未提交 1 文件 · 本地↔远端 1→0 |
-| 🔴 | `mycelium/YetAnotherAA` | 静默 102 天 · 未提交 1 文件 |
+| 🟡 | `mycelium/Sin90` | 本地↔远端 1→0 |
 | 🟢 | `mycelium/blog` | 未提交 10 文件 |
-| 🔴 | `mycelium/docs` | 静默 332 天 · 未提交 1 文件 |
+| 🔴 | `mycelium/docs` | 静默 332 天 |
 | 🟢 | `mycelium/launch` | 未提交 4 文件 |
 
 ---

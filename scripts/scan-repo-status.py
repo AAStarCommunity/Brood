@@ -27,6 +27,12 @@ ORG_DIRS = [
     (os.path.expanduser("~/Dev/mycelium"), "MushroomDAO",     "mycelium"),
 ]
 
+# 个人/研究 repo（特别关注，不归入三大 org，但纳入扫描）
+WATCHED_PERSONAL_REPOS = [
+    (os.path.expanduser("~/Dev/jhfnetboy/DSR-Research-Flow"),
+     "jhfnetboy", "personal", "DSR 论文（H2 OKR KR1）"),
+]
+
 TODAY = datetime.now().date()
 
 
@@ -101,7 +107,7 @@ def scan_repo(path):
 
 
 def scan_all():
-    """Walk all three org dirs, return list of dicts."""
+    """Walk all three org dirs + watched personal repos, return list of dicts."""
     repos = []
     for base, org_full, org_short in ORG_DIRS:
         if not os.path.isdir(base):
@@ -111,8 +117,16 @@ def scan_all():
             if not os.path.isdir(os.path.join(path, ".git")):
                 continue
             info = scan_repo(path)
-            info.update({"org": org_short, "org_full": org_full, "repo": name})
+            info.update({"org": org_short, "org_full": org_full, "repo": name, "note": ""})
             repos.append(info)
+    # Personal watched repos
+    for path, org_full, org_short, note in WATCHED_PERSONAL_REPOS:
+        if not os.path.isdir(os.path.join(path, ".git")):
+            continue
+        info = scan_repo(path)
+        info.update({"org": org_short, "org_full": org_full,
+                     "repo": os.path.basename(path), "note": note})
+        repos.append(info)
     return repos
 
 
@@ -153,6 +167,7 @@ def to_markdown(repos):
         ("aastar", "AAStarCommunity", None),
         ("auraai", "AuraAIHQ", None),
         ("mycelium", "MushroomDAO", None),
+        ("personal", "jhfnetboy (个人/研究 — 仅 watched)", None),
     ]:
         rs = by_org.get(org_short, [])
         if not rs:
@@ -168,8 +183,11 @@ def to_markdown(repos):
         for r in rs_sorted:
             days_disp = f"{r['days_since']}d" if r["days_since"] is not None else "?"
             unc_disp = f"⚠️ {r['uncommitted']}" if r["uncommitted"] > 0 else "—"
+            repo_disp = f"`{r['repo']}`"
+            if r.get("note"):
+                repo_disp += f"<br>📝 {r['note']}"
             out.append(
-                f"| {r['flag']} | `{r['repo']}` | {r['branch']} | {r['ahead_behind']} | "
+                f"| {r['flag']} | {repo_disp} | {r['branch']} | {r['ahead_behind']} | "
                 f"{unc_disp} | {r['last_commit']} | {days_disp} | {r['tag']} |"
             )
         out.append("")

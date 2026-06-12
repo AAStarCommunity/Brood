@@ -36,17 +36,49 @@
 | Paper4 AirAccount D2D MultiSig | DSR repo | ⬜ Not started | 队列中 | Q4 评估 |
 | Paper5 SocialRecovery | DSR repo | ⬜ Not started | 队列中 | Q4 评估 |
 
-### 额外：AI agent 协作网络相关论文（3 篇）
+### A. DSR Papers（`~/Dev/jhfnetboy/DSR-Research-Flow/`）
 
-位置：`~/jhfnetboy/dsr/`（个人目录，不在三大 org 内，**Brood 默认不扫描**）
+✅ **已纳入 Brood 扫描** (`scripts/scan-repo-status.py` 的 `WATCHED_PERSONAL_REPOS`)
+进度源：`~/Dev/jhfnetboy/DSR-Research-Flow/writing/progress.md`
 
-| 论文 | 状态 | 与 Mycelium 的关系 |
-|:---|:---|:---|
-| AI Agent 协作网络 论文 #1 | 进行中 | 为 Mycelium Network / Agent24 / AgentSocial 提供理论基础 |
-| AI Agent 协作网络 论文 #2 | 进行中 | 同上 |
-| AI Agent 协作网络 论文 #3 | 进行中 | 同上 |
+| Paper | 主题 | 状态 | 投稿目标 | KR1 |
+|:---|:---|:---|:---|:---:|
+| paper0 | SuperPaymaster（早期） | 历史归档 | — | — |
+| paper1 | CometENS | 待启动 | — | 候选 |
+| paper2 | MyTasks-GasMarket | 待启动 | — | 候选 |
+| **paper3** | SuperPaymaster: AOA in Account Abstraction | ✅ **已投稿 BRA**（v7.9-PathE）| Ledger / BRA | ⭐ |
+| paper4 | AirAccount: D2D MultiSig | Not started | — | Q4 评估 |
+| paper5 | SocialRecovery | Not started | — | Q4 评估 |
+| paper6 | Gasless EOA Bridge (7702) | Not started | — | Q4 评估 |
+| **paper7** | CommunityFi: Reputation-Backed Credit | 🔧 P6 Done, Step 4 进行中（IET 投稿包就绪 + v12 校对完成）| JBBA / IET | ⭐ |
+| paper8 | ChiangMai-Connect / SuperPaymasterV2 | 🔧 P1 Scaffolding | — | 候选 |
 
-> 提醒：jhfnetboy/dsr 目录不在三大 org 追踪范围；如需进度同步，可手动告知 Brood 或临时把 DSR 路径加入 sync-progress 扫描。
+**作者信息**：Huifeng Jiao (Jason) · ICDI, Chiang Mai University · 学号 662455802 / PhD Program 1.1
+
+---
+
+### B. AI Agent 协作网络系列（`~/Dev/auraai/AgentSocial/`）
+
+✅ **已在 `auraai/AgentSocial` repo 中**（与 TASK-34 AuraAI 关联）
+
+**仓库三层定位**（来自 README）：
+
+> **核心使命**：让 AI Agent 从"可调用的能力容器"进化为"角色承载的社会化协作者"
+
+| 层 | 名称 | 论文 | 关键缩写 |
+|:---|:---|:---:|:---|
+| **网络层** | **ASN — Agent Social Network**（论文正文称 ACN, Agent Collaboration Network）| **Paper 1** | ASN / ACN |
+| **协议层** | **ASM — Agent Social Messaging**（角色承载型 agent 之间的通信协议）| **Paper 2** | ASM |
+| **实现层** | **Social Agent**（基于 Pi/pi-mono 的参考实现）| **Paper 3** | ASN-Agent |
+
+**与 KR3 的关键关联**：
+- README 明文：「配套参赛**第八届浙江大学校友创新创业大赛**(ZUAEC, **提交截止 2026-08-31**)」
+- **AgentSocial 3 篇论文 + 参赛项目 = 杭州公司路径的核心交付物**
+- 这是 KR1（论文）和 KR3（杭州公司）的**双重承载**
+
+### orchestrator 提醒规则（合并 A+B）
+
+- 当任何一篇关键论文（DSR paper3/7 + AgentSocial paper1/2/3）距上次提交 > 14 天且离投稿/比赛 deadline < 30 天，主动提示「⚠️ 论文 X 已 N 天无进展，距离 deadline 还有 M 天」
 
 ---
 
@@ -82,22 +114,50 @@
             └─ 规模 / 成本 / 收入来源 等基础规划
 ```
 
-### 杭州公司路径
+### 杭州公司路径 —— 第八届浙江大学校友创新创业大赛
 
-| 阶段 | 状态 | 阻塞点 |
+**赛程时间表**（⚠️ orchestrator 主动提醒节点）：
+
+| 阶段 | 时间 | 我们的动作 |
 |:---|:---|:---|
-| 浙大创业比赛 | 🔧 进行中 | ⬜ 比赛结果不确定 |
-| 公司主体注册 | ⬜ 等比赛 | 取决于比赛 |
+| **项目征集 / 报名** | **2026-05 ～ 2026-08** | ⚠️ **8 月底前必须完成报名**（核心团队需至少 1 名浙大校友）|
+| 分区赛 | 2026-09 ～ 2026-11 | 4 大国内赛区（东部/南部/西部北部/浙江）+ 2 大海外赛区（亚太/欧美）|
+| 行业赛 | 2026-12 ～ 2027-04 | ~100 个项目进行业赛，分类路演 + 行业评审 |
+| 总决赛 | 2027-05 | ~20 个项目晋级，浙大百卅校庆献礼 |
+
+**赛道选项**：
+- 地方赛区（按地理）— 浙江赛区由杭州校友会承办
+- 学者创新专场（校内教师创业）
+- 乡村振兴专场
+- 百强直通车赛道（特别优秀的项目）
+
+**资格**：核心团队（股东或经营管理层）至少 1 名浙大校友 ✅
+
+**参赛项目载体**：`~/Dev/auraai/AgentSocial`（ASN/ASM/Social Agent 三层 + 3 篇论文，README 已明文锁定提交截止 **2026-08-31**）
+
+**公司路径与比赛的依赖**：
+
+| 阶段 | 状态 | 触发条件 |
+|:---|:---|:---|
+| 报名提交 | ⬜ **本月～8 月**必须完成 | 浙大校友身份确认 + 项目材料准备 |
+| 公司主体注册 | ⬜ 等分区赛进展 | 比赛进展顺利 → 顺理成章成立 → 商业初始投资 |
 | 初始投资到位 | ⬜ 等注册 | — |
-| 业务规划（规模/成本/收入）| 🔧 草稿阶段 | 需要在比赛期间同步打磨 |
+| 业务规划（规模/成本/收入）| 🔧 草稿阶段 | 在比赛期间同步打磨 |
+
+> **orchestrator 提醒规则**：
+> 1. 当今天 ≥ 2026-08-01 且 ZUAEC 报名状态仍为 ⬜，每次 introduce-suggestion 必须红字提示「⚠️ ZUAEC 报名截止 2026-08-31 逼近，AgentSocial 项目是否已报名？」
+> 2. AgentSocial repo 静默 > 7 天且今天距 2026-08-31 < 30 天 → 提示「⚠️ AgentSocial 项目最近 N 天无进展，距 ZUAEC 提交还有 M 天」
 
 ### 泰国公司路径
 
-| 阶段 | 状态 |
-|:---|:---|
-| 主体规划 | 🔧 进行中 |
-| 法律合规研究 | 🔧 |
-| 业务定位 | 🔧 与杭州公司协同分工 |
+| 阶段 | 状态 | 当前进展 |
+|:---|:---|:---|
+| 政策调研 | ✅ 完成 | 初步政策调研已完成 |
+| 主体规划 | 🔧 计划中 | 在计划中尚未启动 |
+| 法律合规研究 | ⬜ | 待启动 |
+| 业务定位 | ⬜ | 与杭州公司协同分工后定 |
+
+> **orchestrator 提醒规则**：泰国公司目前在「计划中尚未启动」阶段，等杭州公司路径明朗后再决定泰国的启动时机和定位（避免双线消耗）。
 
 ---
 
