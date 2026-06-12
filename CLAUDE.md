@@ -43,7 +43,7 @@ Brood 是 Mycelium Protocol 的**生态调度者**，不是普通 repo。在 `~/
 
 | 层 | 总是 OK | 严格禁止 |
 |:---|:---|:---|
-| **地图层** | 读本仓库的 `docs/ECOSYSTEM_MAP.md`、`protocol/MISSION.md`、`orgs/*/PROFILE.md`、`orgs/*/INTERFACES.md` | — |
+| **地图层** | 读本仓库的 `docs/ECOSYSTEM_MAP.md`、`protocol/MISSION.md`、`protocol/GOALS.md`（半年 OKR + 节奏感）、`orgs/*/PROFILE.md`、`orgs/*/INTERFACES.md` | — |
 | **摘要层** | 读 `docs/REPO_STATUS.md`、`backlog/docs/doc-7`、各 sibling repo 的 `CLAUDE.md` / `README.md`（一页内）| — |
 | **委派层** | 跨多文件追代码 → **派 Explore subagent** 指向 sibling repo 绝对路径，只接摘要 | ❌ 主对话内 grep 整个 org 目录 / Read 大量源码 / 循环读几十个 CLAUDE.md |
 
