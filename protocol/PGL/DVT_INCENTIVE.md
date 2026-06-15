@@ -125,6 +125,24 @@ DVT 节点的「守护者声誉徽章」由**多个不可转让的 SBT trait** �
 - 在自身商业活动中作为**可信证明**（运营者可在简历 / 商业洽谈中引用链上 SBT）
 - 在 [`CITY_REP.md`](./CITY_REP.md) 体系内被城市层引用为「数字基建守护者」
 
+### 4.4 Diversity trait 的 Sybil 防御
+
+> **clestons review 2026-06-15 提出**：一个 operator 跑 N 个钱包地址不同、policy hash 故意差异化的节点，能伪造 Diversity，让一人吃多份「多样性」激励。
+
+**多层防御组合**（不依赖任何单一机制）：
+
+| 防御层 | 机制 | 攻击成本 |
+|:---|:---|:---|
+| **经济成本** | 每个节点独立 30 ether GToken stake，N 个假节点 = 30N ether 锁仓 | 线性放大攻击成本 |
+| **运营者 namespace 披露**（§3.1 + §8.2）| 节点上链注册时必须披露运营者 namespace（如 ENS / proof-of-control）；同一运营者控制多个节点会被链上发现 | 强制揭示同源关系 |
+| **多样性 Canary**（§6.5）| Hub 注入「需要不同策略才能正确处理」的复合 Canary；同一 operator 的多节点策略实际同源 → 检测时全签或全拒一致 → 暴露伪装 | 行为级检测，难规避 |
+| **链上声誉外溢**（§5.2）| LongStanding + Diversity 高分需要 6+ 个月稳定运营 + 真实策略差异；攻击者跑 N 节点 6 个月持续维护伪装比真做多样化更贵 | 时间维度成本 |
+| **第三方挑战**（§14.3 #7 待 DAO 定）| 任何人可提交「这 N 个节点是同一运营者」的证据（链下识别 + 链上 attest）；hub 验证后触发 trait 扣减 + slash | 社区监督 |
+
+**已知限制**：上述任意单一层都可被绕过。组合使用让攻击成本超过收益。**100% Sybil 不可能**，但 PGL 设计目标是让 Sybil 不经济。
+
+**长期演进**：当 Mycelium 接入更广义的链下身份证明（如 proof-of-humanity / KYC-light），可作为可选「高信任」节点层叠加。但默认层永远保持**无许可加入**（不强制 KYC）。
+
 ---
 
 ## 5. 激励形态：现金腿 + 声誉腿
@@ -200,6 +218,31 @@ Hub orchestrator 流程：
   4. 节点签了 → Canary 命中 → Hub 链上提交证据 → slash + trait 清零
   5. 节点拒绝 → 计入 NoBlindSign 累积
 ```
+
+#### 6.2.1 Canary attestation 的信任根（trust root）
+
+> **clestons review 2026-06-15 提出**：`reportBlindSign` 是 permissionless（任何人可提交 BLS 证据证明节点签了某请求），但**「这是 Canary」本身**还是需要一方 attest。这看起来与 §7.2「中心化裁判」反模式有冲突，需要明确划界。
+
+**信任结构（明文锁死）**：
+
+| 环节 | 信任假设 | 与 §7.2 中心化裁判的区别 |
+|:---|:---|:---|
+| Canary 的**生成**（"这是一个诱饵"）| 由 hub orchestrator multisig（≥ 2-of-3，与 AirAccount RecoveryService 同源 guardian 模型）attest | hub 多签可被 DAO 罢免；attestation 是**公开可重放的**（任何人能验证 hub 当初注册的诱饵 hash）|
+| 节点**签了 Canary** 这个事实 | 任何人提交 BLS 证据 → 链上自动验签 → 无信任 | 同 §3.2 核心，permissionless |
+| trait 的**颁发 / slash** 触发 | 自动派生自上两条，零人工 | 真正的「裁判」其实是链上 verifier，hub 只提供 dossier |
+
+**为什么不算 §7.2 反模式**：§7.2 反对的是「中心化主体决定谁拿奖（积极判定）」；Canary attestation 是**对 attack surface 的预先声明**（消极判定）：
+
+- §7.2 中心化裁判：**节点行为发生后**才决定是否给奖（黑箱裁量）
+- Canary attestation：**节点行为发生前**已经公开承诺「这条不该签」（白箱可审计）
+
+**减弱 hub 信任的演进路径**：
+
+- v1.0（当前）：hub multisig attest Canary，hub 自身可被 DAO 罢免
+- v1.x：引入 Canary attestation **轮值**机制 + 多 hub 联合 attest
+- v2.0（长期）：节点策略表达可被 zkVM 编译 → 链上 prove 「按照声明策略，这条请求 100% 应该被拒」 → 完全去 hub 中心化
+
+详细 Canary 协议规范单独拆讨论文档，见 §15 #1 `DVT_CANARY_PROTOCOL.md`（待立项）。
 
 ### 6.3 Canary 频率
 
@@ -420,7 +463,8 @@ interface IDVTIncentive {
 |:---|:---|:---|
 | v0.1 草稿（70%） | 2026-06-14 | §1-§7 + §10 完成；§8-§9 占位 |
 | v0.2 草稿（95%） | 2026-06-15 | §8 + §9 基于 hub #42 冻结结论填充 |
-| **v1.0 草稿（100%）** | **2026-06-15** | **hub owner 拍板 (A) PGL 附录 + 引入 aNode 基础设施总称 + §13 技术依赖核对清单 + §14 待拆讨论子主题** |
+| v1.0 草稿（100%） | 2026-06-15 | hub owner 拍板 (A) PGL 附录 + aNode 总称 + §13 + §14 + §15 |
+| **v1.1**（PR #4 follow-up） | **2026-06-15** | **响应 clestons review 2 个 design-open 项**：§6.2.1 Canary attestation 信任根 / §7.2 划界 / 演进路径；§4.4 Diversity Sybil 多层防御 |
 
 ---
 
