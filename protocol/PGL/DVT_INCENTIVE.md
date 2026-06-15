@@ -253,28 +253,139 @@ Hub orchestrator 流程：
 
 ---
 
-## 8. SP v5 `ROLE_DVT` 对接表
+## 8. SP v5 `ROLE_DVT` + `IPolicyRegistry` 对接表
 
-> ⏸️ **待 SP #283 ROLE_DVT slash 触发器接口定型后补充。**
->
-> 预期内容：
-> - `registerRole(ROLE_DVT)` 调用规范
-> - `BLSAggregator.registerBLSPublicKey` 与本文档 §3 策略哈希注册的接口对齐
-> - slash 触发条件链上映射：Canary 失败 / 策略哈希不符 / 长期失联
-> - 服务费结算合约调用接口
-> - trait 颁发合约与 SP v5 SBT 系统的对接
+> **依据冻结结论**（YetAnotherAA-Validator#42 issuecomment-4702143353 + `docs/design/dvt-node-protocol.md` + `dvt-policy-governance.md`）。
+> 由于 SP 侧 `IPolicyRegistry` 具体 Solidity 签名仍在 #283 落地中，本节按**已冻结的概念模型**对接；具体方法名以 SP 最终发布的 interface 为准。
+
+### 8.1 角色注册（复用现状，零变更）
+
+```
+DVT 节点上线：
+  1. Registry.registerRole(ROLE_DVT) + 质押 30 ether GToken
+  2. BLSAggregator.registerBLSPublicKey(...)   // H-02 自服务路径
+  3. PolicyRegistry.registerNodePolicy(policyHash, version, sourceUri)  // 上链承诺策略
+  4. 启动节点软件
+```
+
+### 8.2 策略哈希注册（命门一·独立性）
+
+| 本文档要求 | 冻结结论对应 | 备注 |
+|:---|:---|:---|
+| 节点上链注册策略哈希 + 版本 | `PolicyRegistry` per-sender / staked / governance-gated | 节点策略源 == slash 引用源（冻结结论 #6）|
+| 多样性 trait 颁发依据 | PolicyRegistry 可枚举所有已注册策略 | 链上可对比 hash 分布 |
+| 放松类策略变更 2 天时间锁；收紧/冻结即时 | 直接复用冻结结论 #6 | 时间锁内可被社区 review |
+
+### 8.3 Canary slash 触发器（命门二）
+
+| Canary 结果 | 链上动作 | 触发的 trait 变化 |
+|:---|:---|:---|
+| 节点签了 Canary（盲签） | `executeSlashWithBLS` 调用，按冻结结论的 `signerMask` + `sigG2` 提交证据 | `NoBlindSign` 立即清零；`OnDuty` 失效；如累计 → 节点被 burn SBT + 触发 stake slash |
+| 节点拒绝 Canary | `IDVTIncentive.recordCanaryPass(nodeAddr)` 累计 | `NoBlindSign` +1（向 100 累积）|
+| 节点 N 次连续失联 Canary | `IDVTIncentive.recordOffline(nodeAddr)` | `OnDuty` 扣减；连续 ≥ 阈值 → trait 失效 |
+
+> Canary 证据格式按冻结结论：`expectedMessageHash = userOpHash`（C1）+ `proof = (signerMask, sigG2)`（无 `pkG1` / `msgG2` / `messagePoint`），verifier 链上重算 `msgG2 = hash_to_curve(userOpHash, DST=BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_)`。
+
+### 8.4 服务费结算（现金腿）
+
+| 流程 | 调用 |
+|:---|:---|
+| 用户操作触发 DVT 共签 | SP `validatePaymasterUserOp` 检查 `IPolicyRegistry.shouldTriggerDVT(sender, op)` → 是 → 路由到 DVT |
+| 节点成功共签 | SP `postOp` 结算服务费 → `IDVTIncentive.distributeServiceFee(workHash, signerMask, amount)` |
+| 节点收到 | 普通经营所得，链上记录用于声誉腿统计 |
+
+**关键约束**（命门二）：服务费**按 `signerMask` 中的位数均分**，不按节点的「签了多少次累计」线性加权 → 任何节点单次共签的收益相同 → 没有「攒次数」的激励错配。
+
+### 8.5 状态 sender-keyed（冻结结论 #5）
+
+`todaySpent` 等累计状态必须 sender-keyed，本文档对应：
+- `NoBlindSign` 累积按 **(node, sender)** 计 → 防止节点对某 sender 始终签盲、对另一 sender 假装认真
+- 多样性 trait 评分按 **跨 sender 行为差异**计算
+
+### 8.6 与 RecoveryService / 时间锁的对齐
+
+- Guardian 复用 AirAccount 2-of-3 RecoveryService（冻结结论 #6）→ DVT 节点可申请 guardian 角色
+- 节点策略变更受时间锁约束 → `IDVTIncentive` 的 trait 颁发函数遵守相同时间锁
 
 ---
 
 ## 9. `IDVTIncentive.sol` Interface 草稿
 
-> ⏸️ **待 §8 完成后基于实际对接表生成。**
->
-> 预期内容：
-> - `interface IDVTIncentive` 完整方法签名
-> - trait 颁发 / 扣减 / 查询接口
-> - Canary 提交 / 验证 / slash 触发接口
-> - 服务费结算接口
+```solidity
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.20;
+
+/// @title IDVTIncentive — PGL 体系内 DVT 节点的激励合约接口
+/// @notice 对齐 YetAnotherAA-Validator#42 冻结结论 + SP v5 ROLE_DVT + IPolicyRegistry
+/// @dev SBT 完全不可转让；零人工裁决；触发条件全部机器可判
+interface IDVTIncentive {
+
+    // ============ Trait 类型 ============
+    enum Trait {
+        NoBlindSign,        // 连续 100 次 Canary 全通过
+        OnDuty,             // stake 在线 ≥ 60d + 响应率 ≥ 95% + 无 slash
+        Diversity,          // 策略哈希 / 运营者 / 软件栈 与中位数节点显著差异
+        PolicyPublisher,    // 上链注册策略哈希 + 可审计参照
+        LongStanding        // NoBlindSign + OnDuty 同持 ≥ 6 个月
+    }
+
+    // ============ Trait 状态查询 ============
+    /// @notice 查询某节点的 trait 累计计数（NoBlindSign 等线性 trait）
+    function traitCount(address node, Trait t) external view returns (uint256);
+
+    /// @notice 查询某节点的 trait 是否当前有效（OnDuty 等门限 trait）
+    function traitActive(address node, Trait t) external view returns (bool);
+
+    // ============ Canary 机制（命门二）============
+    /// @notice Hub orchestrator 提交：节点正确拒绝了 Canary
+    /// @dev 由 hub 多签 / DAO 验证后调用；累加 NoBlindSign
+    function recordCanaryPass(address node) external;
+
+    /// @notice 节点签了 Canary（盲签证据）
+    /// @dev 提交 BLS 聚合证据，链上 verifier 重算 msgG2 = hash_to_curve(userOpHash, DST)
+    ///      验证通过即触发 slash + trait 清零
+    function reportBlindSign(
+        address node,
+        bytes32 userOpHash,         // 冻结结论 #1: preimage = userOpHash
+        uint256 signerMask,         // 冻结结论 #3
+        bytes calldata sigG2        // 冻结结论 #3: 无 pkG1/msgG2/messagePoint
+    ) external;
+
+    /// @notice 节点连续失联（无法响应 Canary）
+    function recordOffline(address node, uint256 consecutiveMisses) external;
+
+    // ============ 服务费结算（现金腿）============
+    /// @notice SP postOp 调用，按 signerMask 中的位数均分服务费
+    /// @dev signerMask 位序 = ROLE_DVT 注册 slot（冻结结论 #3）
+    ///      bit i → validatorAtSlot[i+1]
+    function distributeServiceFee(
+        bytes32 workHash,
+        uint256 signerMask,
+        uint256 amount
+    ) external;
+
+    // ============ 策略哈希注册（命门一·独立性）============
+    /// @notice 节点上链注册自己的策略哈希 + 版本 + 可审计参照
+    /// @dev 复用 PolicyRegistry（冻结结论 #6: per-sender / staked / governance-gated）
+    function registerNodePolicy(
+        bytes32 policyHash,
+        uint16 version,
+        string calldata sourceUri    // IPFS / Arweave / git commit URL
+    ) external;
+
+    // ============ Trait 颁发 / 失效 事件 ============
+    event TraitIncreased(address indexed node, Trait indexed t, uint256 newCount);
+    event TraitInvalidated(address indexed node, Trait indexed t, bytes32 reason);
+    event ServiceFeeDistributed(bytes32 indexed workHash, uint256 signerMask, uint256 totalAmount);
+    event NodePolicyRegistered(address indexed node, bytes32 policyHash, uint16 version);
+    event BlindSignReported(address indexed node, bytes32 userOpHash);
+}
+```
+
+**实现注意**：
+- `recordCanaryPass` 入口必须由 hub orchestrator（多签 / DAO 角色）调用 —— 链上验证调用方权限，**避免任何节点自己 mint trait**
+- `reportBlindSign` 是**任何人可调**的 permissionless slash 提交（带 BLS 证据），鼓励第三方监督
+- SBT 实现层禁止 `transfer` / `approve`（Soulbound）；trait 失效时只允许合约自身 `burnTrait`
 
 ---
 
@@ -298,6 +409,28 @@ Hub orchestrator 流程：
 
 | 版本 | 日期 | 状态 |
 |:---|:---|:---|
-| v0.1 草稿（70%） | 2026-06-14 | §1-§7 + §10 完成；§8-§9 待 SP #283 接口定型后补 |
-| v0.2（目标） | TBD | §8 + §9 补全 → 进入 hub #42 命门复核 |
-| v1.0（目标） | TBD | 经 hub #42 + SP #283 双向 review 通过 → 合入 main 分支 |
+| v0.1 草稿（70%） | 2026-06-14 | §1-§7 + §10 完成；§8-§9 占位 |
+| **v0.2 草稿（95%）** | **2026-06-15** | **§8 + §9 基于 hub #42 冻结结论填充；待 hub owner 澄清「Charter 第六条 vs PGL 附录」范围问题** |
+| v1.0（目标） | TBD | Charter 范围澄清 + hub 命门复核通过 → 合入 main |
+
+---
+
+## 12. ⚠️ 待 hub #42 owner 澄清的范围问题
+
+hub #42 issuecomment-4702143353 第 6 项冻结结论原文：
+
+> **「激励落 PGL Charter，与 SuperPaymaster ROLE_DVT 的 slash 路径对齐。」**
+
+本文档 v0.1 + v0.2 草稿按**「PGL 附录，不动 Charter 主体五条」**实现（§1.2 + §10 明文）。两种合理解读：
+
+| 解读 | 含义 | 影响 |
+|:---|:---|:---|
+| **(A) PGL 框架内附录** | 本文档作为 `protocol/PGL/DVT_INCENTIVE.md` 独立存在，REVENUE/CITY_REP/README 加指针；Charter 主体五条不动 | 当前草稿即可，零额外修改 |
+| **(B) Charter 加第六条** | Charter.md 五条扩到六条，新增「**第六条 · 基础设施公物提供者**」纲领条文，本文档作为该条的实施细则 | 需要修改 CHARTER.md（含中英双语版） |
+
+我倾向 **(A)** —— 理由：
+- Charter 五条全部针对**端用户作品**（agent / app / model / skill），加第六条混入「基础设施角色」会让 Charter 概念不一致
+- PGL 整体设计哲学是「最小核心 + 多附录」（参考 CITY_REP.md 也是附录而非 Charter 第六条）
+- (A) 仍然「落在 PGL 体系内」（本文档明文复用 Charter 法律红线 + PGL 体系），不存在「脱离 PGL」的问题
+
+但**最终以 hub owner 决定为准**。如果 owner 选 (B)，我会在 v1.0 草拟 Charter 第六条文本（中英双语）+ 把本文档定位调整为「Charter 第六条实施细则」。
