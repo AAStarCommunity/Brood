@@ -419,27 +419,112 @@ interface IDVTIncentive {
 | 版本 | 日期 | 状态 |
 |:---|:---|:---|
 | v0.1 草稿（70%） | 2026-06-14 | §1-§7 + §10 完成；§8-§9 占位 |
-| **v0.2 草稿（95%）** | **2026-06-15** | **§8 + §9 基于 hub #42 冻结结论填充；待 hub owner 澄清「Charter 第六条 vs PGL 附录」范围问题** |
-| v1.0（目标） | TBD | Charter 范围澄清 + hub 命门复核通过 → 合入 main |
+| v0.2 草稿（95%） | 2026-06-15 | §8 + §9 基于 hub #42 冻结结论填充 |
+| **v1.0 草稿（100%）** | **2026-06-15** | **hub owner 拍板 (A) PGL 附录 + 引入 aNode 基础设施总称 + §13 技术依赖核对清单 + §14 待拆讨论子主题** |
 
 ---
 
-## 12. ⚠️ 待 hub #42 owner 澄清的范围问题
+## 12. Charter 范围决策 — ✅ (A) 锁定
 
 hub #42 issuecomment-4702143353 第 6 项冻结结论原文：
 
-> **「激励落 PGL Charter，与 SuperPaymaster ROLE_DVT 的 slash 路径对齐。」**
+> 「激励落 PGL Charter，与 SuperPaymaster ROLE_DVT 的 slash 路径对齐。」
 
-本文档 v0.1 + v0.2 草稿按**「PGL 附录，不动 Charter 主体五条」**实现（§1.2 + §10 明文）。两种合理解读：
+**hub owner 2026-06-15 拍板 = (A) PGL 附录**。
 
-| 解读 | 含义 | 影响 |
-|:---|:---|:---|
-| **(A) PGL 框架内附录** | 本文档作为 `protocol/PGL/DVT_INCENTIVE.md` 独立存在，REVENUE/CITY_REP/README 加指针；Charter 主体五条不动 | 当前草稿即可，零额外修改 |
-| **(B) Charter 加第六条** | Charter.md 五条扩到六条，新增「**第六条 · 基础设施公物提供者**」纲领条文，本文档作为该条的实施细则 | 需要修改 CHARTER.md（含中英双语版） |
+| 决策 | 含义 |
+|:---|:---|
+| **(A) PGL 框架内附录** ✅ 锁定 | 本文档作为 `protocol/PGL/DVT_INCENTIVE.md` 独立存在；CHARTER.md 主体五条**不动**；REVENUE/CITY_REP/README 加指针 |
 
-我倾向 **(A)** —— 理由：
-- Charter 五条全部针对**端用户作品**（agent / app / model / skill），加第六条混入「基础设施角色」会让 Charter 概念不一致
-- PGL 整体设计哲学是「最小核心 + 多附录」（参考 CITY_REP.md 也是附录而非 Charter 第六条）
-- (A) 仍然「落在 PGL 体系内」（本文档明文复用 Charter 法律红线 + PGL 体系），不存在「脱离 PGL」的问题
+→ 本文档 §1.2 + §10 的「不动 Charter 主体」实现保持有效，无额外修改。
 
-但**最终以 hub owner 决定为准**。如果 owner 选 (B)，我会在 v1.0 草拟 Charter 第六条文本（中英双语）+ 把本文档定位调整为「Charter 第六条实施细则」。
+「激励落 PGL Charter」的准确含义 = 「激励**落在 PGL 体系（Charter 法律红线 + 复用 SBT 不可转让 + 不发币）之内**」，而非「写进 Charter 五条主体」。
+
+---
+
+## 13. 基础设施总称 — aNode（forward compatibility）
+
+### 13.1 hub owner 2026-06-15 决策
+
+DVT 与 x402 facilitator 等**所有基础设施角色**统称为 **aNode**。当前为避免改动过大，本文档继续用「DVT」命名；**未来基础设施角色统一在 aNode 命名空间下**。
+
+### 13.2 影响本文档的命名映射
+
+| 当前命名（v1.0）| 未来 aNode 命名（向前兼容）|
+|:---|:---|
+| `ROLE_DVT` / `ROLE_DVT_NODE` | `ROLE_ANODE_DVT` 或 `ROLE_ANODE.DVT` |
+| `IDVTIncentive` | `IANodeIncentive` 或 `aNode.DVTIncentive` 模块 |
+| `DVT_INCENTIVE.md` | 未来可能成为 `ANODE_DVT_INCENTIVE.md` 或纳入 `protocol/aNode/` 子目录 |
+| `DVT_ECONOMICS.md` | 同上 |
+
+### 13.3 设计含义
+
+aNode 总称意味着：
+- DVT、x402 facilitator、**未来其他基础设施**（如 reputation oracle、data availability node、indexer 等）**共享同一套 PGL 激励范式**：trait + 服务费 + 命门约束
+- 本文档 §3 两条命门（独立性 + 不绑次数）**自然延展到所有 aNode 角色**
+- 节点运营者可同时持有多个 aNode 角色（如同一运营者同时跑 DVT + facilitator），trait 跨角色独立累积
+
+### 13.4 关联仓库
+
+- 线上：[`AAStarCommunity/aNode`](https://github.com/AAStarCommunity/aNode)（permissionless paymaster + gas token，当前活跃）
+- 本文档**不直接修改**该仓库，只声明「未来基础设施 PGL 激励规范集中到 aNode 命名空间下」
+
+---
+
+## 14. 技术依赖核对清单（Tech Dependencies Check）
+
+本节列出**实施 v1.0 设计**所依赖的所有外部技术，区分**已核对** vs **待核对** vs **外部决策**。
+
+### 14.1 已核对（基于 SP v5 source 直接确认）
+
+| # | 依赖项 | 实装位置 | 核对结论 |
+|:---:|:---|:---|:---:|
+| 1 | `ROLE_DVT` 初始化（stake / ticket / cooldown）| `SuperPaymaster/contracts/src/core/Registry.sol:85` | ✅ 30 ether stake, 3 ether ticket, 10 max keys, 30 days exit |
+| 2 | `BLSAggregator.registerBLSPublicKey` 自服务路径（H-02）| `SuperPaymaster/contracts/src/modules/monitoring/BLSAggregator.sol:232` | ✅ stake 跌破 minStake 自动失效逻辑已写 |
+| 3 | hub 冻结的签名格式 DST=POP | hub #42 [comment-4702127834](https://github.com/AAStarCommunity/YetAnotherAA-Validator/issues/42#issuecomment-4702127834) | ✅ `BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_` |
+| 4 | proof tuple `(signerMask, sigG2)` 位序 = ROLE_DVT 注册 slot | hub #42 [comment-4702127834](https://github.com/AAStarCommunity/YetAnotherAA-Validator/issues/42#issuecomment-4702127834) | ✅ |
+
+### 14.2 待核对（v1.0 → v1.1 实施前必须确认）
+
+| # | 依赖项 | 为什么需要 | 核对方法 |
+|:---:|:---|:---|:---|
+| 1 | `@noble/curves` v2.0.1 DST=POP 支持 | §8.3 Canary 证据 BLS verifier 链下生成 | 在 SDK #63 范围内验证；查 SDK lock 文件 |
+| 2 | EIP-2537 BLS precompile 在 Sepolia / OP mainnet 的支持状态 | §8.3 链上重算 msgG2 + pkAgg 重建依赖 G1ADD precompile | 查 OP-stack 升级日志 + 测试 fork 实际 gas 成本 |
+| 3 | `IPolicyRegistry` 具体 Solidity 签名 | §8.2 + §9 所有「per-sender / staked / governance-gated」调用都依赖此 interface | 等 SP #283 发布；目前用占位假设 |
+| 4 | `AAStarGlobalGuard.TokenConfig`（v0.18 已实装）实际字段形状 | §8.5 sender-keyed 状态机依赖每账户每资产 tier 阈值 | 读 airaccount-contract v0.18 源码 + hub #110 确认 |
+| 5 | `AirAccount RecoveryService` 2-of-3 接口 | §8.6 guardian 复用依赖 | 读 AirAccount KMS proto 源 + hub #70 确认 |
+| 6 | `PaymasterV4 oracle`（USD aggregator）| 全局 USD 兜底阈值需要喂价 | 读 PaymasterV4 源；确认 oracle 健康度 + heartbeat |
+| 7 | Mycelium SBT 系统现状 | 5 个 trait 实际颁发依赖 SBT 合约 | 找 mycelium 生态的 SBT 实装；如无，本文档要明文「待 SBT 合约 v1 落地」|
+| 8 | AgentStore curator 角色实装 | §5.2 trait 解锁 curator 权益需要 AgentStore 端有对应入口 | AgentStore 还未上线 → 标「v1.1 待 AgentStore MVP 后兑现」|
+| 9 | CityRep 实装状态 | §5.2 「数字基建守护者」引用依赖 CityRep 落地 | CityRep 现在是 RFC，标「v1.1 待 CityRep 上线后兑现」|
+
+### 14.3 外部决策（DAO / hub owner 拍板，非技术核对）
+
+| # | 决策项 | 当前默认 / 占位 | 谁决定 |
+|:---:|:---|:---|:---|
+| 1 | DVT 服务费率 F（单 op 费用）| 占位 $0.50-$2 区间 | Mycelium DAO |
+| 2 | Canary 抽样比例 | 占位 1/200 ～ 1/1000 | hub owner + DAO |
+| 3 | NoBlindSign 累积阈值（默认 100）| 100 次 Canary 通过 | hub owner + DAO |
+| 4 | OnDuty 阈值（响应率 ≥ 95%, stake ≥ 60d）| 默认 95% / 60d | hub owner + DAO |
+| 5 | LongStanding 阈值（≥ 6 个月）| 默认 6 个月 | hub owner + DAO |
+| 6 | opt-out 默认开 flip 时点 | 「DVT 网络成熟后」（定性，待量化）| hub owner |
+| 7 | slash 绝对金额（盲签 / 失联 / 策略不符 各档）| 占位 | DAO（实施前必须定）|
+
+---
+
+## 15. 待拆分讨论的子主题（hub line-comment 时 pin 这里）
+
+以下子主题**可能需要拆出独立讨论 / 独立子文档**。hub owner 可在 line-comment 时标记哪些要拆：
+
+| # | 子主题 | 现在位置 | 是否拆 |
+|:---:|:---|:---|:---|
+| 1 | Canary 协议细化（hub orchestrator 接口 + 反 Canary 识别 + 多样性 Canary）| §6 | 建议拆 `DVT_CANARY_PROTOCOL.md` |
+| 2 | `IPolicyRegistry` 接口最终定型 | §8.2 + §9 占位 | 不拆（等 SP #283）|
+| 3 | Slash 绝对金额 + cooldown 表 | §14.3 #7 占位 | 建议拆 `DVT_SLASH_TABLE.md`（DAO 提案模板）|
+| 4 | Mycelium SBT 合约选型 | §14.2 #7 待核对 | 建议拆 `MYCELIUM_SBT_CHOICE.md`（生态选型决策）|
+| 5 | DVT 服务费率 F 定价模型 | §14.3 #1 | 留在 `DVT_ECONOMICS.md` |
+| 6 | opt-out 默认开 flip 触发条件量化 | §14.3 #6 | 留在 `DVT_ECONOMICS.md` |
+| 7 | DVT 与 x402 facilitator 共享 aNode 体系的具体方式 | §13 概念 | **新增**：v1.1 时考虑 `ANODE_ARCHITECTURE.md` |
+| 8 | 服务费上下游资金流细节（用户 → SP → 节点 钱包）| §8.4 + §4.1 | 留在本文档（不必拆）|
+| 9 | Canary slash 与 Mycelium DAO 治理流程的衔接 | §3.2 + §6 | 留在本文档 |
+| 10 | trait 持有者商业可信度的对外证明方式（API / 签名）| §5.2 | 建议拆 `DVT_REPUTATION_API.md`|
