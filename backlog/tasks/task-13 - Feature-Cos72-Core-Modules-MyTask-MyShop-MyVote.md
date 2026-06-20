@@ -23,21 +23,20 @@ ordinal: 3000
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Implement the three core modules for Cos72 Chrome Plugin.
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 35%** | MushroomDAO/MyTask 近 30 天 12 次提交，最近一次 2026-04-29；以 license/SPDX/CLA 合规为主，feature 进展放缓
+**🚀 预估进度: 35%** | Cos72 9 天 3 次提交（badge / license / @clestons code owner）；MyTask 9 天 1 次提交（license 五件套）；feature 维度仍无进展
 
 **✅ AC 完成情况**:
-- 🔧 #1 MyTask: Community tasks execution — Sprint 1 完成（x402/hono SDK、EIP-3009 签名验证、Jury 合约），近期主要为合规提交
-- ⬜ #3 MyVote: Snapshot-based governance voting — 仓库存在但近期无 feature 进展
+- 🔧 #1 MyTask: Community tasks execution — Sprint 1 已完成，本期无新 feature
+- ⬜ #3 MyVote: Snapshot-based governance voting — 仓库存在但仍无 feature 进展
 - ✅ #4 MyShop: Redeem points for goods/services — MushroomDAO/MyShop M1 功能完整
 
-**📝 近期动态** (MushroomDAO/MyTask):
-- 近 30 天 12 次提交，最近一次 2026-04-29
-- 全部为 license/CLA/SPDX 合规提交（Apache 2.0 五件套）
-- 无 feature 维度新进展
+**📝 近期动态**:
+- Cos72 2026-06-20: chore: fix badge formatting (#51) + Apache 2.0 license 合规 (#52) + @clestons as code owner (#53)
+- MyTask 2026-06-20: chore: Apache 2.0 license 合规五件套 (#8)
 
-💡 MyTask Sprint 1 + MyShop M1 已完成，本期主要在做合规清理。剩余 65% 主要为 MyVote 启动 + Cos72 主仓库核心集成。
+💡 本期仍以合规收尾为主，feature 维度静默。剩余 65% 主要为 MyVote 启动 + Cos72 主仓库核心集成。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -91,6 +91,9 @@
 | registry | aastar/registry | 2026-04-15 | 注册表 |
 | research | aastar/research | 2026-04-15 | 研究记录 |
 | zu.coffee | aastar/zu.coffee | 2026-04-15 | （社区站点）|
+| aastar-docs | aastar/aastar-docs | 2026-06-20 | 🆕 SDK 文档站（v0.16.23）|
+| aastar-examples | aastar/aastar-examples | 2026-06-20 | 🆕 SDK 示例集合 |
+| abi-docs-kit | aastar/abi-docs-kit | 2026-06-13 | 🆕 ABI 文档生成工具 |
 
 > 已归档的旧仓库（在 GitHub 标记 archived）：Adapters, Gateway, AnotherAirAccountCommunityNode —— 不本地化。
 

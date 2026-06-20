@@ -30,24 +30,18 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 40%** | 主仓库 `AAStarCommunity/UltraRelay-AAStar` (aastar-dev 分支)，近 30 天 24 次提交，最近 2026-05-06；本期主要为 upstream merge + Mycelium @-include
+**🚀 预估进度: 40%** | `AAStarCommunity/UltraRelay-AAStar` 9 天 0 次提交，最近一次 2026-06-03（chore: add @clestons code owner）。aastar-dev 分支静默 ≈ 16 天
 
 **✅ AC 完成情况**:
-- ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定，多个 fix 入主线（PR #26 entry point deposit）
-- ⬜ Accept aPNTs and ETH to pay the service — 未见相关实现
-- 🔧 Accept EIP-7702 request and be a relay server — authorizationList 在 estimateGas 中持续维护
-- ⬜ Be any relay server with permission service — 未见相关实现
-- 🔧 More feats inherited from ultrabundler — geometric retry escalation、mempool replacement、max-executors/wallets 验证、debug handler bundle 提交保护
+- ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定
+- ⬜ Accept aPNTs and ETH to pay the service — 未启动
+- 🔧 Accept EIP-7702 request and be a relay server — authorizationList 维护中
+- ⬜ Be any relay server with permission service — 未启动
 
-**📝 近期动态** (aastar-dev 分支):
-- 2026-05-06: 最近一次提交（活跃迭代）
-- chore: bump viem 2.27.0 → 2.37.7
-- fix: geometric retry escalation 保证 mempool replacement 有效
-- fix: non-sponsored estimate via EntryPoint deposit override (#26)
-- fix: 多个 bundle/wallets/executors 边界条件
-- merge: upstream zerodevapp/ultra-relay gas_optimization 分支
+**📝 近期动态**:
+- 2026-06-03: chore: add @clestons code owner（治理调整，无 feature 进展）
 
-💡 aastar-dev 分支持续吸收 upstream 优化 + 自主修复，已具备生产可用度。剩余 60% 主要为 aPNTs 支付集成 + 权限化 relay 设计。
+💡 本期 Bundler 进入静默期，建议本周或下周激活，否则会拖累 Phase 2 aPNTs 链上支付路径。
 <!-- SECTION:DESCRIPTION:END -->

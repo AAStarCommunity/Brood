@@ -26,19 +26,18 @@ demo先设计和完成，给社区用户体验，给sdk和airaccount集成提供
   1. cos72.mushroom.dev，在线demo 0.1版本，演示demo+真实注册可用（可docker自部署）🚧
 5. sp提供社区面板，改进registry repo；🚧
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 20%** | 关联仓库 `AAStarCommunity/Cos72`（`~/Dev/Community/Cos72`）近 30 天 18 次提交，最近一次 2026-04-29；以 license 合规为主，feature 进展放缓
+**🚀 预估进度: 20%** | `AAStarCommunity/demo` 9 天 0 次提交，最近 2026-04-15（仍静默）。Cos72 主仓库本期 3 次提交均为 license/badge/owner 治理
 
 **✅ AC 完成情况**:
-- ⬜ #1 Define Card structure, Implement Points system, Develop Perks distribution — Cos72 主仓库本期主要做合规清理，Cards/Points/Perks 核心功能未启动
+- ⬜ #1 Define Card structure, Implement Points system, Develop Perks distribution — Cards/Points/Perks 核心功能未启动
 
-**📝 近期动态** (AAStarCommunity/Cos72):
-- 2026-04-29: 最近一次提交
-- 全部为 license/CLA/badge 合规提交（Apache 2.0 五件套 + PR #50）
-- `AAStarCommunity/demo` 仓库无近期更新，最近一次 2025-10-10
+**📝 近期动态**:
+- AAStarCommunity/demo：最近 2026-04-15，连续静默 ≥ 60 天
+- AAStarCommunity/Cos72：2026-06-20 3 次治理提交，无 feature
 
-💡 Cos72 本期专注 license 合规，核心 Cards/Points/Perks 仍待启动。剩余 80% 主要为产品形态定义与首版交付。
+💡 Cos72 demo 仍未启动，剩余 80% 主要为产品形态定义与首版交付。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
