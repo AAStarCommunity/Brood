@@ -15,7 +15,7 @@ updated_date: '2026-06-21 10:00'
 
 | Phase | 加权进度 | 任务数 | 说明 |
 |:---|:---:|:---:|:---|
-| **Phase 1**: Genesis Launch | **70%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
+| **Phase 1**: Genesis Launch | **71%** | 13个任务 | Done=6, In Progress=5, To Do=2 |
 | **Phase 2**: Community Expansion | **7%** | 8个任务 | Done=0, In Progress=2, To Do=6 |
 | **Phase 3**: Ecosystem Maturity | **11%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
 | **Research**: Papers + Experiments | **46%** | 7个任务 | Done=1, In Progress=5, To Do=1 |
@@ -33,7 +33,7 @@ updated_date: '2026-06-21 10:00'
 | TASK-31 | SuperPaymaster | **95%** | AAStarCommunity/SuperPaymaster | 06-16 | **v5.4.0-beta.1 mainnet GA prep** + Sepolia fresh redeploy + TX-Value-Verification 5 文档 |
 | TASK-23 | Meta Phase 1 Genesis Launch | **92%** | MushroomDAO/launch | 06-20 | **AAStar+AuraAI landing pages** (#12) + ZUAEC 参赛研究入仓 (#13) |
 | TASK-9 | CometENS 免费子域名 | **82%** | MushroomDAO/CometENS | 06-18 | **DNSSEC verify runbook** + identity-pages plan + DNS-domain integration 三连 PR |
-| TASK-5 | AirAccount + YetAnotherAA | **78%** | AAStarCommunity/{AirAccount,YetAnotherAA} | 06-20 | **passkey-guardian 端到端 UI/recovery** + AirAccount v0.23.2 (Beta5) |
+| TASK-5 | Account 全栈 (AirAccount+SDK+aNode+UI) | **88%** | 5 repos | 06-20 | **SDK v0.20.9→0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + passkey-guardian 端到端 |
 | TASK-34 | AuraAI | **68%** | agent-speaker + 5 repos | 06-20 | **agent-speaker TUI Chat #4 合入** + bunker 修复 + serve auth flags |
 | TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 06-20 | 1 commit（license 合规） |
 | TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 06-03 | 9 天 0 commit，进入静默期 |
@@ -139,7 +139,7 @@ updated_date: '2026-06-21 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
-| 2026-06-21 | **70%** | **7%** | **11%** | **TASK-31 ↑95%（v5.4.0-beta.1 mainnet GA prep + Sepolia fresh redeploy + TX 验证 5 文档）**；**TASK-5 ↑78%（passkey-guardian 端到端 UI/recovery 上线 + AirAccount v0.23.2 Beta5）**；**TASK-9 ↑82%（DNSSEC runbook + identity-pages + DNS 集成三 PR 合入）**；TASK-23 ↑92%（AAStar+AuraAI landing + ZUAEC 参赛入仓）；TASK-34 ↑68%（agent-speaker TUI Chat 合入 + serve auth）；TASK-36 ↑25%（zeroclaw 30+ commit 高频活跃） |
+| 2026-06-21 | **71%** | **7%** | **11%** | **TASK-31 ↑95%（v5.4.0-beta.1 mainnet GA prep + Sepolia fresh redeploy + TX 验证 5 文档）**；**TASK-5 ↑88%（补扫 aastar-sdk + aNode Validator + aastar-docs：SDK v0.24.1 + DVT v1.5.0 testnet always-on + passkey-guardian 端到端）**；**TASK-9 ↑82%（DNSSEC runbook + identity-pages + DNS 集成三 PR 合入）**；TASK-23 ↑92%（AAStar+AuraAI landing + ZUAEC 参赛入仓）；TASK-34 ↑68%（agent-speaker TUI Chat 合入 + serve auth）；TASK-36 ↑25%（zeroclaw 30+ commit 高频活跃） |
 | 2026-06-12 | **68%** | **7%** | **11%** | **TASK-31 ↑92%（v5.3.3-beta.2 发布 + 18 v5.4 issues）**；**TASK-5 ↑70%（AirAccount 全量安全审计 P0+High 修复 + MX93）**；TASK-23 ↑90%（EIP-7702 gasless 3-flow UX 上线）；TASK-34 ↑65%（iDoris-SDK M2-M5 完成 + AgentSocial 新仓库）；TASK-9 ↑75%（生产化重启）；TASK-32 ↑30%（Paper7 v7 + 可复现 artifacts） |
 | 2026-05-28 | **67%** | **7%** | **9%** | **TASK-31 ↑90%（Paper3 投稿 BRA + v5.3.2 全测 + GToken v2.2.0）**；TASK-23 ↑85%（5-18 路演完成 + ACN-Agent on Pi 工程化）；TASK-34 ↑55%（74 commits 5 仓库）；TASK-32 ↑25%（Paper7 第二版数据收集中） |
 | 2026-05-12 | **67%** | **7%** | **9%** | TASK-31 85%、TASK-23 80%、TASK-9 70%、TASK-34 50% |

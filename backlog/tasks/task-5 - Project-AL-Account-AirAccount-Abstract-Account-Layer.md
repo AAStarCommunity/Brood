@@ -14,6 +14,9 @@ dependencies:
   - TASK-3
 references:
   - 'https://github.com/AAStarCommunity/YetAnotherAA'
+  - 'https://github.com/AAStarCommunity/aastar-sdk'
+  - 'https://github.com/AAStarCommunity/YetAnotherAA-Validator'
+  - 'https://github.com/AAStarCommunity/aastar-docs'
 ordinal: 6000
 ---
 
@@ -26,28 +29,26 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 ### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 78%** | YetAnotherAA 9 天 30+ 次提交 + AirAccount v0.23.2 (Beta5) 发布；**passkey-guardian 端到端 UI/recovery 上线** + **API key auth 进入正式 release** + **KMS 依赖风险与 P-256 迁移路径文档化**
+**🚀 预估进度: 88%** | 关联 5 仓库（AirAccount + YetAnotherAA + aastar-sdk + YetAnotherAA-Validator + aastar-docs）9 天累计 **440+ 次提交**；**SDK 主干 v0.20.9 → v0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + **passkey-guardian 端到端 UI/recovery**
 
 **✅ AC 完成情况**:
 - 🔧 #1 Support Social Login — WebAuthn passkey + v0.6.0 lazy KMS（已完成）
-- ✅ **passkey-guardian 完整流程上线**（YetAnotherAA #332-336）：UI account creation + backend recovery (proposeRecoveryWithSig, relayed) + recovery UI WebAuthn ceremony + in-UI guide + 每日 ETH 限额 presets
-- ✅ **AirAccount v0.23.1 + v0.23.2 (Beta5)** 发布：API key 强制 + operator-configurable RP + api-key CLI scriptable
-- ✅ **TRUST 文档**：硬件安全基础（enclave）6 点 + PSA 说明
-- ✅ #102 guardian KMS-dependency 风险 + DR/trust 澄清 + P-256 迁移路径文档（PR #103）
-- ✅ RELEASE-CHECKLIST 文档化：lib 变更需重建并部署 CLI 二进制（api-key / kms-admin）
+- ✅ **passkey-guardian 完整流程上线**（YetAnotherAA #332-336）：UI account creation + backend recovery (proposeRecoveryWithSig, relayed) + WebAuthn ceremony 中继 + in-UI guide + ETH 限额 presets
+- ✅ **aastar-sdk v0.24.1 GA-ready**：DVT through-EntryPoint + validator-router + default nodes + Gap B deployAndWireValidator（一调部署 + setValidator on-chain e2e）+ DVT pin v1.5.0
+- ✅ **YetAnotherAA-Validator v1.5.0 (aNode DVT)**：testnet always-on + clone-and-deploy + dvt-testnet.sh（管理 3 testnet 节点 + cloudflared tunnel）+ prod-node E2E verifier（3 独立节点 → 链上 validate===0）
+- ✅ **aastar-docs SDK 文档站持续 sync**：0.20.9 → 0.22.0 → 0.23.0 → 0.24.0 同步完毕 + SDK release runbook 入仓
+- ✅ **AirAccount v0.23.1 + v0.23.2 (Beta5)** 发布：API key 强制 + operator-configurable RP + api-key CLI scriptable + #102 guardian KMS 依赖风险 + P-256 迁移路径文档
 - 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现
 - ⬜ Enable Cross-Chain Operations — 未启动
 
-**📝 近期动态**:
-- AirAccount 2026-06-20: release v0.23.2 (Beta5) + api-key CLI scriptable + KMS deps risk docs
-- AirAccount 2026-06-?: docs API key auth + management CLI（generate/list/revoke）in README
-- YetAnotherAA #336 2026-06-20: feat(account) clarify daily limit is native-ETH + suggested presets
-- YetAnotherAA #335 2026-06-?: feat(account) in-UI passkey-guardian guide + pre-filled daily limit
-- YetAnotherAA #334 2026-06-?: feat(recovery) passkey-guardian recovery UI (WebAuthn → relayed)
-- YetAnotherAA #333 2026-06-?: feat(guardian) backend passkey-guardian recovery proposeRecoveryWithSig
-- YetAnotherAA #332 2026-06-?: feat(account) passkey-guardian account creation in UI (default path)
+**📝 近期动态** (5 仓库聚合):
+- aastar-sdk 2026-06-20: v0.24.1 (Gap B deployAndWireValidator one-call deploy + wire) + v0.24.0 (DVT through-EntryPoint + validator-router + default nodes; DVT pin v1.5.0)
+- YetAnotherAA-Validator 2026-06-20: v1.5.0 testnet always-on DVT + clone-and-deploy + dvt-testnet.sh + prod-node E2E verifier
+- aastar-docs 2026-06-20: sync SDK 0.24.0 + SDK release runbook in CLAUDE.md
+- AirAccount 2026-06-20: release v0.23.2 (Beta5) api-key CLI scriptable + KMS deps risk docs
+- YetAnotherAA #332-336 (2026-06-20): passkey-guardian end-to-end UI + backend + recovery
 
-💡 passkey-guardian 从合约 → 后端 → UI 整链路打通，AirAccount Beta5 API-key 进入正式 release 节奏。安全 + 硬件 + 备份 + Guardian recovery 四里程碑齐全。剩余 22% 为 Cross-Chain Operations 启动 + Session Keys 收口。
+💡 Account 全栈（合约 + SDK + DVT 节点 + 文档 + UI）在 9 天内集中突破：SDK 进入 0.24.x，aNode DVT 进入 always-on testnet 可复制部署，passkey-guardian 全链路打通。剩余 12% 为 Cross-Chain Operations 启动 + Session Keys 收口 + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
