@@ -1,0 +1,42 @@
+类别	模型名称	参数量	内存占用	量化/格式	运行时	驻留策略	适用场景	备注
+═══ 主力 LLM（oMLX 管理，互斥加载）═══
+LLM	Qwen3-30B-A3B	30.5B (激活3.3B)	32GB	8bit MLX	oMLX	默认常驻	日常全能·128K上下文·信息收集·文案·翻译	MoE 稀疏架构，90%日常首选
+LLM	Qwen3.6-27B	27B	35GB	8bit MLX	oMLX	场景切换	代码开发·结构化输出	Dense 架构
+LLM	Qwen3-32B	32.8B	41GB	8bit MLX	oMLX	场景切换	深度推理·高质量长文创作	Dense 旗舰，余量仅7GB
+═══ 常驻服务 ═══
+嵌入/RAG	bge-m3	568M	1.5GB	—	Ollama	常驻	文档嵌入·RAG检索	开机自启
+预处理	Apple Intelligence 3B	3B	2GB	—	apfel	按需启动	笔记摘要·关键词·CSV解析·格式预处理	Neural Engine加速
+═══ 图片生成（独立脚本，用完即卸）═══
+图片生成	FLUX.1-schnell	12B	16GB	8bit MLX	mflux	用完即卸	快速文生图（~20s/张）	MLX原生，推荐
+图片生成	FLUX.1-dev	12B	16GB	8bit MLX	mflux	用完即卸	高质量文生图（25+steps）	MLX原生
+图片生成	SDXL	3.5B	6-8GB	FP16	Draw Things / ComfyUI	用完即卸	轻量文生图·LoRA·ControlNet	可与30B LLM共存
+图片生成	SD 1.5	0.9B	4GB	CoreML	MochiDiffusion	用完即卸	最快出图·成熟生态
+═══ 语音合成 TTS（独立脚本，用完即卸）═══
+TTS	F5-TTS	155M	2-3GB	—	PyTorch MPS	用完即卸	快速TTS·RTF 0.15	最轻量选择
+TTS	CosyVoice2-0.5B	500M	3GB	—	PyTorch MPS	用完即卸	中文语音克隆·多语种·口播	推荐中文
+TTS	ChatTTS	300M	4GB	—	PyTorch MPS	用完即卸	对话式中文/英文TTS
+TTS	Bark (small)	300M	2.3GB	—	transformers MPS	用完即卸	多语种+音效·表情丰富
+═══ 视频生成（独立脚本，必须独占）═══
+视频生成	LTX-2.3 Distilled Q4	2B	19GB	Q4 MLX	ltx-video-mac	用完即卸	短视频生成·64GB最佳选择	推荐，必须先卸载LLM
+视频生成	LTX-2 Unified	2B	42GB	MLX	ltx-video-mac	用完即卸	高质量视频·占满预算	仅视频独占时用
+视频生成	Wan2.1-T2V-1.3B	1.3B	24GB	MLX	Wan2.2-mlx	用完即卸	文生视频·较慢	备选
+═══ 文档处理（独立脚本，用完即卸）═══
+OCR	GOT-OCR2	580M	3-4GB	—	transformers MPS	用完即卸	端到端OCR·图片/PDF
+PDF转换	Marker (Surya)	150M	2-3GB	—	pip install marker-pdf	用完即卸	PDF→Markdown
+OCR	Surya	150M	2-3GB	—	pip install surya-ocr	用完即卸	90+语种OCR·表格识别
+═══ 翻译（复用LLM或独立）═══
+翻译	(复用 Qwen3-30B-A3B)	—	0 额外	—	oMLX	跟随主力	日常中英/日/韩翻译	原生100+语种
+翻译	NLLB-200-distilled-600M	600M	3GB	FP32	transformers MPS	用完即卸	200语种批量翻译
+翻译	NLLB-200-1.3B	1.3B	5-6GB	FP32	transformers MPS	用完即卸	高质量多语种翻译
+翻译	Helsinki-NLP OPUS-MT	50-80M/对	<1GB	—	transformers	用完即卸	特定语对·极速
+═══ 场景内存预算 ═══
+场景	配置	总占用	余量	适用
+场景A: 日常	oMLX(30B-A3B) + Ollama(BGE)	49.5GB	14.5GB	信息收集·文档·博客·社媒
+场景B-1: 文案+口播	oMLX(30B-A3B) + CosyVoice2	51GB	13GB	脚本创作+口播生成
+场景B-2: 图片素材	SDXL(6-8GB) 独立	22-24GB	40-42GB	批量出图（卸载LLM）
+场景B-2: 图片素材(高质量)	mflux FLUX-schnell(16GB)	32GB	32GB	高质量出图（卸载LLM）
+场景B-3: 视频合成	LTX-2.3 Q4(19GB) 独占	35GB	29GB	AI短片+Final Cut剪辑
+场景C: 代码开发	oMLX(Qwen3.6-27B) + Ollama(BGE)	52.5GB	11.5GB	代码生成+代码检索
+场景D: 深度推理	oMLX(Qwen3-32B) 独占	57GB	7GB	深度推理·长文创作
+场景E: 翻译	oMLX(30B-A3B)	48GB	16GB	复用日常LLM
+场景E: OCR	GOT-OCR2 + oMLX(30B-A3B)	52GB	12GB	OCR+LLM后处理
