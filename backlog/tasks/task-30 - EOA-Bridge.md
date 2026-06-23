@@ -29,17 +29,17 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 20%** | 关联仓库 `jhfnetboy/DSR-Research-Flow` 未本地克隆，无法分析近 30 天提交
+**🚀 预估进度: 20%** | `jhfnetboy/DSR-Research-Flow`（本地 `~/Dev/jhfnetboy/`）9 天 2 次提交：awesome-ai-research-writing 子模块接入 + 使用指南。Paper6 本身仍为 Not started
 
 **✅ AC 完成情况**:
-- ⬜ Paper6: Gasless EOA Bridge (7702) — 仍为 "Not started"，DSR P1-P6 均未开始
-- DSR repo 当前资源仍集中于 Paper3（SuperPaymaster）和 Paper7（CommunityFi）
+- ⬜ Paper6: Gasless EOA Bridge (7702) — DSR P1-P6 均未开始
+- 🔧 DSR repo 写作工具链增强（awesome-ai-research-writing skill 接入）
 
-**📝 近期动态**:
-- DSR-Research-Flow 仓库未本地 clone（应放在 ~/Dev/tmp/）
-- Paper6 排队待启动，Paper3/7 投稿仍是当前优先级
+**📝 近期动态** (jhfnetboy/DSR-Research-Flow):
+- 2026-06-16: docs(skills): usage guide for awesome-ai-research-writing submodule
+- 2026-06-?: feat(skills): add awesome-ai-research-writing as submodule + usage doc
 
-💡 EOA Bridge (Paper6) 仍在队列中。建议 clone DSR repo 到 ~/Dev/tmp/ 以获取最新论文进度。
+💡 DSR 在 paper 工程化工具上推进，但 Paper6 本身仍在队列。Paper3/7 投稿后建议启动 Paper6 P1。
 <!-- SECTION:DESCRIPTION:END -->

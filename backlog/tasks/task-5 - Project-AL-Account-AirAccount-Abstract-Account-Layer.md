@@ -14,6 +14,9 @@ dependencies:
   - TASK-3
 references:
   - 'https://github.com/AAStarCommunity/YetAnotherAA'
+  - 'https://github.com/AAStarCommunity/aastar-sdk'
+  - 'https://github.com/AAStarCommunity/YetAnotherAA-Validator'
+  - 'https://github.com/AAStarCommunity/aastar-docs'
 ordinal: 6000
 ---
 
@@ -24,26 +27,28 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 70%** | 关联仓库 `AirAccount` 近期最新提交 2026-06-11；**2026-06-11 全量安全审计 P0 + High findings 全部修复** + MX93 硬件适配 + 备份系统上线
+**🚀 预估进度: 88%** | 关联 5 仓库（AirAccount + YetAnotherAA + aastar-sdk + YetAnotherAA-Validator + aastar-docs）9 天累计 **440+ 次提交**；**SDK 主干 v0.20.9 → v0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + **passkey-guardian 端到端 UI/recovery**
 
 **✅ AC 完成情况**:
 - 🔧 #1 Support Social Login — WebAuthn passkey + v0.6.0 lazy KMS（已完成）
-- ✅ **安全审计 2026-06-11**：所有 P0 + High findings 修复，Challenger-confirmed review C-1..4, H-3..6, M-1,3,4,5 处理完毕
-- ✅ MX93 硬件适配：REE-FS fallback + on-hardware fixes + MX93 build pipeline
-- ✅ 备份系统：comprehensive KMS CA/TA + metadata 备份，BACKUP-GUIDE.md（含 full/incremental + 恢复步骤）
+- ✅ **passkey-guardian 完整流程上线**（YetAnotherAA #332-336）：UI account creation + backend recovery (proposeRecoveryWithSig, relayed) + WebAuthn ceremony 中继 + in-UI guide + ETH 限额 presets
+- ✅ **aastar-sdk v0.24.1 GA-ready**：DVT through-EntryPoint + validator-router + default nodes + Gap B deployAndWireValidator（一调部署 + setValidator on-chain e2e）+ DVT pin v1.5.0
+- ✅ **YetAnotherAA-Validator v1.5.0 (aNode DVT)**：testnet always-on + clone-and-deploy + dvt-testnet.sh（管理 3 testnet 节点 + cloudflared tunnel）+ prod-node E2E verifier（3 独立节点 → 链上 validate===0）
+- ✅ **aastar-docs SDK 文档站持续 sync**：0.20.9 → 0.22.0 → 0.23.0 → 0.24.0 同步完毕 + SDK release runbook 入仓
+- ✅ **AirAccount v0.23.1 + v0.23.2 (Beta5)** 发布：API key 强制 + operator-configurable RP + api-key CLI scriptable + #102 guardian KMS 依赖风险 + P-256 迁移路径文档
 - 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现
 - ⬜ Enable Cross-Chain Operations — 未启动
 
-**📝 近期动态** (AAStarCommunity/AirAccount):
-- 2026-06-11: feat(mx93): REE-FS fallback + on-hardware fixes + MX93 build pipeline
-- 2026-06-10: security: fix all P0 + High findings from 2026-06-11 full audit
-- 2026-06-09: fix: address challenger-confirmed review findings (C-1..4, H-3..6, M-1,3,4,5)
-- 2026-06-05: docs: add BACKUP-GUIDE.md with full/incremental mechanism, restore steps
-- 2026-06-02: feat: comprehensive backup system for KMS CA/TA and metadata
+**📝 近期动态** (5 仓库聚合):
+- aastar-sdk 2026-06-20: v0.24.1 (Gap B deployAndWireValidator one-call deploy + wire) + v0.24.0 (DVT through-EntryPoint + validator-router + default nodes; DVT pin v1.5.0)
+- YetAnotherAA-Validator 2026-06-20: v1.5.0 testnet always-on DVT + clone-and-deploy + dvt-testnet.sh + prod-node E2E verifier
+- aastar-docs 2026-06-20: sync SDK 0.24.0 + SDK release runbook in CLAUDE.md
+- AirAccount 2026-06-20: release v0.23.2 (Beta5) api-key CLI scriptable + KMS deps risk docs
+- YetAnotherAA #332-336 (2026-06-20): passkey-guardian end-to-end UI + backend + recovery
 
-💡 安全审计 + 硬件适配 + 备份系统三个工程化里程碑同时落地，AirAccount 接近生产就绪。剩余 30% 主要为 Cross-Chain Operations 启动 + onboarding 流程联调。
+💡 Account 全栈（合约 + SDK + DVT 节点 + 文档 + UI）在 9 天内集中突破：SDK 进入 0.24.x，aNode DVT 进入 always-on testnet 可复制部署，passkey-guardian 全链路打通。剩余 12% 为 Cross-Chain Operations 启动 + Session Keys 收口 + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

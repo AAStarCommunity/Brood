@@ -1,4 +1,4 @@
-# PGL DVT 激励规范（附录）/ DVT Incentive Spec (PGL Appendix)
+# PGL aNode - DVT 激励规范（附录）/ DVT Incentive Spec (PGL Appendix)
 
 > 版本：v0.1 草稿（70%，待 SP #283 ROLE_DVT 接口定型后补 §8-§9） · 最后更新：2026-06-14
 > 关联：协调 hub [`YetAnotherAA-Validator#42`](https://github.com/AAStarCommunity/YetAnotherAA-Validator/issues/42) · 上游 [`SuperPaymaster#283`](https://github.com/AAStarCommunity/SuperPaymaster/issues/283) · 本 issue [`Brood#3`](https://github.com/AAStarCommunity/Brood/issues/3)

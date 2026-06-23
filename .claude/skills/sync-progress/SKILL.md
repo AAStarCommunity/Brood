@@ -210,6 +210,75 @@ python3 ${REPO_ROOT}/scripts/scan-repo-status.py
 
 **这一步让 orchestrator 拥有 repo-centric 视野**：不仅看到 In Progress 任务关联的仓库，还能识别长期静默 / 待激活 / 漂移的仓库，是 Brood 作为生态大脑的关键摘要数据源。
 
+#### 步骤 0-7：孤儿活跃仓库检测（强制，事故防御）
+
+> ⚠️ **事故教训（2026-06-21）**：sync-progress 2026-06-21 漏扫了 `aastar-sdk`（217 commits/9d）+ `YetAnotherAA-Validator`（116 commits/9d）+ `aastar-docs`（15 commits/9d），原因是这些仓库不在任何 task 的 `references:` 字段里。
+> 用户发现并反馈："为何这几个仓库都没有进度展示变化？更新了很多"。
+> 根因：sync-progress 完全依赖 task references 做扫描入口，**有大量提交但无 task 绑定的仓库会被默默跳过**。
+
+**目标**：在进入第一步之前，**主动报警**所有"高活跃但未绑定 task"的仓库，让 orchestrator 决定归属，杜绝漏扫。
+
+**执行步骤**：
+
+1. 用以下 Python 检测：所有 In Progress task 的 `references:` URL 标准化后存入 `referenced_set`，对 `found_repos` 中每个三大 org 仓库，统计 9 天 commit 数 + 检查是否被任一 task 引用：
+
+```python
+import subprocess, re, glob
+
+# Collect all referenced URLs from In Progress tasks
+referenced = set()
+for f in sorted(glob.glob(f'{REPO_ROOT}/backlog/tasks/*.md')):
+    content = open(f).read()
+    fm = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not fm: continue
+    if 'In Progress' not in (re.search(r'^status:\s*(.+)', fm.group(1), re.M) or type('',(),{'group':lambda*_:''})).group(1):
+        continue
+    for u in re.findall(r'https://github\.com/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+', content):
+        owner, repo = u.replace("https://github.com/","").rstrip("/").split("/")[:2]
+        referenced.add(f"{owner.lower()}/{repo.lower()}")
+
+# Find high-activity orphans
+THRESHOLD = 30  # 9 天内提交数门槛
+orphans = []
+for (path, remote, org, last) in found_repos:
+    owner, repo = remote.replace("https://github.com/","").rstrip("/").split("/")[-2:]
+    key = f"{owner.lower()}/{repo.lower()}"
+    if key in referenced:
+        continue
+    # Skip Brood self
+    if "brood" in repo.lower():
+        continue
+    r = subprocess.run(["git","-C",path,"log","--all","--oneline","--since","9 days ago"],
+                       capture_output=True, text=True, timeout=10)
+    count = len([l for l in r.stdout.split("\n") if l.strip()])
+    if count >= THRESHOLD:
+        orphans.append((count, key, path, remote))
+
+if orphans:
+    orphans.sort(reverse=True)
+    print(f"\n⚠️ 检测到 {len(orphans)} 个高活跃但未绑定 task 的孤儿仓库（9 天 commits ≥ {THRESHOLD}）:\n")
+    for count, key, path, remote in orphans:
+        print(f"  🔴 {key} — {count} commits/9d ({remote})")
+    print("\n⛔ 必须先决定每个孤儿仓库的归属：")
+    print("   选项 A: 加到现有最相关 task 的 references 字段")
+    print("   选项 B: 新建独立 task 跟踪")
+    print("   选项 C: 显式跳过（在本 skill 的 IGNORE_LIST 里记一笔）")
+    print("\n建议主动询问用户：「检测到 X 个孤儿活跃仓库，每个归到哪个 task？」\n")
+else:
+    print(f"\n✅ 无孤儿活跃仓库（所有 ≥{THRESHOLD} commits/9d 的仓库都被 task 引用）")
+```
+
+2. **强制要求**：检测到孤儿仓库时，**必须**在第一步开始前用 AskUserQuestion 或文本明确列出，等待用户决定归属后再继续。**不可静默跳过**，否则会重演 2026-06-21 事故。
+
+3. 用户决定归属后：
+   - 选 A：用 Edit 工具将 URL 追加到目标 task 的 `references:` 字段（参考第一步·五的写入规则）
+   - 选 B：用 backlog CLI 新建 task（`npx backlog task create ...`）并加 references
+   - 选 C：在 skill 内部维护 `IGNORE_LIST`（如 fork-only / archived 仓库）— 当前默认 IGNORE_LIST 为空
+
+4. 完成归属后继续 Phase 0-5 摘要 + 第一步。
+
+**门槛 30 的选择依据**：30 commits/9d ≈ 3-4 commits/day，是有意义工程化活动的下限。低于此可能只是 license/chore 治理提交。可根据 IGNORE_LIST 适度调整。
+
 ---
 
 ### 第一步：收集进行中的任务

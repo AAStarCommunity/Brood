@@ -28,21 +28,18 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-12 扫描)
+### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 30%** | aastar-sdk 仓库 community/research 子目录有 Paper7 实质性进展：**v7 long-horizon dynamics** + **Sankey budget-flow 可视化** + 可复现 artifacts
+**🚀 预估进度: 30%** | DSR-Research-Flow 9 天 2 次提交（research-writing skill 工具链）。Paper7 第二版工程化数据在上次扫描周期已就绪，本期无新论文产出
 
 **✅ AC 完成情况**:
 - ✅ Paper7 第一版：CommunityFi DSR P1-P6 全部 Done，JBBA 投稿包就绪
-- 🔧 **Paper7 第二版（v7）数据收集**：long-horizon dynamics (churn / burnout / recruitment) 已建模
-- ✅ **Paper7 可复现 artifacts** 已建立
-- ✅ **Sankey budget-flow 可视化** 已成型
-- 🔧 投稿：JBBA 投稿包等待第二版数据完成后正式提交
-- ⬜ 链上信用系统合约：等 SuperPaymaster v5.4 issue 推进（#215 P1-35 recordDebt cumulative cap + TTL）
+- 🔧 Paper7 第二版（v7）数据收集：long-horizon dynamics / Sankey budget-flow / reproducible artifacts 已就绪（截至 2026-06-12）
+- 🔧 投稿：JBBA 投稿包等待第二版数据收尾
+- ⬜ 链上信用系统合约：等 SuperPaymaster v5.4 推进（#215 P1-35 recordDebt cumulative cap + TTL）
 
-**📝 近期动态** (AAStarCommunity/aastar-sdk community/research):
-- 2026-06-08: feat(CommunityFi): v7 long-horizon dynamics - churn, burnout, recruitment
-- 2026-06-05: feat(community/research): add Sankey budget-flow visualization for paper7
-- 2026-06-03: feat(community/research): add CommunityFi paper7 reproducible artifacts
+**📝 近期动态**:
+- DSR-Research-Flow 2026-06-16: docs/feat(skills) awesome-ai-research-writing submodule
 
-💡 Paper7 第二版工程化推进顺利（v7 动力学 + 可视化 + 可复现），剩余 70% 主要为期刊投稿提交 + v5.4 链上信用系统整合。
+💡 论文层本期暂无产出，应在 SuperPaymaster v5.4 mainnet 落地后立即启动 Paper7 第二版投稿。剩余 70% 主要为期刊投稿提交 + v5.4 链上信用系统整合。
+<!-- SECTION:DESCRIPTION:END -->
