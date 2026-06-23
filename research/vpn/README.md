@@ -192,6 +192,8 @@ Mesh VPN 的核心流程：
 | [01-easytier.md](./01-easytier.md) | EasyTier 原理、架構、完整搭建步驟、故障排查 |
 | [02-netbird.md](./02-netbird.md) | NetBird 原理、Docker 部署、團隊管理配置、ACL 策略 |
 | [03-headscale.md](./03-headscale.md) | Headscale 原理、自建控制面、Tailscale 客戶端接入、DERP 配置 |
+| [04-onboarding-guide.md](./04-onboarding-guide.md) | 新員工 VPN 接入指南（可直接發給新人，5 分鐘上手） |
+| [05-local-testing.md](./05-local-testing.md) | 本地測試環境搭建（Mac Docker → Cloudflare Tunnel → 生產） |
 
 ---
 
