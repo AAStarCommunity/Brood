@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  /* ---- hand-drawn explainer deck ---- */
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --ink:#1a1a1a; --orange:#e8763a; --red:#d23b2e; --blue:#2f6fb0;
+    --gray:#f3f1ec; --grayline:#b9b4a8;
+    --hand:"Hannotate SC","Hanzipen SC","Baoli SC",sans-serif;
+    --hand2:"Hanzipen SC","Hannotate SC",sans-serif;
+  }
+  body{ background:#888; font-family:var(--hand); color:var(--ink); }
+  .slide{
+    width:1280px; height:720px; background:#fdfcf9; position:relative;
+    overflow:hidden; page-break-after:always; padding:52px 64px;
+  }
+  /* subtle paper texture via faint dots */
+  .slide::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(rgba(0,0,0,.018) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .kicker{ font-family:var(--hand2); color:var(--blue); font-size:21px; letter-spacing:1px; }
+  h1.title{ font-size:50px; line-height:1.12; margin:2px 0 6px; font-weight:400; }
+  h1.title .u{ border-bottom:5px solid var(--orange); padding-bottom:2px;}
+  .red{color:var(--red);} .orange{color:var(--orange);} .blue{color:var(--blue);}
+  .sub{ font-family:var(--hand2); font-size:23px; color:#444; line-height:1.5; }
+  .pageno{ position:absolute; right:26px; bottom:18px; font-family:var(--hand2);
+    color:var(--grayline); font-size:18px;}
+  .foot{ position:absolute; left:64px; bottom:20px; font-family:var(--hand2);
+    color:#9a9488; font-size:18px;}
+
+  /* hand-drawn box: wobbly border via SVG filter */
+  .box{ position:relative; border:2.5px solid var(--ink); border-radius:10px;
+    padding:16px 18px; background:#fff; filter:url(#rough); }
+  .box.gray{ background:var(--gray); }
+  .box.o{ border-color:var(--orange); }
+  .box.r{ border-color:var(--red); }
+  .box.b{ border-color:var(--blue); }
+  .box h3{ font-size:25px; font-weight:400; margin-bottom:6px;}
+  .box p,.box li{ font-family:var(--hand2); font-size:20px; line-height:1.42; color:#333;}
+  .box ul{ list-style:none; }
+  .box li::before{ content:"· "; color:var(--orange); font-weight:700;}
+
+  .row{ display:flex; gap:22px; }
+  .col{ flex:1; }
+  .center{ text-align:center; }
+  .big{ font-size:30px;} .bigger{font-size:36px;}
+
+  .arrow{ font-size:30px; color:var(--orange); align-self:center;}
+  .down{ text-align:center; color:var(--orange); font-size:26px; margin:6px 0;}
+
+  /* 小J presenter */
+  .xiaoj{ position:absolute; bottom:14px; right:30px; width:118px; height:140px;}
+  .bubble{ position:absolute; bottom:120px; right:150px; max-width:260px;
+    font-family:var(--hand2); font-size:19px; color:#333; background:#fff;
+    border:2px solid var(--ink); border-radius:14px; padding:8px 12px;
+    filter:url(#rough);}
+  .bubble:after{ content:"";position:absolute; right:-9px; bottom:14px;
+    border-left:10px solid var(--ink); border-top:7px solid transparent;
+    border-bottom:7px solid transparent;}
+
+  .barwrap{ width:100%; height:62px; border:2.5px solid var(--ink); border-radius:8px;
+    display:flex; overflow:hidden; filter:url(#rough); font-size:22px;}
+  .barwrap .seg{ display:flex; align-items:center; justify-content:center; color:#fff;}
+  .seg20{ width:20%; background:var(--grayline);} .seg80{ width:80%; background:var(--orange);}
+
+  table.cmp{ width:100%; border-collapse:collapse; font-family:var(--hand2);}
+  table.cmp td,table.cmp th{ border:2px solid var(--ink); padding:10px 12px; font-size:20px;}
+  table.cmp th{ background:var(--gray); font-family:var(--hand); font-size:22px; font-weight:400;}
+  .tick{color:#2e9e4f;font-weight:700;} .cross{color:var(--red);font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- SVG hand-drawn roughen filter + 小J template -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="rough">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <symbol id="xj" viewBox="0 0 120 150">
+    <!-- puffer jacket body -->
+    <path d="M32 84 q-10 4 -11 28 l0 32 l78 0 l0 -32 q-1 -24 -11 -28 l-14 -6 l-16 0 z"
+      fill="#3a3a3a" stroke="#1a1a1a" stroke-width="2.5"/>
+    <line x1="26" y1="106" x2="96" y2="106" stroke="#000" stroke-width="1.3" opacity=".45"/>
+    <line x1="26" y1="124" x2="96" y2="124" stroke="#000" stroke-width="1.3" opacity=".45"/>
+    <!-- two simple arms at the sides -->
+    <path d="M30 92 q-9 11 -7 30" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M90 92 q9 11 7 30" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- red backpack straps (signature) -->
+    <path d="M46 84 l-5 54" stroke="#d23b2e" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M74 84 l5 54" stroke="#d23b2e" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- neck -->
+    <rect x="53" y="66" width="14" height="14" fill="#f0d9b8" stroke="#1a1a1a" stroke-width="2"/>
+    <!-- head -->
+    <circle cx="60" cy="46" r="23" fill="#f6e3c5" stroke="#1a1a1a" stroke-width="2.5"/>
+    <!-- sideburns / 络腮胡 along the jaw -->
+    <path d="M39 48 q1 13 9 19" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M81 48 q-1 13 -9 19" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- fluffy hair + fringe -->
+    <path d="M36 46 q-5 -34 24 -36 q29 2 24 36 q-6 -17 -17 -15 q-3 9 -9 6 q-2 -9 -8 -5 q-8 -1 -10 14 z"
+      fill="#1a1a1a"/>
+    <path d="M50 30 q5 9 -2 15" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+    <!-- eyes -->
+    <circle cx="52" cy="48" r="2.6" fill="#1a1a1a"/><circle cx="68" cy="48" r="2.6" fill="#1a1a1a"/>
+    <!-- goatee / 山羊胡 chin tuft -->
+    <path d="M52 63 q8 13 16 0 q-2 11 -8 12 q-6 -1 -8 -12 z" fill="#1a1a1a"/>
+  </symbol>
+</svg>
+
+<!-- ============ SLIDE 1 — 封面 ============ -->
+<section class="slide">
+  <div style="height:80px"></div>
+  <div class="center">
+    <div class="kicker">Mycelium Protocol 出品</div>
+    <h1 class="title" style="font-size:78px; margin-top:10px;">Hyphae <span style="font-size:48px;">菌丝</span></h1>
+    <div class="big" style="margin:4px 0 28px;">中小组织的<span class="orange">专属智能菌丝</span></div>
+  </div>
+  <div class="row" style="max-width:980px; margin:0 auto;">
+    <div class="box gray center" style="font-size:26px;">
+      把 AI 装进<span class="red">你自己的硬件</span>，<br>长成懂你业务的<span class="orange">数字合伙人</span>
+    </div>
+  </div>
+  <div class="center sub" style="margin-top:30px;">
+    开源 &nbsp;·&nbsp; 本地运行 &nbsp;·&nbsp; 数据不出门 &nbsp;·&nbsp; 越用越懂你
+  </div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="foot">jhfnetboy@gmail.com · 2026 于昆明</div>
+  <div class="pageno">01 / 10</div>
+</section>
+
+<!-- ============ SLIDE 2 — 问题 ============ -->
+<section class="slide">
+  <div class="kicker">问题 / The Problem</div>
+  <h1 class="title">全球 <span class="red">5000 万</span>家中小组织，被 AI 浪潮<span class="u">抛弃</span></h1>
+  <div class="row" style="margin-top:26px;">
+    <div class="col box"><h3>① 没人会用</h3>
+      <ul><li>老板想用，团队不会</li><li>不懂微调 / RAG / prompt</li></ul></div>
+    <div class="col box"><h3>② 数据不能上云</h3>
+      <ul><li>律所卷宗 · 医院病历</li><li>监管禁止传到别人服务器</li></ul></div>
+    <div class="col box"><h3>③ 业务太特殊</h3>
+      <ul><li>每家流程都独一无二</li><li>通用工具不解决</li></ul></div>
+  </div>
+  <div class="box r" style="margin-top:28px; font-size:24px;">
+    AI 巨头（估值 <span class="red">150 亿美金</span>的 Firework）客户全是 Cursor / Notion 这种 AI 原生公司。
+    <b>中小组织？没人服务。</b> ← 这就是我们的市场
+  </div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="pageno">02 / 10</div>
+</section>
+
+<!-- ============ SLIDE 3 — 真相（真实引用） ============ -->
+<section class="slide">
+  <div class="kicker">认知 / The Insight</div>
+  <h1 class="title">AI 落地难，不在<span class="orange">模型</span>，在<span class="u">业务与数据</span></h1>
+  <div class="row" style="margin-top:22px;">
+    <div class="col box"><h3 class="red">85%</h3>
+      <p>企业 AI 项目因<b>数据质量差 / 缺相关数据</b>而失败</p>
+      <p class="sub" style="font-size:15px;color:#888;">Gartner, 2025</p></div>
+    <div class="col box"><h3 class="red">88% → 39%</h3>
+      <p>88% 企业用了 AI，<b>只有 39% 看到利润影响</b></p>
+      <p class="sub" style="font-size:15px;color:#888;">McKinsey 全球 AI 调研, 2025</p></div>
+    <div class="col box o"><h3 class="orange">50-70%</h3>
+      <p>成功 AI 项目的时间与预算花在<b>「数据就绪」</b>，不是模型</p>
+      <p class="sub" style="font-size:15px;color:#888;">Gartner</p></div>
+  </div>
+  <div class="box gray" style="margin-top:22px; font-size:21px; line-height:1.5;">
+    <b>我的判断（创始人，20 年软件 + 10 年 ERP 经验）：</b>
+    模型谁都买得到；真正难、真正值钱的，是那 50-70% 的<span class="red">业务理解与数据工程</span> ——
+    比如一家蛋糕店在<b>下雨天 + 库存高 + 员工请假</b>时该不该摆集市。<span class="orange">技术能买，业务理解买不到。</span>
+  </div>
+  <div class="bubble">数字是行业的，<br>判断是我的</div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="foot" style="font-size:14px;color:#aaa;">数据来源：Gartner 2025 / McKinsey Global AI Survey 2025（详见演讲备注）</div>
+  <div class="pageno">03 / 10</div>
+</section>
+
+<!-- ============ SLIDE 4 — 方案 分层栈 ============ -->
+<section class="slide">
+  <div class="kicker">方案 / The Product</div>
+  <h1 class="title">Hyphae = <span class="orange">数字合伙人</span>，不是聊天框</h1>
+  <div class="sub" style="margin:6px 0 18px;">装在你自己的 Mac Studio（32-128GB）= 一个小组织的 AI 大脑</div>
+  <div style="display:flex; flex-direction:column; gap:10px; max-width:980px;">
+    <div class="box b"><b class="blue">桌面壳</b> &nbsp;员工浏览器 / 钉钉 / 飞书 直接用</div>
+    <div class="box"><b>编排</b> &nbsp;懂业务的 Agent 帮你决策 + 排流程</div>
+    <div class="box"><b>记忆</b> &nbsp;记住你的客户、门店、每一次历史决策</div>
+    <div class="box"><b>知识库</b> &nbsp;读懂你公司所有文档</div>
+    <div class="box o"><b class="orange">模型</b> &nbsp;本地 Qwen + 你的行业专属微调</div>
+  </div>
+  <div class="center big" style="margin-top:18px;">
+    数据 <span class="red">100% 不出门</span> · token <span class="orange">永久免费</span> · <span class="blue">越用越懂你</span>
+  </div>
+  <div class="pageno">04 / 10</div>
+</section>
+
+<!-- ============ SLIDE 5 — 4 个不一样 ============ -->
+<section class="slide">
+  <div class="kicker">差异化 / Why Different</div>
+  <h1 class="title">给企业的 <span class="orange">4 个"不一样"</span></h1>
+  <div class="row" style="margin-top:24px;">
+    <div class="col box"><h3>① 数据主权</h3>
+      <p>数据 + 模型都在你硬件里<br><span class="red">律所 / 医院 / 政府终于能用 AI</span></p></div>
+    <div class="col box"><h3>② 本地零成本</h3>
+      <p>token 永久免费，不按量计费<br><span class="red">用越多越省，不被卡脖子</span></p></div>
+  </div>
+  <div class="row" style="margin-top:20px;">
+    <div class="col box"><h3>③ 记忆 + 演进</h3>
+      <p>记住业务，月度自动进化<br><span class="red">今天的 AI 比上月更懂你</span></p></div>
+    <div class="col box"><h3>④ 行业 know-how</h3>
+      <p>不是通用 AI，是懂你这行的老炮儿<br><span class="red">蛋糕店 / 律所 各有判断范式</span></p></div>
+  </div>
+  <div class="center sub" style="margin-top:20px;">这四点，任何<b>云端大模型</b>都给不了</div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="pageno">05 / 10</div>
+</section>
+
+<!-- ============ SLIDE 6 — 场景 + 蛋糕店 ============ -->
+<section class="slide">
+  <div class="kicker">场景 / Use Cases</div>
+  <h1 class="title">什么情况下用？<span class="orange">越往下越值钱</span></h1>
+  <div class="row" style="margin-top:18px;">
+    <div class="col">
+      <div class="box" style="margin-bottom:8px;"><b>获客</b> &nbsp;"帮我写明天的朋友圈 + 海报"</div>
+      <div class="box" style="margin-bottom:8px;"><b>提效</b> &nbsp;"库存提醒 + 客户分类 + 复购触发"</div>
+      <div class="box r"><b class="red">决策</b> &nbsp;"下雨天库存高，该不该摆集市？"</div>
+    </div>
+    <div class="col box gray">
+      <h3>实例：杭州蛋糕坊「星妈烘焙」</h3>
+      <p style="margin-top:6px;">每早 <b class="orange">7:30</b> 推送：今日 3 个方案 + 推荐 + 理由</p>
+      <ul style="margin-top:4px;">
+        <li>雨天到店送泡芙（拉新客）</li>
+        <li>蛋挞 9 折清库存</li>
+        <li>或休息让数据自然走</li>
+      </ul>
+      <p style="margin-top:6px;"><span class="blue">[采纳] [修改] [拒绝]</span> → 反馈回流，下月更懂</p>
+    </div>
+  </div>
+  <div class="center big" style="margin-top:16px;">从"工具"到"<span class="red">合伙人</span>"的跨越</div>
+  <div class="pageno">06 / 10</div>
+</section>
+
+<!-- ============ SLIDE 7 — 竞争优势 ============ -->
+<section class="slide">
+  <div class="kicker">竞争优势 / Moat</div>
+  <h1 class="title">赢在<span class="orange">别人不碰</span>的地方</h1>
+  <table class="cmp" style="margin-top:18px;">
+    <tr><th style="width:30%"></th><th>对手</th><th>Hyphae</th></tr>
+    <tr><td><b>vs Firework</b><br>(云端巨头)</td>
+        <td><span class="cross">✗</span> 服务 AI 公司，放弃中小组织<br><span class="cross">✗</span> 数据必须上云</td>
+        <td><span class="tick">✓</span> 专攻中小组织无人区<br><span class="tick">✓</span> 数据不出门</td></tr>
+    <tr><td><b>vs 传统 SaaS</b><br>(钉钉/CRM)</td>
+        <td><span class="cross">✗</span> 表格 + 流程<br><span class="cross">✗</span> vendor lock-in 锁死你</td>
+        <td><span class="tick">✓</span> 会决策的大脑<br><span class="tick">✓</span> 开源，随时能走</td></tr>
+  </table>
+  <div class="box o" style="margin-top:18px; font-size:20px;">
+    <b>6 大护城河</b> ｜ ① 20年软件+10年ERP业务know-how &nbsp; ② 中小组织无人区卡位 &nbsp;
+    ③ <span class="orange">Mycelium 共建生态</span>（复用 8 个兄弟产品，省 800-2500 万美金）
+  </div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="pageno">07 / 10</div>
+</section>
+
+<!-- ============ SLIDE 8 — 商业模式（产品化，不靠人力） ============ -->
+<section class="slide">
+  <div class="kicker">商业模式 / Business Model</div>
+  <h1 class="title">卖<span class="orange">产品化的持续价值</span>，不卖贴身服务</h1>
+  <div class="box gray" style="margin-top:14px; font-size:20px;">
+    <b class="red">关键认知：</b>对小组织，人力贴身服务成本爆炸、根本不 scale。我们交付的是
+    <b>可复利、自动运转</b>的产品价值 ——
+  </div>
+  <div class="row" style="margin-top:16px;">
+    <div class="col box"><h3>① 碎片流程 AI 化</h3>
+      <p>把零散的活儿一件件自动化（文案/海报/对账/提醒）</p></div>
+    <div class="col box"><h3>② 系统数据同步</h3>
+      <p>接入已有系统（钉钉/CRM/Excel），数据自动流动</p></div>
+  </div>
+  <div class="row" style="margin-top:12px;">
+    <div class="col box o"><h3 class="orange">③ 持续进化</h3>
+      <p>每月自动变得更懂你，越用越值钱</p></div>
+    <div class="col box r"><h3 class="red">④ 行业判断推送</h3>
+      <p>主动推送决策建议，不用你开口问</p></div>
+  </div>
+  <div class="center big" style="margin-top:16px;">
+    开源底座<span class="blue">免费</span>（建信任 + 攒数据）→ <span class="orange">订阅式产品价值</span> + 行业模型训练
+  </div>
+  <div class="pageno">08 / 10</div>
+</section>
+
+<!-- ============ SLIDE 9 — 为什么是我们（已启动建设 + 方向正确） ============ -->
+<section class="slide">
+  <div class="kicker">为什么是我们 / Why Us</div>
+  <h1 class="title">不是空想 —— <span class="orange">已动工在建</span>，且<span class="u">方向正确</span></h1>
+  <div class="row" style="margin-top:18px;">
+    <div class="col box b">
+      <h3 class="blue">① 我们已经启动建设</h3>
+      <ul>
+        <li><b>AuraAI 在建</b>：Agent24（桌面 Agent 框架）</li>
+        <li>iDoris（个人 AI）· AgentSocial · AgentSpeaker</li>
+        <li>三篇论文 + LoRA 训练 SOP（已沉淀方法论）</li>
+      </ul>
+      <p style="margin-top:6px;"><span class="red">不是 PPT，是正在建设的真实系统</span></p>
+    </div>
+    <div class="col box o">
+      <h3 class="orange">② 技术方向大概率正确</h3>
+      <ul>
+        <li>小服装厂 / 民宿客栈 / 诊所 / 培训机构</li>
+        <li>引入<b>全流程 AI 太难</b>，市面也<b>没有适配的</b></li>
+        <li>"自我培养适用自己的 AI" 是唯一可行路线</li>
+      </ul>
+      <p style="margin-top:6px;"><span class="red">特定行业 + 大量数据训练 → 达到可用标准</span></p>
+    </div>
+  </div>
+  <div class="box r" style="margin-top:18px; font-size:22px;">
+    对标 Firework AI 在中大型组织的需求程度 —— <b>这是中小组织的下一波「SaaS AI 化」</b>。
+    谁先把行业数据训出可用的 AI，谁就卡住这个位置。
+  </div>
+  <div class="center sub" style="margin-top:10px;">落地节奏：形态 A 开箱 → B 标准（记忆+Agent）→ C 进阶（自我演进），渐进交付</div>
+  <div class="pageno">09 / 10</div>
+</section>
+
+<!-- ============ SLIDE 10 — 收尾 ============ -->
+<section class="slide">
+  <div style="height:60px"></div>
+  <div class="center">
+    <h1 class="title" style="font-size:54px;">让每个小组织都有<span class="u">自己的 AI 大脑</span></h1>
+    <div class="sub" style="margin:18px 0; font-size:26px;">
+      不是又一个 AI 工具，<br>是装在你硬件里、懂你业务、<span class="orange">越用越聪明的数字合伙人</span>
+    </div>
+  </div>
+  <div class="box r center" style="max-width:900px; margin:24px auto 0; font-size:24px;">
+    Firework 的护城河深到不可正面挑战。<br>
+    但他们<b>刻意不服务中小组织</b> —— <span class="red">这才是 Hyphae 的金矿</span>
+  </div>
+  <div class="center sub" style="margin-top:28px;">
+    由 <b class="blue">Mycelium Protocol</b> 数字公共物品生态出品 &nbsp;·&nbsp; jhfnetboy@gmail.com
+  </div>
+  <svg class="xiaoj"><use href="#xj"/></svg>
+  <div class="pageno">10 / 10</div>
+</section>
+
+</body>
+</html>
