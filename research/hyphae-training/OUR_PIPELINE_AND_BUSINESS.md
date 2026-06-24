@@ -1,6 +1,13 @@
-# OUR_PIPELINE_AND_BUSINESS.md — Hyphae Training 完整流程 + HyperCapital 商业服务
+# OUR_PIPELINE_AND_BUSINESS.md — Hyphae Training 完整流程 + 商业服务
 
-> ⭐ **这是本研究目录的最终落地文档**：把前面所有调研整合为 Hyphae Training 的完整训练流程 + HyperCapital 怎么赚钱的具体设计。
+> ⚠️ **口径更新（2026-06-24）**：本文"HyperCapital 顾问/工程师一对一辅导"的**交付主体已变更**。
+> 落地不靠 Hyphae 雇人贴身服务（成本爆炸、不 scale），改由**区域/行业运营合伙人分润**完成；
+> 收入主体从"一次性辅导服务包"转向"**订阅式产品价值 + 行业模型训练**"。
+> 下文**训练技术流程（Step 1-5）仍有效**，只是"由谁做落地"从 HyperCapital 员工 → 运营合伙人。
+> 权威商业口径见 [../hyphae/POSITIONING.md](../hyphae/POSITIONING.md)；联邦学习见 [FEDERATED_LEARNING.md](./FEDERATED_LEARNING.md)。冲突以 POSITIONING 为准。
+
+> ⭐ **这是本研究目录的最终落地文档**：把前面所有调研整合为 Hyphae Training 的完整训练流程 + 怎么赚钱的具体设计。
+> （阅读时把"HyperCapital 顾问"理解为"运营合伙人（分润）"。）
 
 ---
 
