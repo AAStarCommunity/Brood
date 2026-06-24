@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * ETHGlobal Faucet — 每日自動領取
+ * ETHGlobal Faucet — 每日自動領取測試幣
  *
+ * 前置: node setup.js（只需一次，完整複製 Chrome Profile）
  * 用法:
  *   node claim.js              日常 headless 領取
- *   node claim.js --dry-run    模擬，不實際點擊
- *   node claim.js --headed     顯示瀏覽器窗口調試
- *   node claim.js --chain sepolia-11155111-eth  只領取指定鏈
+ *   node claim.js --dry-run    模擬，不點擊
+ *   node claim.js --headed     顯示瀏覽器窗口
+ *   node claim.js --chain sepolia-11155111-eth  單鏈
  */
 
-const { chromium } = require('playwright');
+const { chromium } = require('playwright-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+chromium.use(StealthPlugin());
 const fs = require('fs');
 const path = require('path');
 
@@ -18,8 +21,8 @@ const CONFIG = {
   userDataDir: path.join(__dirname, 'browser-profile'),
   claimLogPath: path.join(__dirname, 'claim-log.json'),
   cooldownMs: 23.5 * 60 * 60 * 1000,
-  claimTimeoutMs: 90_000,
-  pageTimeoutMs: 30_000,
+  claimTimeoutMs: 120_000,
+  chainCooldownMs: 5000,
 };
 
 const args = process.argv.slice(2);
@@ -32,122 +35,123 @@ function log(msg, lv = 'info') {
   const icons = { info: '📋', success: '✅', warn: '⚠️', error: '❌', start: '🚀', skip: '⏭️' };
   console.log(`[${ts}] ${icons[lv] || '  '} ${msg}`);
 }
-
-const loadClaimLog = () => {
-  try { return fs.existsSync(CONFIG.claimLogPath) ? JSON.parse(fs.readFileSync(CONFIG.claimLogPath, 'utf8')) : {}; }
-  catch { return {}; }
-};
-const saveClaimLog = d => fs.writeFileSync(CONFIG.claimLogPath, JSON.stringify(d, null, 2));
+const loadLog = () => { try { return fs.existsSync(CONFIG.claimLogPath) ? JSON.parse(fs.readFileSync(CONFIG.claimLogPath, 'utf8')) : {}; } catch { return {}; } };
+const saveLog = d => fs.writeFileSync(CONFIG.claimLogPath, JSON.stringify(d, null, 2));
 const canClaim = (slug, log) => { const l = log[slug]; return !l || Date.now() - new Date(l).getTime() >= CONFIG.cooldownMs; };
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-async function getAvailableChains(page) {
-  await page.goto(`${CONFIG.baseUrl}/faucet/`, { waitUntil: 'networkidle', timeout: CONFIG.pageTimeoutMs });
-  await page.waitForTimeout(3000);
+// ── 掃描列表頁 ──
+async function scanFaucetList(page) {
+  for (const strategy of ['load', 'domcontentloaded']) {
+    try { await page.goto(`${CONFIG.baseUrl}/faucet/`, { waitUntil: strategy, timeout: 20000 }); break; }
+    catch { if (strategy === 'domcontentloaded') throw new Error('列表頁無法載入'); }
+  }
+  await page.waitForTimeout(4000);
 
   const chains = await page.evaluate(() => {
     const results = [];
-    const links = document.querySelectorAll('a[href*="/faucet/"]');
     const seen = new Set();
-    for (const link of links) {
+    for (const link of document.querySelectorAll('a[href*="/faucet/"]')) {
       const href = link.getAttribute('href');
-      if (!href || href === '/faucet/' || seen.has(href)) continue;
+      if (!href || href === '/faucet/' || href === '/faucet' || seen.has(href)) continue;
+      if (href.includes('/auth') || href.includes('/login')) continue;
+      if (!/\/faucet\/[a-zA-Z0-9_-]+/.test(href)) continue;
       seen.add(href);
-      const parent = link.closest('div, section, article, li') || link.parentElement;
-      const text = parent?.textContent || '';
-      if (text.includes('Available') || text.includes('available')) {
-        const nameEl = parent.querySelector('h2, h3, h4, [class*="name"], [class*="title"]');
-        results.push({
-          name: (nameEl?.textContent || link.textContent || href.split('/').pop()).trim(),
-          url: href.startsWith('http') ? href : `https://ethglobal.com${href}`,
-          slug: href.split('/').pop(),
-        });
+
+      let node = link, isUnavailable = false;
+      for (let i = 0; i < 4 && node && node.tagName !== 'BODY'; i++) {
+        if (/Unavailable/i.test(node.textContent || '')) { isUnavailable = true; break; }
+        node = node.parentElement;
       }
+      if (isUnavailable) continue;
+
+      const rawName = (link.childNodes[0]?.textContent || link.textContent || '').trim();
+      const cleanName = rawName.split(/[\n\r]+/)[0].split(',')[0].trim();
+      results.push({
+        name: cleanName || href.split('/').pop(),
+        url: href.startsWith('http') ? href : `https://ethglobal.com${href}`,
+        slug: href.split('/').pop(),
+      });
     }
     return results;
   });
 
-  log(`發現 ${chains.length} 條可用鏈`);
+  log(`列表頁: ${chains.length} 條鏈`);
+  for (const c of chains) log(`  ${c.name}`, 'detail');
   return chains;
 }
 
-async function claimChain(context, chain) {
+// ── 單鏈 Claim ──
+async function claimOne(context, chain) {
   const page = await context.newPage();
-  const result = { chain: chain.slug, name: chain.name, status: 'unknown', detail: '' };
+  const r = { slug: chain.slug, name: chain.name, status: 'unknown', detail: '' };
 
   try {
-    log(`處理: ${chain.name}`);
-    await page.goto(chain.url, { waitUntil: 'networkidle', timeout: CONFIG.pageTimeoutMs });
+    await page.goto(chain.url, { waitUntil: 'load', timeout: 20000 });
     await page.waitForTimeout(3000);
+    const bodyText = await page.evaluate(() => document.body?.textContent || '');
 
-    // 登錄檢查
-    const loggedIn = await page.evaluate(() => {
-      const b = document.body.textContent || '';
-      return !b.includes('Login to access faucet') && !b.includes('Login to ETHGlobal');
-    });
-    if (!loggedIn) { result.status = 'logged_out'; result.detail = '登錄態過期'; await page.close(); return result; }
+    if (bodyText.includes('Login to access faucet')) {
+      r.status = 'logged_out'; r.detail = '需登錄'; log(`  ❌ 未登錄`, 'error'); await page.close(); return r;
+    }
 
-    // CD 檢查
-    const cd = await page.evaluate(() => {
-      const b = document.body.textContent || '';
-      const m = b.match(/(come back in \d+h|next claim in \d+h|\d+h \d+m remaining)/i);
-      return m ? m[0] : null;
-    });
-    if (cd) { result.status = 'cooldown'; result.detail = cd; log(`  ${cd}`, 'skip'); await page.close(); return result; }
+    const cd = bodyText.match(/(come back in \d+h|next claim in \d+h|\d+h \d+m remaining)/i);
+    if (cd) { r.status = 'cooldown'; r.detail = cd[0]; log(`  ⏭️ ${cd[0]}`, 'skip'); await page.close(); return r; }
 
-    // 找按鈕
     const btn = await page.evaluate(() => {
       for (const b of document.querySelectorAll('button')) {
-        const t = (b.textContent || '').trim().toLowerCase();
-        if ((t === 'claim' || t.startsWith('claim')) && !t.includes('claimed') && !b.disabled) return true;
+        const t = (b.textContent || '').trim();
+        if (/^Claim$/i.test(t) && !b.disabled && b.offsetParent !== null) return { ok: true, text: t };
       }
-      return false;
+      return null;
     });
-    if (!btn) { result.status = 'no_button'; result.detail = '無可用按鈕'; await page.close(); return result; }
 
-    if (DRY_RUN) { result.status = 'dry_run'; result.detail = 'DRY RUN'; await page.close(); return result; }
+    if (!btn) { r.status = 'no_button'; r.detail = '無可用按鈕'; log(`  ⚠️ 無按鈕`, 'warn'); await page.close(); return r; }
 
-    // 點擊
+    if (DRY_RUN) { r.status = 'dry_run'; r.detail = `DRY RUN — "${btn.text}"`; log(`  🔍 ${r.detail}`, 'skip'); await page.close(); return r; }
+
     await page.click('button:has-text("Claim")');
-    log('  等待交易...');
+    log(`  等待交易...`);
 
-    // 等結果
     const outcome = await (async () => {
-      const start = Date.now();
-      while (Date.now() - start < CONFIG.claimTimeoutMs) {
-        await page.waitForTimeout(2000);
-        const t = await page.evaluate(() => document.body.textContent || '');
-        if (t.includes('successfully sent') || t.includes('View transaction') ||
-            t.includes('Transaction submitted') || t.includes('Claimed successfully')) return 'success';
-        if (t.includes('Failed') || t.includes('Something went wrong')) return 'fail';
-        if (t.includes('come back in') || t.includes('already claimed')) return 'cooldown';
+      const deadline = Date.now() + CONFIG.claimTimeoutMs;
+      while (Date.now() < deadline) {
+        await page.waitForTimeout(3000);
+        const t = await page.evaluate(() => document.body?.textContent || '');
+        if (/successfully sent|View transaction|Transaction submitted|Claimed successfully/i.test(t)) return 'success';
+        if (/Failed|Something went wrong|error occurred/i.test(t)) return 'fail';
+        if (/come back in|already claimed|next claim/i.test(t)) return 'cooldown';
       }
       return 'timeout';
     })();
 
-    result.status = outcome;
-    result.detail = outcome === 'success' ? '領取成功' : outcome === 'fail' ? '領取失敗' : '超時';
-    log(`  ${outcome === 'success' ? '✅' : outcome === 'fail' ? '❌' : '⏱️'} ${result.detail}`, outcome === 'success' ? 'success' : 'error');
+    r.status = outcome;
+    r.detail = outcome === 'success' ? '✅ 成功' : outcome === 'fail' ? '❌ 失敗' : '⏱️ 超時';
+    log(`  ${r.detail}`, outcome === 'success' ? 'success' : 'warn');
+
   } catch (err) {
-    result.status = 'error'; result.detail = err.message;
-  } finally {
-    await page.close();
-  }
-  return result;
+    r.status = 'error'; r.detail = err.message.slice(0, 80);
+    log(`  💥 ${r.detail}`, 'error');
+  } finally { await page.close(); }
+  return r;
 }
 
+// ── 主流程 ──
 async function main() {
-  log('ETHGlobal Faucet Bot', 'start');
+  log('═══════════════════════════════', 'start');
+  log(`ETHGlobal Faucet — ${DRY_RUN ? 'DRY RUN' : '正式'}`, 'start');
 
   if (!fs.existsSync(CONFIG.userDataDir)) {
-    log('未找到 browser-profile，請先: node setup.js', 'error');
+    log('未找到 browser-profile/，請先: node setup.js', 'error');
     process.exit(1);
   }
 
-  const claimLog = loadClaimLog();
+  const claimLog = loadLog();
   const results = [];
+
   const context = await chromium.launchPersistentContext(CONFIG.userDataDir, {
     headless: !HEADED,
+    channel: 'chrome',
     viewport: { width: 1280, height: 800 },
   });
 
@@ -156,37 +160,46 @@ async function main() {
     if (SINGLE_CHAIN) {
       chains = [{ name: SINGLE_CHAIN, slug: SINGLE_CHAIN, url: `${CONFIG.baseUrl}/faucet/${SINGLE_CHAIN}` }];
     } else {
-      const lp = await context.newPage();
-      chains = await getAvailableChains(lp);
-      await lp.close();
+      const listPage = await context.newPage();
+      chains = await scanFaucetList(listPage);
+      await listPage.close();
     }
 
-    const eligible = chains.filter(c => canClaim(c.slug, claimLog));
-    const inCD = chains.filter(c => !canClaim(c.slug, claimLog));
+    if (!chains.length) { log('沒有鏈', 'warn'); return; }
 
-    if (inCD.length) log(`${inCD.length} 條鏈仍在 CD`, 'skip');
-    if (!eligible.length) { log('無可領取鏈', 'info'); return; }
+    const eligible = [], inCD = [];
+    for (const c of chains) {
+      (canClaim(c.slug, claimLog) ? eligible : inCD).push(c);
+    }
+    for (const c of inCD) {
+      const next = new Date(new Date(claimLog[c.slug]).getTime() + CONFIG.cooldownMs);
+      log(`⏭️ ${c.name}: ${next.toISOString().slice(0, 16)}`, 'skip');
+    }
+    if (!eligible.length) { log('全部 CD', 'info'); return; }
 
-    log(`準備領取 ${eligible.length} 條鏈`, 'start');
-
+    log(`\n── 領取 ${eligible.length} 條鏈 ──`, 'start');
     for (let i = 0; i < eligible.length; i++) {
-      log(`[${i + 1}/${eligible.length}]`);
-      const r = await claimChain(context, eligible[i]);
+      log(`[${i + 1}/${eligible.length}] ${eligible[i].name}`);
+      const r = await claimOne(context, eligible[i]);
       results.push(r);
-      if (r.status === 'success') { claimLog[eligible[i].slug] = new Date().toISOString(); saveClaimLog(claimLog); }
+      if (r.status === 'success') { claimLog[eligible[i].slug] = new Date().toISOString(); saveLog(claimLog); }
       if (r.status === 'logged_out') break;
-      if (i < eligible.length - 1) await wait(2000 + Math.random() * 2000);
+      if (i < eligible.length - 1) await wait(CONFIG.chainCooldownMs + Math.random() * 3000);
     }
-  } finally {
-    await context.close();
-  }
+  } finally { await context.close(); }
 
-  const summary = {
-    success: results.filter(r => r.status === 'success').length,
-    fail: results.filter(r => r.status === 'fail').length,
-    error: results.filter(r => ['error', 'timeout', 'no_button', 'logged_out'].includes(r.status)).length,
-  };
-  log(`完成: 成功 ${summary.success} | 失敗 ${summary.fail} | 異常 ${summary.error}`, 'info');
+  log('\n── 總結 ──', 'info');
+  const icons = { success: '✅', fail: '❌', cooldown: '⏭️', timeout: '⏱️', dry_run: '🔍', error: '💥', logged_out: '🚫', no_button: '👻' };
+  for (const r of results) console.log(`  ${icons[r.status] || '❓'} ${(r.name || r.slug).padEnd(30)} ${r.detail}`);
+  const s = { success: 0, fail: 0, cd: 0, timeout: 0, err: 0 };
+  for (const r of results) {
+    if (r.status === 'success') s.success++;
+    else if (r.status === 'fail') s.fail++;
+    else if (r.status === 'cooldown') s.cd++;
+    else if (r.status === 'timeout') s.timeout++;
+    else if (r.status !== 'dry_run') s.err++;
+  }
+  log(`成功 ${s.success} | 失敗 ${s.fail} | CD ${s.cd} | 超時 ${s.timeout} | 異常 ${s.err}`, 'info');
 }
 
-main().catch(err => { log(err.message, 'error'); console.error(err); process.exit(1); });
+main().catch(err => { log(err.message, 'error'); process.exit(1); });
