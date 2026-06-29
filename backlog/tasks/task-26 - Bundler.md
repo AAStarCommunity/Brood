@@ -30,18 +30,20 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-06-29 扫描)
 
-**🚀 预估进度: 40%** | `AAStarCommunity/UltraRelay-AAStar` 9 天 0 次提交，最近一次 2026-06-03（chore: add @clestons code owner）。aastar-dev 分支静默 ≈ 16 天
+**🚀 预估进度: 40%** | 近30天 8 次提交（stuck bundle rotation + gas fee cap），最近一次 2026-05-06；静默 ≥ 53 天，进入深度静默期
 
 **✅ AC 完成情况**:
 - ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定
+- ✅ stuck bundle 轮换至新钱包 + 替代 gas 设置（2026-05-06 feature）
 - ⬜ Accept aPNTs and ETH to pay the service — 未启动
-- 🔧 Accept EIP-7702 request and be a relay server — authorizationList 维护中
+- 🔧 Accept EIP-7702 request — authorizationList 维护中
 - ⬜ Be any relay server with permission service — 未启动
 
 **📝 近期动态**:
-- 2026-06-03: chore: add @clestons code owner（治理调整，无 feature 进展）
+- 2026-05-06: feat: rotate stuck bundles to fresh wallet + max-priority-fee-per-gas-cap
+- 2026-04-15: chore: add @clestons code owner
 
-💡 本期 Bundler 进入静默期，建议本周或下周激活，否则会拖累 Phase 2 aPNTs 链上支付路径。
+💡 ⚠️ 静默超 53 天，Phase 2 aPNTs 支付路径依赖 Bundler，建议优先评估是否需要重新激活。
 <!-- SECTION:DESCRIPTION:END -->

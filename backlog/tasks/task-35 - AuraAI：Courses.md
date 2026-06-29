@@ -25,7 +25,7 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 - [Course 4 - Workshop](https://docs.google.com/presentation/d/1hDTDav9pyJCirTRWr82akpcY4ftXTY96JOGHX3onJhM/edit?usp=sharing)
 -
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-06-29 扫描)
 
-**🚀 预估进度: 50%** | `AuraAIHQ/courses` 9 天 1 次提交：chore Apache 2.0 license 五件套 (#1 2026-06-20)。课程内容仍未更新
+**🚀 预估进度: 50%** | `AuraAIHQ/courses` 近30天 1 次提交（license），最近 2026-04-29；5 门课程框架存在，内容仍未更新
 <!-- SECTION:DESCRIPTION:END -->

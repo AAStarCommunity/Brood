@@ -3,11 +3,11 @@ id: doc-7
 title: "\U0001F4CA Progress Report"
 type: other
 created_date: '2026-03-14 10:00'
-updated_date: '2026-06-21 10:00'
+updated_date: '2026-06-29 10:00'
 ---
 
 > 本文档由 `/sync-progress` 自动维护，每次扫描后自动更新。
-> *Auto-maintained by `/sync-progress`. Last scan: **2026-06-21**.*
+> *Auto-maintained by `/sync-progress`. Last scan: **2026-06-29**.*
 
 ---
 
@@ -20,6 +20,8 @@ updated_date: '2026-06-21 10:00'
 | **Phase 3**: Ecosystem Maturity | **11%** | 9个任务 | Done=0, In Progress=3, To Do=6 |
 | **Research**: Papers + Experiments | **46%** | 7个任务 | Done=1, In Progress=5, To Do=1 |
 
+> ⚠️ Phase 1 各主力任务进度已升（TASK-5 92% / TASK-23 94% / TASK-9 85%），但 TASK-2/TASK-3/TASK-6/TASK-13 拉低总体。
+
 > 进度算法：Done=100%，In Progress=取进度报告实际估算值，To Do=0%；对该 Phase 所有任务取算术平均。
 
 ---
@@ -30,21 +32,21 @@ updated_date: '2026-06-21 10:00'
 |:---|:---|:---:|:---|:---:|:---|
 | TASK-10 | Sign90 Smart Account Core | **✅ Done** | airaccount-contract | 04-15 | M7 r11 安全修复完成，audit pre-freeze |
 | TASK-4 | SuperPaymaster 合约 | **✅ Done** | SuperPaymaster | 04-15 | ticket model + x402 micropayment 引入 |
-| TASK-31 | SuperPaymaster | **95%** | AAStarCommunity/SuperPaymaster | 06-16 | **v5.4.0-beta.1 mainnet GA prep** + Sepolia fresh redeploy + TX-Value-Verification 5 文档 |
-| TASK-23 | Meta Phase 1 Genesis Launch | **92%** | MushroomDAO/launch | 06-20 | **AAStar+AuraAI landing pages** (#12) + ZUAEC 参赛研究入仓 (#13) |
-| TASK-9 | CometENS 免费子域名 | **82%** | MushroomDAO/CometENS | 06-18 | **DNSSEC verify runbook** + identity-pages plan + DNS-domain integration 三连 PR |
-| TASK-5 | Account 全栈 (AirAccount+SDK+aNode+UI) | **88%** | 5 repos | 06-20 | **SDK v0.20.9→0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + passkey-guardian 端到端 |
-| TASK-34 | AuraAI | **68%** | agent-speaker + 5 repos | 06-20 | **agent-speaker TUI Chat #4 合入** + bunker 修复 + serve auth flags |
-| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 06-20 | 1 commit（license 合规） |
-| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 06-03 | 9 天 0 commit，进入静默期 |
-| TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/{MyTask,Cos72} | 06-20 | 4 commit（badge + license + code owner） |
-| TASK-32 | CommunityFi | **30%** | jhfnetboy/DSR-Research-Flow | 06-16 | research-writing skill 工具链，无新论文产出 |
-| TASK-36 | Main Road Research | **25%** | zeroclaw-labs/zeroclaw | 06-21 | **zeroclaw 30+ commit 高频活跃**：Node24 pin + provider replay + install PATH |
-| TASK-30 | EOA Bridge | **20%** | jhfnetboy/DSR-Research-Flow | 06-16 | DSR 工具链增强；Paper6 仍未启动 |
-| TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 06-07 | 静默 |
-| TASK-2 | Cos72 Cards/Points/Perks | **20%** | AAStarCommunity/demo | 04-15 | 静默 ≥ 60 天 |
-| TASK-28 | OpenCrab Agent | **15%** | AuraAIHQ/OpenCrab | 06-20 | 1 commit（license #2） |
-| TASK-29 | Asset3 Protocol | **10%** | MushroomDAO/Asset3 | 06-07 | 静默 |
+| TASK-31 | SuperPaymaster | **97%** | AAStarCommunity/SuperPaymaster | 06-28 | **v5.4.1-rc.1** 发布（S1/S2/S3 HIGH 修复 + queueSlash/initBLSAggregator）+ E2E 4/4 PASS |
+| TASK-5 | Account 全栈 (AirAccount+SDK+aNode+UI) | **92%** | 5 repos | 06-29 | **AirAccount v0.27.3 (Beta5)** + **SDK v0.29.7**；WebAuthn Tier-2/3 packer + DVT verify endpoint |
+| TASK-23 | Meta Phase 1 Genesis Launch | **94%** | MushroomDAO/launch | 06-24 | **EIP-3009 receiveWithAuth 审计修复** + buyTokensFor/buyAPNTsFor + relayer 白名单集合 |
+| TASK-9 | CometENS 免费子域名 | **85%** | MushroomDAO/CometENS | 06-18 | **v0.7.0 testnet GA**：312 测试全通，HybridResolver OP Sepolia 已部署 |
+| TASK-34 | AuraAI | **70%** | agent-speaker + 5 repos | 06-20 | NIP-86 role commands + jq date helpers + --jq-raw flag |
+| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 04-29 | 静默（license 合规），5 门课程框架存在 |
+| TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 05-06 | 静默 ≥ 53 天，stuck bundle 轮换已实现 |
+| TASK-13 | Cos72 Core Modules | **35%** | AAStarCommunity/{Cos72,MyTask} | 04-29 | 连续两轮无 feature，仅治理提交 |
+| TASK-32 | CommunityFi | **30%** | jhfnetboy/DSR-Research-Flow | — | 本地未 clone；Paper7 JBBA 投稿包就绪待提交 |
+| TASK-36 | Main Road Research | **25%** | zeroclaw-labs/zeroclaw | — | 本地未 clone；zeroclaw 外部高频迭代 |
+| TASK-30 | EOA Bridge | **20%** | jhfnetboy/DSR-Research-Flow | — | 本地未 clone；Paper6 仍未启动 |
+| TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 04-29 | 静默，等待 Phase 3 |
+| TASK-2 | Cos72 Cards/Points/Perks | **20%** | AAStarCommunity/demo | 04-15 | 静默 ≥ 75 天 |
+| TASK-28 | OpenCrab Agent | **15%** | AuraAIHQ/OpenCrab | 04-29 | 静默 ≥ 60 天 |
+| TASK-29 | Asset3 Protocol | **10%** | MushroomDAO/Asset3 | 04-29 | 静默，Phase 3 设计阶段 |
 
 ---
 
@@ -64,26 +66,24 @@ updated_date: '2026-06-21 10:00'
 - UUPS v4.0.0 Sepolia 部署完成，7链稳定币策略就绪，安全审计报告提交
 - x402 微支付标准引入（standards/x402 submodule）
 
-#### TASK-9 · CometENS · 65% · Phase 1
-- **仓库**: `MushroomDAO/CometENS`（本地 /Dev/aastar/ens-tool）
-- **最新动态**: 2026-04-27 D6 multi-root domain + Apache 2.0 badge；v0.5.0（2026-04-04）
-- L2RecordsV3 ERC-721 子域 + 3种插件（Free/Whitelist/FlatFee）+ OPResolver Bedrock 状态证明
-- 132 TS + 182 Foundry 测试全部通过；3轮 Codex 安全审核通过
-- 下一步：.cv/.box/.zparty 实际域名映射 + mushroom.cv 自动授予
+#### TASK-9 · CometENS · 85% · Phase 1
+- **仓库**: `MushroomDAO/CometENS`（本地 /Dev/mycelium/CometENS）
+- **最新动态**: 2026-06-18；**v0.7.0 testnet GA** — HybridResolver（签名↔终结证明）OP Sepolia 已部署
+- 312 自动化测试全通（198 Foundry + 101 TS + 29 Anvil E2E）
+- DNSSEC verify runbook + identity-pages plan + DNS-domain integration plan 就绪
+- 下一步：.cv/.box/.zparty 实际域名主网接入
 
-#### TASK-23 · Meta Phase 1 Genesis Launch · 70% · Phase 1
-- **仓库**: `MushroomDAO/launch`（新）；`MushroomDAO/MyShop`（历史）
-- **最新动态**: 2026-04-26 gasless GToken 购买页 + Cloudflare Worker relayer + roadshow prep
-- Shop M1 完整：C1-C11 合约 + F1-F8 前端 + W1-W5 Worker，Codex + Slither 双重审计通过
-- GToken：launch.html 购买页 + relayer Worker 已上线；GToken 合约本体待部署
-- Hangzhou roadshow 5-18 为近期里程碑
+#### TASK-23 · Meta Phase 1 Genesis Launch · 94% · Phase 1
+- **仓库**: `MushroomDAO/launch`
+- **最新动态**: 2026-06-24；**sale 审计硬化全套**：EIP-3009 receiveWithAuth + buyTokensFor/buyAPNTsFor + relayer 白名单集合 + 2% 滑点保护 + gasless cap 豁免
+- Sale 合约重新部署（audit-hardened 版），ops 开/关脚本 + 文档就绪
+- 剩余 6%：主网 GA 正式部署
 
-#### TASK-34 · AuraAI · 35% · Phase 3
-- **仓库**: `jhfnetboy/AuraAI`、`AuraAIHQ/Agent24`、`AuraAIHQ/agent-speaker`、`MushroomDAO/agent-speaker-relay`、`MushroomDAO/Agent-WeChat-SDK`
-- **最新动态**: 2026-04-27 agent-speaker TUI fix（PR review）；2026-04-26 WeChat SDK @agent-wechat/core + CLI
-- agent-speaker：group chat + TUI Bubble Tea + SQLite + NIP-44 加密（PR #3 merge 完成）
-- relay：strfry Docker + restart.sh + Alpine/Ubuntu 双构建，稳定运行
-- 下一步：iDoris 三层结构 + Mycelium Network
+#### TASK-34 · AuraAI · 70% · Phase 3
+- **仓库**: `AuraAIHQ/Agent24`、`AuraAIHQ/agent-speaker`、`AuraAIHQ/simple-agent`
+- **最新动态**: 2026-06-20；NIP-86 role commands + jq date helpers + --jq-raw flag + serve --auth/--eager-auth
+- agent-speaker TUI Chat #4 合入，bunker 连接冲突修复完成
+- 下一步：iDoris 三层结构（云端大模型 + 训练服务）+ Mycelium Network 工程化
 
 #### TASK-13 · Cos72 Core Modules · 30% · Phase 1
 - **仓库**: `MushroomDAO/MyTask`、`AAStarCommunity/Cos72`
@@ -139,6 +139,7 @@ updated_date: '2026-06-21 10:00'
 
 | 日期 | Phase 1 | Phase 2 | Phase 3 | 关键变化 |
 |:---|:---:|:---:|:---:|:---|
+| 2026-06-29 | **71%** | **7%** | **11%** | **TASK-31 ↑97%（v5.4.1-rc.1 Sepolia RC：S1/S2/S3 HIGH 安全修复 + E2E 4/4 PASS）**；**TASK-5 ↑92%（AirAccount v0.27.3 + SDK v0.29.7：WebAuthn Tier-2/3 packer 完整）**；**TASK-9 ↑85%（v0.7.0 testnet GA：HybridResolver OP Sepolia 部署，312 测试全通）**；TASK-23 ↑94%（EIP-3009 审计修复 + buyTokensFor + relayer 白名单）；TASK-34 ↑70%（NIP-86 role commands + jq helpers）；孤儿检测：AirAccount→TASK-5、SuperPaymaster→TASK-31 references 补全 |
 | 2026-06-21 | **71%** | **7%** | **11%** | **TASK-31 ↑95%（v5.4.0-beta.1 mainnet GA prep + Sepolia fresh redeploy + TX 验证 5 文档）**；**TASK-5 ↑88%（补扫 aastar-sdk + aNode Validator + aastar-docs：SDK v0.24.1 + DVT v1.5.0 testnet always-on + passkey-guardian 端到端）**；**TASK-9 ↑82%（DNSSEC runbook + identity-pages + DNS 集成三 PR 合入）**；TASK-23 ↑92%（AAStar+AuraAI landing + ZUAEC 参赛入仓）；TASK-34 ↑68%（agent-speaker TUI Chat 合入 + serve auth）；TASK-36 ↑25%（zeroclaw 30+ commit 高频活跃） |
 | 2026-06-12 | **68%** | **7%** | **11%** | **TASK-31 ↑92%（v5.3.3-beta.2 发布 + 18 v5.4 issues）**；**TASK-5 ↑70%（AirAccount 全量安全审计 P0+High 修复 + MX93）**；TASK-23 ↑90%（EIP-7702 gasless 3-flow UX 上线）；TASK-34 ↑65%（iDoris-SDK M2-M5 完成 + AgentSocial 新仓库）；TASK-9 ↑75%（生产化重启）；TASK-32 ↑30%（Paper7 v7 + 可复现 artifacts） |
 | 2026-05-28 | **67%** | **7%** | **9%** | **TASK-31 ↑90%（Paper3 投稿 BRA + v5.3.2 全测 + GToken v2.2.0）**；TASK-23 ↑85%（5-18 路演完成 + ACN-Agent on Pi 工程化）；TASK-34 ↑55%（74 commits 5 仓库）；TASK-32 ↑25%（Paper7 第二版数据收集中） |

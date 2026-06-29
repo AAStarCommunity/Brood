@@ -9,6 +9,7 @@ labels: []
 milestone: m-r
 dependencies: []
 references:
+  - 'https://github.com/AAStarCommunity/SuperPaymaster'
   - 'https://github.com/jhfnetboy/DSR-Research-Flow'
 priority: high
 ---
@@ -29,27 +30,24 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-06-29 扫描)
 
-**🚀 预估进度: 95%** | 9 天 ≥20 次提交，最近一次 2026-06-16；**v5.4.0-beta.1 mainnet GA prep 完成**：Sepolia fresh redeploy + TX-Value-Verification 5 文档 + release-process 模板 + 18 个 v5.4 issue 推进
+**🚀 预估进度: 97%** | 近30天 220 次提交，最近一次 2026-06-28；**v5.4.1-rc.1 Sepolia RC 发布**（2026-06-27）：3 HIGH 安全修复（two-step slash guard + srcHash authority + BLS_AGGREGATOR wiring）+ E2E 4/4 PASS
 
 **✅ AC 完成情况**:
 - ✅ **Paper3: SuperPaymaster AOA in ERC-4337 — 已正式投稿 BRA 期刊**
-- ✅ 合约实现 v5.4.0-beta.1：mainnet-dry-run Sepolia 完整 fresh redeploy + clean-deploy gap fixes + 真实 on-chain E2E tx hashes 回填
-- ✅ **TX-Value-Verification 5 文档套件**（PR #297）+ harness nonce-retry fix（PR #295）
-- ✅ **release-process 模板**（PR #291）+ v5.4.0-beta.1 release log
-- ✅ X402Facilitator 在部署时原子转移 ownership 到 governor
-- ✅ Sepolia addresses 同步到 v5.4.0-beta.1-redeploy（PR #298）
-- ✅ runbook 修正：Mycelium/MushroomDAO 是真实 mainnet 社区（非 demo）
+- ✅ 合约 v5.4.1-rc.1：S1/S2/S3 HIGH 安全修复；Sepolia `0x09DF0d2e...` 验证通过
+- ✅ **queueSlash/cancelSlash + initBLSAggregator** — 新 ABI；BLS slash 路径完整
+- ✅ tx-value-verification + release-process 全套文档（v5.4.0 系列）
+- ✅ x402 SDK v0.29.x 发布（SDK 文档已同步 "available" 状态）
+- 🔧 Mainnet GA 正式部署（仅余最后 3% — rc.1 → 主网）
 - 🔧 Paper7 第二版数据收集中（CommunityFi 见 TASK-32）
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-06-16: docs(addresses): update Sepolia to v5.4.0-beta.1-redeploy (#298)
-- 2026-06-?: docs(e2e): TX-Value-Verification 5-doc for v5.4.0-beta.1 fresh redeploy + Codex 2-axis (#297)
-- 2026-06-?: deploy(rehearsal): fresh v5.4.0 mainnet-dry-run on Sepolia + fixes for clean-deploy gaps (#296)
-- 2026-06-?: release(v5.4.0): bump version() 5.3.3→5.4.0 + mainnet GA prep
-- 2026-06-?: fix(v5.4-deploy): transfer X402Facilitator ownership to governor atomically at deploy
-- 2026-06-?: docs: backfill real on-chain E2E tx hashes into v5.4 deploy-record
+- 2026-06-27: v5.4.1-rc.1 Sepolia Release Candidate — S1/S2/S3 HIGH 修复 + E2E 4/4 PASS (#317)
+- 2026-06-28: docs(sdk-x402): eliminate remaining x402 contradictions
+- 2026-06-27: fix(p0-2,p0-3): CEI order in PaymasterFactory + Registry unchecked call
+- 2026-06-24: docs(security): Slither report + E2E 4/4 PASS — v5.4.1-rc.1
 
-💡 v5.3.3 → v5.4.0-beta.1 mainnet GA prep 跨越，配套 release-process / TX 验证 / addresses / deploy script 全面规范化。距离 mainnet GA 仅一步之遥。剩余 5% 为 mainnet 正式部署 + Paper7 投稿提交。
+💡 v5.4.1-rc.1 发布，3 HIGH 安全修复，Sepolia E2E 全通。剩余 3%：mainnet 正式部署（rc.1 → 主网 GA）+ Paper7 投稿。
 <!-- SECTION:DESCRIPTION:END -->

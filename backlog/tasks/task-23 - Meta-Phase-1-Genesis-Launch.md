@@ -27,24 +27,26 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-06-29 扫描)
 
-**🚀 预估进度: 92%** | 9 天 2 次提交，最近一次 2026-06-20；**AAStar + AuraAI 双 landing 上线 + ZUAEC 第八届浙大校友创业大赛参赛研究入仓**
+**🚀 预估进度: 94%** | 近30天 18 次提交，最近一次 2026-06-24；**sale 全面审计修复 + buyTokensFor/buyAPNTsFor 上线**：EIP-3009 receiveWithAuth + balance-delta + CEI order + relayer 白名单集合
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成
-- ✅ GToken launch contract — SaleContractV2 已部署、roles ticket prices 配置完成
-- ✅ 5-18 Hangzhou roadshow 完成
-- ✅ **gasless EIP-7702 三流 UX**：join-gasless.html (P3, on top of #8) 上线
-- ✅ **gasless-eoa-enhance** 分支 E2E 测试 + RUNBOOK + ACCEPTANCE 全套就绪
-- ✅ **AAStar + AuraAI landing pages 上线**（PR #12）+ 导航/标签修正
-- ✅ **ZUAEC 比赛研究入仓**（PR #13：Agent协作网络方向，对接 8-31 报名截止）
-- 🔧 主网部署 — 待执行
-- 🔧 ACN-Agent on Pi 技术规划 — Paper3 后续工程化进行中
+- ✅ GToken launch contract — SaleContractV2 重新部署（audit-hardened 版本）
+- ✅ **buyTokensFor/buyAPNTsFor**（#22）— self-pay with explicit recipient
+- ✅ **EIP-3009 receiveWithAuth 审计修复**（#26）+ balance-delta + milestone advance
+- ✅ **relayer 单地址 → 可增删白名单集合**（#24 dvt#5 方案A）
+- ✅ **sale 发布门 hardening**（#23）— gasless cap 豁免 + 防呆 + CEI + recipient event
+- ✅ **ops 开/关脚本**（#29）+ 文档 + README 链接
+- ✅ 2% 滑点保护 minOut for GToken buy (gasless + self-pay)
+- 🔧 主网正式部署 — audit hardened 版就绪，待 GA 执行
 
 **📝 近期动态** (MushroomDAO/launch):
-- 2026-06-20: feat(site): AAStar + AuraAI landing pages + nav links + label fixes (#12)
-- 2026-06-?: research(zuaec): 第八届浙大校友创业大赛参赛研究（Agent协作网络）(#13)
+- 2026-06-24: feat(ops): sale 开/关脚本 + 文档 (#29)
+- 2026-06-24: chore(redeploy): 仓库地址指向审计修复后新栈 (#27)
+- 2026-06-24: fix(audit): EIP-3009 receiveWithAuth + balance-delta (#26)
+- 2026-06-23: feat(BuyHelper): relayer 白名单集合 (#24)
 
-💡 站点对外门面在 ZUAEC 报名季前完成 AAStar/AuraAI 双 landing 升级，比赛研究入仓正式 commit 锁定参赛方向（H2 KR3 推进）。剩余 8% 为主网部署执行。
+💡 sale 合约经过完整审计轮（EIP-3009 + CEI + hardening），buyTokensFor 自付款通道上线，relayer 白名单机制完善。剩余 6%：主网 GA 正式部署。
 <!-- SECTION:DESCRIPTION:END -->
