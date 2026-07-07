@@ -25,7 +25,7 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 - [Course 4 - Workshop](https://docs.google.com/presentation/d/1hDTDav9pyJCirTRWr82akpcY4ftXTY96JOGHX3onJhM/edit?usp=sharing)
 -
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 50%** | `AuraAIHQ/courses` 近30天 1 次提交（license），最近 2026-04-29；5 门课程框架存在，内容仍未更新
+**🚀 预估进度: 55%** | `AuraAIHQ/AI_Beginner_Courses`（新发现活跃仓库）近9天 2 次提交，最近 2026-07-05；Agent Loop/Loop Engineering 讲义新增 + Learning in Public 结构建立；原 `AuraAIHQ/courses` 仍静默（最近 2026-04-29）
 <!-- SECTION:DESCRIPTION:END -->

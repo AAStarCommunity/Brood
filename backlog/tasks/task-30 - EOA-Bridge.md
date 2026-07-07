@@ -29,9 +29,9 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 20%** | `jhfnetboy/DSR-Research-Flow` 本地未 clone，无法拉取近期提交；Paper6 本身仍为 Not started
+**🚀 预估进度: 20%** | DSR-Research-Flow 本地未 clone；Paper6 仍 Not started
 
 **✅ AC 完成情况**:
 - ⬜ Paper6: Gasless EOA Bridge (7702) — DSR P1-P6 均未开始

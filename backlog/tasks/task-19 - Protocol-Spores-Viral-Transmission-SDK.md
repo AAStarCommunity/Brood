@@ -21,9 +21,9 @@ priority: low
 <!-- SECTION:DESCRIPTION:BEGIN -->
 A protocol for viral community growth and member invitation tracking.
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 20%** | 近30天 2 次提交（license 合规），最近一次 2026-04-29；Spores SDK 连续两轮无功能进展，等待 Phase 3 启动信号
+**🚀 预估进度: 20%** | MushroomDAO/Spores 静默 ≥ 69 天，等待 Phase 3
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -28,9 +28,9 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 30%** | `jhfnetboy/DSR-Research-Flow` 本地未 clone，无法拉取近期提交；Paper7 投稿包在 JBBA 就绪状态待提交
+**🚀 预估进度: 30%** | DSR-Research-Flow 本地未 clone；Paper7 JBBA 投稿包就绪待提交
 
 **✅ AC 完成情况**:
 - ✅ Paper7 第一版：CommunityFi DSR P1-P6 全部 Done，JBBA 投稿包就绪

@@ -30,24 +30,25 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 97%** | 近30天 220 次提交，最近一次 2026-06-28；**v5.4.1-rc.1 Sepolia RC 发布**（2026-06-27）：3 HIGH 安全修复（two-step slash guard + srcHash authority + BLS_AGGREGATOR wiring）+ E2E 4/4 PASS
+**🚀 预估进度: 98%** | 近30天 22 次提交，最近一次 2026-07-07；**slash-threshold-evidence-unify (#329)** + BLS modules 全部 wired on Sepolia；aastar-sdk BLSAggregator ABI 已同步 (#285)
 
 **✅ AC 完成情况**:
 - ✅ **Paper3: SuperPaymaster AOA in ERC-4337 — 已正式投稿 BRA 期刊**
-- ✅ 合约 v5.4.1-rc.1：S1/S2/S3 HIGH 安全修复；Sepolia `0x09DF0d2e...` 验证通过
-- ✅ **queueSlash/cancelSlash + initBLSAggregator** — 新 ABI；BLS slash 路径完整
-- ✅ tx-value-verification + release-process 全套文档（v5.4.0 系列）
-- ✅ x402 SDK v0.29.x 发布（SDK 文档已同步 "available" 状态）
-- 🔧 Mainnet GA 正式部署（仅余最后 3% — rc.1 → 主网）
-- 🔧 Paper7 第二版数据收集中（CommunityFi 见 TASK-32）
+- ✅ 合约 v5.4.1-rc.1：S1/S2/S3 HIGH 安全修复；Sepolia 验证通过
+- ✅ **#329 slash-threshold-evidence-unify**：per-severity thresholds + evidence binding (H-1 closure)；`queueSlashWithConsensus` 新接口
+- ✅ xpnts H-2 — emergency kill switch halts all non-SP autoApproved spenders
+- ✅ BLS module Sepolia migration wiring 完整（SP + Registry + staking 三模块对齐）
+- ✅ SDK v0.37.3 — BLSAggregator/DVTValidator ABI 已同步 (#285)
+- 🔧 Mainnet GA 正式部署（仅余最后 2% — 等待 SP.applyBLSAggregator() 最终切换）
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-06-27: v5.4.1-rc.1 Sepolia Release Candidate — S1/S2/S3 HIGH 修复 + E2E 4/4 PASS (#317)
-- 2026-06-28: docs(sdk-x402): eliminate remaining x402 contradictions
-- 2026-06-27: fix(p0-2,p0-3): CEI order in PaymasterFactory + Registry unchecked call
-- 2026-06-24: docs(security): Slither report + E2E 4/4 PASS — v5.4.1-rc.1
+- 2026-07-07: deploy(sepolia): BLS modules migration wiring 完整 (SP+Registry+staking)
+- 2026-07-06: fix(slash): slash-threshold-evidence-unify (#329) + xpnts H-2 kill switch
+- 2026-07-06: docs(security): 2026-07-03 multi-agent audit report + slash design
+- 2026-07-03: fix(p0): CEI order in PaymasterFactory + Registry unchecked call (#319)
+- 2026-07-03: chore(goutou): pin repoId for Cooperation-Center label
 
-💡 v5.4.1-rc.1 发布，3 HIGH 安全修复，Sepolia E2E 全通。剩余 3%：mainnet 正式部署（rc.1 → 主网 GA）+ Paper7 投稿。
+💡 #329 slash 机制统一完成，BLS modules Sepolia fully wired。SDK ABI 已同步。剩余 2%：SP.applyBLSAggregator() 最终切换 + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->

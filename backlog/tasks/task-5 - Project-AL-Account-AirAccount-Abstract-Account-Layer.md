@@ -18,6 +18,7 @@ references:
   - 'https://github.com/AAStarCommunity/aastar-sdk'
   - 'https://github.com/AAStarCommunity/YetAnotherAA-Validator'
   - 'https://github.com/AAStarCommunity/aastar-docs'
+  - 'https://github.com/AAStarCommunity/airaccount-contract'
 ordinal: 6000
 ---
 
@@ -28,26 +29,28 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 92%** | 关联 5 仓库近30天累计 **1196 次提交**；**AirAccount v0.27.3 (Beta5)** + **SDK v0.29.7** 双主干持续高频发布；WebAuthn 累积 packer + DVT verify endpoint 全通
+**🚀 预估进度: 95%** | 关联 6 仓库（含新增 airaccount-contract）近30天极度活跃：**airaccount-contract v0.24.0→v0.27.0**（DVT validator unification）+ **aastar-sdk v0.37.2→v0.39.0**（DVT registration API）+ YetAnotherAA DVT wizard + Validator BLS gossip quorum live
 
 **✅ AC 完成情况**:
-- ✅ #1 Support Social Login — WebAuthn passkey Tier-2/3 cumulative packers 完整实现（SDK #234）
-- ✅ **AirAccount v0.27.0-v0.27.3 (Beta5)**：DVT confirm-verify endpoint (#124) + contact-binding (#129) + address-case airtight + /health endpoint inventory + posture guard
-- ✅ **SDK v0.29.5-v0.29.7**：WebAuthn submit robustness fixes + cumulative packers (algId 0x09/0x0a) for device-passkey Tier-2/3 + noble/curves p256 fix
-- ✅ **YetAnotherAA-Validator DVT** testnet always-on（v1.5.0+）
-- ✅ passkey-guardian 端到端 UI/backend/recovery 全链路
-- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现
+- ✅ #1 Support Social Login — WebAuthn passkey Tier-2/3 完整实现；passkey-guardian 全链路
+- ✅ **airaccount-contract v0.27.0**：DVT validator unification — 挂载 authoritative BLS validator 于 algId 0x01；900 tests + E2E 31/31 + 4/4 real UserOp PASS；Sepolia 已部署 (`0xf25621DF…`)
+- ✅ **aastar-sdk v0.39.0**：DVT operator registration SDK API (`buildDvtPop` + `dvtOperatorActions`)；agent-session phantom deprecation（fail-closed）
+- ✅ **YetAnotherAA-Validator**：live gossip BLS quorum co-signer (#179 CC-13 inc-2)；ownerAuth tag fix + CC-22 hardening
+- ✅ **YetAnotherAA**：DVT node-registration wizard + tier-setup self-pay + create-with-tier-profile
+- 🔧 Implement Session Keys — SessionKeyValidator 已统一为 algId 0x08；agent-session phantom 已清理
 - ⬜ Enable Cross-Chain Operations — 未启动
 
-**📝 近期动态** (5 仓库聚合):
-- 2026-06-29: AirAccount v0.27.3 — posture guard + --ca-only deploy mode (mx93 incident) (#142)
-- 2026-06-28: AirAccount v0.27.2 — address-case airtight (address_cache) (#137) + v0.27.1 contact/verify accept address OR key_id
-- 2026-06-29: SDK v0.29.7 — WebAuthn submit robustness fixes (#240 review) + v0.29.6 device-passkey Tier-2/3 prepare/submit
-- 2026-06-28: SDK v0.29.5 — WebAuthn cumulative packers + v0.21.0 address sync (#234)
+**📝 近期动态** (6 仓库聚合):
+- 07-07: AirAccount — DVT BLS TEE 托管 Variant B 成型（blst TA + KMS+DVT joint deploy）
+- 07-05: airaccount-contract v0.27.0 — DVT validator unification，Sepolia `0xf25621DF` 部署
+- 07-06: aastar-sdk v0.39.0 — agent-session phantom 清理；v0.38.0 DVT registerWithProof API
+- 07-07: YetAnotherAA-Validator — BLS gossip quorum co-signer live (PR #179)
+- 07-06: YetAnotherAA — DVT wizard + @aastar/sdk 0.38.0 接入 (CC-17)
+- 07-07: airaccount-contract v0.26.0 — HIGH-1 module-route tier fix；v0.24.0 security hardening
 
-💡 5 仓库全线高频迭代（AirAccount Beta5 + SDK v0.29.x）；WebAuthn device-passkey Tier-2/3 完整打通，DVT verify 上链验证通过。剩余 8%：Session Keys 收口 + Cross-Chain Operations + mainnet GA。
+💡 6 仓库全线突破性进展：DVT validator 生态统一完成（airaccount-contract + SDK + UI + Validator 四端对齐），BLS TEE 托管路径打通。剩余 5%：Cross-Chain Operations + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

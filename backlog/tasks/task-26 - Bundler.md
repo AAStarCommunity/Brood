@@ -30,9 +30,9 @@ enhance a close integration with AAStar infrastructure.
 4. Be any relay server with permission service
 5. More feats inherited from ultrabundler
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 40%** | 近30天 8 次提交（stuck bundle rotation + gas fee cap），最近一次 2026-05-06；静默 ≥ 53 天，进入深度静默期
+**🚀 预估进度: 40%** | 静默 62 天（最近 2026-05-06），UltraRelay stuck-bundle rotation 已实现
 
 **✅ AC 完成情况**:
 - ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定

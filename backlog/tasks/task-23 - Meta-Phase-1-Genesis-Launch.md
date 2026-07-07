@@ -27,26 +27,24 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-06-29 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 94%** | 近30天 18 次提交，最近一次 2026-06-24；**sale 全面审计修复 + buyTokensFor/buyAPNTsFor 上线**：EIP-3009 receiveWithAuth + balance-delta + CEI order + relayer 白名单集合
+**🚀 预估进度: 95%** | 近30天 13 次提交，最近一次 2026-06-24；本期主要变化：**relayer 日购买上限移除**（审计修复 #8）+ sale open/close ops 脚本完整落地；无新功能，sale 合约已就绪等待主网部署
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成
-- ✅ GToken launch contract — SaleContractV2 重新部署（audit-hardened 版本）
-- ✅ **buyTokensFor/buyAPNTsFor**（#22）— self-pay with explicit recipient
-- ✅ **EIP-3009 receiveWithAuth 审计修复**（#26）+ balance-delta + milestone advance
-- ✅ **relayer 单地址 → 可增删白名单集合**（#24 dvt#5 方案A）
-- ✅ **sale 发布门 hardening**（#23）— gasless cap 豁免 + 防呆 + CEI + recipient event
-- ✅ **ops 开/关脚本**（#29）+ 文档 + README 链接
-- ✅ 2% 滑点保护 minOut for GToken buy (gasless + self-pay)
-- 🔧 主网正式部署 — audit hardened 版就绪，待 GA 执行
+- ✅ GToken launch contract — SaleContractV2 audit-hardened 版重新部署
+- ✅ buyTokensFor/buyAPNTsFor + EIP-3009 receiveWithAuth + relayer 白名单集合
+- ✅ sale 发布门 hardening（gasless cap 豁免 + CEI + recipient event）
+- ✅ ops 开/关脚本 + 文档 + README 链接（#29）
+- ✅ **chore(relayer): 移除从未执行的日购买上限声明**（审计 #8, #28）
+- 🔧 主网正式部署 — 最后 5%，audit-hardened 版本待 GA 执行
 
 **📝 近期动态** (MushroomDAO/launch):
-- 2026-06-24: feat(ops): sale 开/关脚本 + 文档 (#29)
+- 2026-06-24: chore(relayer): 移除从未执行的日购买上限声明 (审计 #8) (#28)
 - 2026-06-24: chore(redeploy): 仓库地址指向审计修复后新栈 (#27)
-- 2026-06-24: fix(audit): EIP-3009 receiveWithAuth + balance-delta (#26)
-- 2026-06-23: feat(BuyHelper): relayer 白名单集合 (#24)
+- 2026-06-24: feat(ops): sale 开/关脚本 + 文档（#29，最新提交）
+- 本期无新提交（静默 ≥ 13 天）
 
-💡 sale 合约经过完整审计轮（EIP-3009 + CEI + hardening），buyTokensFor 自付款通道上线，relayer 白名单机制完善。剩余 6%：主网 GA 正式部署。
+💡 sale 合约审计修复完整，ops 工具链就绪。剩余 5%：主网 GA 正式部署（等待时机/资金/上线计划）。
 <!-- SECTION:DESCRIPTION:END -->
