@@ -123,6 +123,13 @@ async function exportStaticBacklog() {
     const milestoneProgress = await computeMilestoneProgress();
     console.log('Milestone weighted progress:', milestoneProgress);
 
+    // Load progress history for chart injection
+    let progressHistory = [];
+    try {
+      const histPath = path.join(process.cwd(), 'backlog', 'data', 'progress-history.json');
+      progressHistory = JSON.parse(await fs.readFile(histPath, 'utf-8')).history || [];
+    } catch (_) { /* optional, skip if missing */ }
+
     console.log('Downloading assets:', assets);
     for (const asset of assets) {
       const assetData = await fetchFromLocal(`/${asset}`);
@@ -193,6 +200,8 @@ async function exportStaticBacklog() {
     <script>
       // Weighted milestone progress: Done=100%, InProgress=estimate, ToDo=0%
       window.__milestoneProgress = ${JSON.stringify(milestoneProgress)};
+      // Phase progress history for /statistics chart
+      window.__progressHistory = ${JSON.stringify(progressHistory)};
 
       window.originalFetch = window.fetch;
       window.fetch = async function(resource, init) {
@@ -301,34 +310,179 @@ async function exportStaticBacklog() {
         style.innerHTML = 'button[title*="Delete"], button[aria-label*="Delete"] { display: none !important; }';
         document.head.appendChild(style);
 
-        // Floating progress chart button (opens /progress-chart.html)
-        const btn = document.createElement('a');
-        btn.href = '/progress-chart.html';
-        btn.target = '_blank';
-        btn.rel = 'noopener';
-        btn.title = 'Phase Progress History Chart';
-        btn.style.cssText = [
-          'position:fixed','bottom:20px','right:20px',
-          'width:44px','height:44px','border-radius:50%',
-          'background:rgba(17,24,39,0.88)',
-          'border:1px solid rgba(255,255,255,0.12)',
-          'display:flex','align-items:center','justify-content:center',
-          'font-size:20px','text-decoration:none','z-index:9998',
-          'box-shadow:0 4px 14px rgba(0,0,0,0.35)',
-          'backdrop-filter:blur(8px)',
-          'transition:transform 0.15s ease,box-shadow 0.15s ease',
-          'cursor:pointer'
-        ].join(';');
-        btn.innerHTML = '<span style="line-height:1" role="img" aria-label="chart">📈</span>';
-        btn.addEventListener('mouseenter', () => {
-          btn.style.transform = 'scale(1.12)';
-          btn.style.boxShadow = '0 6px 20px rgba(0,0,0,0.45)';
-        });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.transform = '';
-          btn.style.boxShadow = '0 4px 14px rgba(0,0,0,0.35)';
-        });
-        document.body.appendChild(btn);
+        // Inject progress chart into /statistics page
+        (function() {
+          var PANEL_ID = '__prog_chart_panel';
+
+          function buildPanel() {
+            var H = window.__progressHistory;
+            if (!H || H.length < 2) return null;
+            var last = H[H.length-1], prev = H[H.length-2];
+            function delta(k){var d=last[k]-prev[k];return d>0?'+'+d+'%':d<0?d+'%':'—';}
+            function deltaClass(k){return last[k]-prev[k]>0?'#34D399':'#8B9AB0';}
+
+            var wrap = document.createElement('div');
+            wrap.id = PANEL_ID;
+            wrap.style.cssText='margin:24px 0 0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
+
+            wrap.innerHTML = [
+              '<div style="border:1px solid var(--border,#e2e8f0);border-radius:4px;overflow:hidden;background:var(--card-bg,#fff)">',
+              '<div style="padding:14px 20px 12px;border-bottom:1px solid var(--border,#e2e8f0);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">',
+              '<div>',
+              '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:3px">Mycelium Protocol</div>',
+              '<div style="font-size:14px;font-weight:600">Phase Progress — Historical Trend</div>',
+              '</div>',
+              '<div style="display:flex;gap:10px;flex-wrap:wrap">',
+              ['p1','Phase 1','#F59E0B','rgba(245,158,11,.12)'],
+              ['p2','Phase 2','#22D3EE','rgba(34,211,238,.12)'],
+              ['p3','Phase 3','#A78BFA','rgba(167,139,250,.12)']
+              ].map(function(p){if(!Array.isArray(p))return p;
+                return '<div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:4px;border:1px solid '+p[2]+'44;background:'+p[3]+'">'+
+                  '<div style="width:7px;height:7px;border-radius:50%;background:'+p[2]+'"></div>'+
+                  '<span style="font-size:11px;color:#94a3b8">'+p[1]+'</span>'+
+                  '<span style="font-size:12px;font-weight:700;color:'+p[2]+';font-variant-numeric:tabular-nums">'+last[p[0]]+'%</span>'+
+                  '<span style="font-size:10px;font-variant-numeric:tabular-nums;color:'+deltaClass(p[0])+'">'+delta(p[0])+'</span>'+
+                  '</div>';
+              }).join('')+
+              '</div></div>',
+              '<div style="padding:16px 20px 8px;position:relative">',
+              '<canvas id="__prog_canvas" style="display:block;width:100%;cursor:crosshair" height="240"></canvas>',
+              '<div id="__prog_tip" style="position:absolute;pointer-events:none;background:#1e2433;border:1px solid #2d3a50;border-radius:4px;padding:8px 12px;font-size:12px;white-space:nowrap;display:none;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.3)">',
+              '<div id="__prog_tdate" style="font-size:10px;color:#8b9ab0;margin-bottom:5px"></div>',
+              '<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;background:#F59E0B"></div><span style="color:#8b9ab0;min-width:48px">Phase 1</span><span id="__prog_tv1" style="font-weight:700;color:#e6edf3;font-variant-numeric:tabular-nums"></span></div>',
+              '<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;background:#22D3EE"></div><span style="color:#8b9ab0;min-width:48px">Phase 2</span><span id="__prog_tv2" style="font-weight:700;color:#e6edf3;font-variant-numeric:tabular-nums"></span></div>',
+              '<div style="display:flex;align-items:center;gap:7px"><div style="width:6px;height:6px;border-radius:50%;background:#A78BFA"></div><span style="color:#8b9ab0;min-width:48px">Phase 3</span><span id="__prog_tv3" style="font-weight:700;color:#e6edf3;font-variant-numeric:tabular-nums"></span></div>',
+              '</div>',
+              '</div>',
+              '<div style="padding:6px 20px 12px;border-top:1px solid var(--border,#e2e8f0);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">',
+              '<span style="font-size:11px;color:#94a3b8">Done=100%, In Progress=估算值, To Do=0%; Phase 内算术平均</span>',
+              '<span style="font-size:11px;color:#94a3b8;font-variant-numeric:tabular-nums">最后扫描: '+last.date+'  |  '+H.length+' 次记录</span>',
+              '</div>',
+              '</div>'
+            ].join('');
+            return wrap;
+          }
+
+          function drawChart() {
+            var cv = document.getElementById('__prog_canvas');
+            if (!cv) return;
+            var H = window.__progressHistory;
+            if (!H || H.length < 2) return;
+            var dpr = window.devicePixelRatio||1;
+            var W = cv.parentElement.offsetWidth - 40;
+            var CH = 240;
+            cv.width = W*dpr; cv.height = CH*dpr;
+            cv.style.width = W+'px'; cv.style.height = CH+'px';
+            var ctx = cv.getContext('2d');
+            ctx.scale(dpr, dpr);
+            var PAD = {t:16,r:20,b:36,l:40};
+            var cW = W-PAD.l-PAD.r, cH = CH-PAD.t-PAD.b;
+            function xOf(i){return PAD.l+(i/(H.length-1))*cW}
+            function yOf(v){return PAD.t+(1-v/100)*cH}
+            // Grid
+            [0,25,50,75,100].forEach(function(v){
+              var y=yOf(v);
+              ctx.strokeStyle='#1d2433';ctx.lineWidth=1;
+              ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
+              ctx.fillStyle='#4a5568';ctx.textAlign='right';ctx.textBaseline='middle';
+              ctx.font='10px system-ui,sans-serif';ctx.fillText(v+'%',PAD.l-6,y);
+            });
+            // X labels
+            var step=Math.ceil(H.length/5);
+            ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle='#4a5568';
+            H.forEach(function(d,i){
+              if(i%step!==0&&i!==H.length-1)return;
+              var pts=d.date.split('-'),mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              ctx.fillText(mo[parseInt(pts[1])]+' '+parseInt(pts[2]),xOf(i),PAD.t+cH+6);
+            });
+            // Series
+            var series=[{k:'p1',c:'#F59E0B'},{k:'p2',c:'#22D3EE'},{k:'p3',c:'#A78BFA'}];
+            series.forEach(function(s){
+              // Fill
+              ctx.beginPath();ctx.moveTo(xOf(0),yOf(H[0][s.k]));
+              H.forEach(function(d,i){if(i)ctx.lineTo(xOf(i),yOf(d[s.k]));});
+              ctx.lineTo(xOf(H.length-1),yOf(0));ctx.lineTo(xOf(0),yOf(0));ctx.closePath();
+              var g=ctx.createLinearGradient(0,PAD.t,0,PAD.t+cH);
+              var hx=s.c.replace('#',''),r=parseInt(hx.substr(0,2),16),gr=parseInt(hx.substr(2,2),16),b=parseInt(hx.substr(4,2),16);
+              g.addColorStop(0,'rgba('+r+','+gr+','+b+',.13)');g.addColorStop(1,'rgba('+r+','+gr+','+b+',.01)');
+              ctx.fillStyle=g;ctx.fill();
+              // Line
+              ctx.beginPath();ctx.strokeStyle=s.c;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+              H.forEach(function(d,i){var x=xOf(i),y=yOf(d[s.k]);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+              // Last dot
+              var lx=xOf(H.length-1),ly=yOf(H[H.length-1][s.k]);
+              ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fillStyle=s.c;ctx.fill();
+              ctx.strokeStyle='#161b22';ctx.lineWidth=2;ctx.stroke();
+            });
+            // Hover
+            cv._H=H;cv._PAD=PAD;cv._cW=cW;cv._cH=cH;cv._W=W;
+          }
+
+          function setupHover(cv) {
+            if (!cv || cv._hoverReady) return;
+            cv._hoverReady = true;
+            var tip=document.getElementById('__prog_tip');
+            var td=document.getElementById('__prog_tdate'),tv1=document.getElementById('__prog_tv1'),tv2=document.getElementById('__prog_tv2'),tv3=document.getElementById('__prog_tv3');
+            cv.addEventListener('mousemove',function(e){
+              var rect=cv.getBoundingClientRect(),H=cv._H,PAD=cv._PAD,cW=cv._cW,cH=cv._cH;
+              if(!H)return;
+              var mx=e.clientX-rect.left,my=e.clientY-rect.top;
+              if(mx<PAD.l||mx>PAD.l+cW||my<PAD.t||my>PAD.t+cH){tip.style.display='none';return;}
+              var idx=Math.max(0,Math.min(H.length-1,Math.round((mx-PAD.l)/cW*(H.length-1))));
+              var d=H[idx];
+              td.textContent=d.date;tv1.textContent=d.p1+'%';tv2.textContent=d.p2+'%';tv3.textContent=d.p3+'%';
+              var tx=(mx+PAD.l+48)>(cv._W+40)?mx-180:mx+20;
+              tip.style.left=tx+'px';tip.style.top='24px';tip.style.display='block';
+            });
+            cv.addEventListener('mouseleave',function(){tip.style.display='none';});
+          }
+
+          var injected = false;
+          function tryInject() {
+            if (injected || document.getElementById(PANEL_ID)) { injected=true; return; }
+            if (!location.pathname.match(/statistic/i)) return;
+            // Find the statistics page main container — try several selectors
+            var candidates = Array.from(document.querySelectorAll('main, [class*="content"], [class*="page"], [class*="statistics"], [class*="wrapper"]'));
+            var target = null;
+            for (var i=0; i<candidates.length; i++) {
+              var t=candidates[i], txt=t.textContent.toLowerCase();
+              if((txt.includes('statistic')||txt.includes('total task')||txt.includes('complete')||txt.includes('in progress'))&&t.children.length>0){
+                target=t; break;
+              }
+            }
+            if (!target) {
+              // Fallback: look for any element with numerical content that looks like stats
+              var allDivs = document.querySelectorAll('div');
+              for(var j=0;j<allDivs.length;j++){
+                if(allDivs[j].textContent.match(/\\bstatistic/i)&&allDivs[j].offsetHeight>100){target=allDivs[j];break;}
+              }
+            }
+            if (!target) return; // SPA not rendered yet
+            var panel = buildPanel();
+            if (!panel) return;
+            target.appendChild(panel);
+            injected = true;
+            setTimeout(function(){drawChart();setupHover(document.getElementById('__prog_canvas'));},50);
+          }
+
+          function onRoute() {
+            var panel=document.getElementById(PANEL_ID);
+            if(panel)panel.remove();
+            injected=false;
+            if(location.pathname.match(/statistic/i)){
+              var tries=0;
+              var t=setInterval(function(){tryInject();if(injected||++tries>40)clearInterval(t);},300);
+            }
+          }
+
+          // Intercept SPA navigation
+          var _push=history.pushState,_replace=history.replaceState;
+          history.pushState=function(){_push.apply(this,arguments);onRoute();};
+          history.replaceState=function(){_replace.apply(this,arguments);onRoute();};
+          window.addEventListener('popstate',onRoute);
+          // Initial check
+          onRoute();
+        })();
       });
     </script>
     `;
