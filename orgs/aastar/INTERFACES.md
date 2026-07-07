@@ -1,7 +1,7 @@
 # AAstar — 对外接口规范
 
 > 文档类型：接口契约（Interface Contracts）
-> 维护者：jason | 最后更新：2026-05-30
+> 维护者：jason | 最后更新：2026-07-07
 > 关联：`orgs/aastar/PROFILE.md`
 
 ---
@@ -11,7 +11,7 @@
 ### 1. AirAccount — 账户基础设施
 
 **仓库**: `github.com/AAStarCommunity/AirAccount`
-**版本**: v2025.09.29-kms-web-ui（git tag，KMS 分支生产中）
+**版本**: v0.27.3-Beta5（KMS+WebAuthn，Sepolia 生产中）
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
@@ -36,7 +36,7 @@
 ### 2. SuperPaymaster — Gas 抽象支付
 
 **仓库**: `github.com/AAStarCommunity/SuperPaymaster`
-**版本**: v5.3.0-dev（git tag，含 UUPS 升级，Sepolia 已部署）
+**版本**: v5.4.1-rc.1（slash-threshold-evidence-unify，BLS 模块 Sepolia 已部署）
 
 **核心接口（ERC-4337 标准层）**
 
@@ -97,7 +97,7 @@
 ### 4. AAStar SDK — 开发者集成包
 
 **仓库**: `github.com/AAStarCommunity/aastar-sdk`（monorepo，pnpm workspace）
-**版本**: v0.18.0（`@aastar/monorepo`）
+**版本**: v0.39.0（DVT operator registration API + BLSAggregator ABI sync）
 **Sub-packages**: `core` / `sdk` / `dapp` / `enduser` / `operator` / `paymaster` / `identity` / `data` / `tokens` / `x402`
 
 ```typescript

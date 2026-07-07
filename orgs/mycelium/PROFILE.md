@@ -22,6 +22,9 @@ provides:
   - capability: broodbrain
     interface: 协议神经系统（任务看板 + 上下文发布）
     repo: github.com/AAStarCommunity/Brood
+  - capability: nostr-relay
+    interface: Nostr 中继节点（agent 通信基础设施，NIP-86）
+    repo: github.com/MushroomDAO/agent-speaker-relay
 depends_on: []
 contact:
   builder: jason
