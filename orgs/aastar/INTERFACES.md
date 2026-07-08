@@ -1,7 +1,7 @@
 # AAstar — 对外接口规范
 
 > 文档类型：接口契约（Interface Contracts）
-> 维护者：jason | 最后更新：2026-07-07
+> 维护者：jason | 最后更新：2026-07-08
 > 关联：`orgs/aastar/PROFILE.md`
 
 ---
@@ -117,6 +117,37 @@ const tx = await SuperPaymaster.sendGasless({
 **封装能力**：AirAccount + SuperPaymaster + CometENS + OpenPNTs
 
 > ⚠️ 旧仓库 `jhfnetboy/AAStar_SDK`（注意:owner 是个人账号，不是 AAStarCommunity）已 **archived**，仅作历史 backup 保留。所有新集成请用上方 `AAStarCommunity/aastar-sdk` monorepo。
+
+---
+
+### 5. 合约接口契约 / Cross-repo Versioned Contracts
+
+> 本节收录跨仓库调用的稳定接口 selector，作为版本管理权威来源。
+> owner 仓库变更接口时须通过 CC 任务通知 brood 更新版本行。
+
+#### `isValidOwnerAuth` — AirAccount owner-gate
+
+| 字段 | 值 |
+|------|-----|
+| **接口** | `function isValidOwnerAuth(bytes32 userOpHash, bytes calldata ownerAuth) external view returns (bytes4)` |
+| **Selector / 成功 magic** | `0xa0cf00cf`（= `isValidOwnerAuth.selector`，刻意不用 ERC-1271 `0x1626ba7e`，避免混淆） |
+| **失败返回** | `0xffffffff`（fail-closed，永不 revert） |
+| **宿主合约** | `AirAccountExtension`，经 `AAStarAirAccountV7` fallback 路由 |
+| **owner** | `airaccount-contract` |
+| **consumers** | DVT `YetAnotherAA-Validator` v1.9.0（`blockchain.service.ts` owner-gate）；AirAccount KMS |
+| **稳定自** | v0.23.0（issue #159）；经 v0.24/25/26/27.0 未变 |
+| **当前实现（Sepolia v0.27.0）** | impl `0x4a76dEf9eE4EE44eF6D0B2a327a068B5B7931E1C`；Extension `0xEcE87546989Da7df573b107D54a0ead0aCB49923` |
+| **参考账户** | e2e_account `0x92EA8b02D34A4D5d10f0Db9Ea894e8bC72e292e8`（owner `0xb5600060…`） |
+| **源码位置** | `src/core/AirAccountExtension.sol:1016` |
+
+**`ownerAuth` 编码规则（consumers 必读）**：
+
+| tag | 含义 | payload 构造 | 长度 |
+|-----|------|-------------|------|
+| `0x01` | owner ECDSA (secp256k1) | `personal_sign(userOpHash)`（EIP-191）；v=0/1 归一到 27/28；low-S 强制；ownerAuth = `0x01 ‖ sig` | 严格 66 字节，非 66 直接返回 `0xffffffff` |
+| `0x02` | owner WebAuthn passkey | `authenticatorData ‖ clientDataJSON ‖ …` | 可变 |
+
+> **版本管理约定**：`airaccount-contract` 升级该接口（改 selector/magic/tag 语义/宿主）时通过 CC 任务通知 brood，brood 更新本表版本行并同步 consumers。
 
 ---
 
