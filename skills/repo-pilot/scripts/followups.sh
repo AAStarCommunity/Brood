@@ -60,10 +60,25 @@ next_id() {
   echo $(( ${n:-0} + 1 ))
 }
 
+lock_dir="$ledger.lock"
+acquire_lock() {
+  # mkdir is atomic → a portable mutex (macOS ships no flock). Serialize read-then-write so
+  # concurrent `add`s can't compute the same next id (observed: 6 parallel adds → all FU-1),
+  # and a `done` can't race a concurrent write of the ledger.
+  mkdir -p "$docs_dir"
+  local i=0
+  until mkdir "$lock_dir" 2>/dev/null; do
+    i=$((i+1)); [ "$i" -gt 300 ] && { echo "ERROR: cannot acquire $lock_dir (stale lock? rm it)" >&2; exit 3; }
+    sleep 0.05
+  done
+  trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
+}
+
 case "$sub" in
   add)
     [ -n "$cls" ] && [ -n "$desc" ] || { echo "usage: followups.sh add --class <A|B|C|D> --source <ref> --desc <text>" >&2; exit 2; }
     case "$cls" in A|B|C|D) : ;; *) echo "ERROR: --class must be A|B|C|D" >&2; exit 2 ;; esac
+    acquire_lock          # serialize next_id-then-append so parallel adds get distinct ids
     ensure_ledger
     id="FU-$(next_id)"
     day="$(date +%F)"
@@ -89,6 +104,7 @@ case "$sub" in
     [ -n "$pr" ] || { echo "ERROR: done requires --pr <n>" >&2; exit 2; }
     [ -f "$ledger" ] || { echo "ERROR: no ledger at $ledger" >&2; exit 2; }
     case "$pos" in FU-[0-9]*) : ;; *) echo "ERROR: id must look like FU-<n>" >&2; exit 2 ;; esac
+    acquire_lock          # serialize read-modify-write of the ledger against concurrent add/done
     tmp="$ledger.tmp.$$"
     awk -v id="$pos" -v pr="$pr" '
       $0 ~ ("^- \\[ \\] " id " ") && index($0, "["id"") == 0 {

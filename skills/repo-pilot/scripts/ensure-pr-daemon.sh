@@ -37,15 +37,24 @@ if [ ! -x "$watch" ] && [ ! -f "$watch" ]; then
 fi
 
 is_running() {
-  # watch.sh status prints 'review watcher running: pid N' when alive.
-  bash "$watch" status 2>/dev/null | grep -q 'review watcher running'
+  # Authoritative signal = the actual loop PROCESS. pgrep also avoids the SIGPIPE-under-
+  # pipefail trap that `bash "$watch" status | grep -q` falls into (grep -q closes the pipe
+  # early → watch.sh gets SIGPIPE → pipefail makes the pipeline rc=141 → false "not running").
+  if command -v pgrep >/dev/null 2>&1; then
+    pgrep -f 'review_watch\.py' >/dev/null 2>&1 && return 0
+    return 1
+  fi
+  # No pgrep: capture first (no pipe) so grep can't SIGPIPE-kill watch.sh under pipefail.
+  local out
+  out="$(bash "$watch" status 2>/dev/null || true)"
+  case "$out" in *'review watcher running'*) return 0 ;; *) return 1 ;; esac
 }
 
 case "$sub" in
   check)
     if is_running; then
       echo "PR_DAEMON: running"
-      bash "$watch" status 2>/dev/null | grep -E 'running: pid|last_full_sync|meta:' | head -3
+      bash "$watch" status 2>/dev/null | grep -E 'running: pid|last_full_sync|meta:' | head -3 || true
       exit 0
     fi
     echo "PR_DAEMON: not running"
@@ -58,7 +67,7 @@ case "$sub" in
     fi
     echo "PR_DAEMON: down — starting the review watcher (detached background)…"
     # watch.sh start -> start_review_watch.sh start, with AUTO_REVIEW env set. Idempotent.
-    bash "$watch" start 2>&1 | grep -E 'started review watcher|already running|pid ' | head -3
+    bash "$watch" start 2>&1 | grep -E 'started review watcher|already running|pid ' | head -3 || true
     if is_running; then
       echo "PR_DAEMON: started ✓ — it now reviews open PRs across the configured repos."
       exit 0

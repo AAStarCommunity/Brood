@@ -36,8 +36,10 @@ case "$sub" in
     [ $# -gt 0 ] || die "add needs explicit path(s); refusing an empty 'git add'"
     for a in "$@"; do
       case "$a" in
-        -A|--all|.|-p|--patch|-u|--update|:/|":/"*|-*)
-          die "refusing 'git add $a' — pass explicit file paths only (never -A/./--all)" ;;
+        -*)            die "refusing flag '$a' — explicit file paths only (never -A/--all/-u/-p)" ;;
+        .|./|..|../|/) die "refusing '$a' — stages a whole tree; pass explicit files" ;;
+        :*)            die "refusing pathspec magic '$a' (e.g. ':(top)', ':/', ':!') — explicit file paths only" ;;
+        *'*'*|*'?'*|*'['*) die "refusing glob '$a' — explicit file paths only" ;;
       esac
     done
     exec git add -- "$@"
@@ -45,7 +47,12 @@ case "$sub" in
   push)
     remote="${1:-}"; branch="${2:-}"
     { [ -n "$remote" ] && [ -n "$branch" ]; } || die "usage: git-guard.sh push <remote> <branch>"
-    is_protected "$branch" && die "refusing to push to protected branch '$branch' — open a PR from a feature branch"
+    [ $# -eq 2 ] || die "push takes exactly <remote> <branch> — refusing extra refspecs/flags"
+    case "$branch" in -*) die "refusing flag-like ref '$branch'" ;; esac
+    # Resolve the DESTINATION ref from any refspec form (src:dst, +dst, refs/heads/dst) so
+    # `push origin HEAD:main` can't smuggle a protected branch past an exact-name check.
+    dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"
+    is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
     exec git push -u "$remote" "$branch"
     ;;
   merge-pr)
@@ -57,17 +64,23 @@ case "$sub" in
         --integration)
           [ $# -ge 2 ] || die "--integration requires a value"
           integration="$2"; shift 2 ;;
+        # Refuse flags that defeat the rail: --admin bypasses branch protection; --repo/-R
+        # would point the merge at a different repo than the base check validated.
+        --admin|--repo|-R) die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
         *) args+=("$1"); shift ;;
       esac
     done
     [ -n "$n" ] || die "usage: git-guard.sh merge-pr <n> --integration <branch> [gh args]"
     [ -n "$integration" ] || die "merge-pr requires --integration <branch>"
     command -v gh >/dev/null 2>&1 || die "gh not installed"
-    base="$(gh pr view "$n" --json baseRefName --jq .baseRefName 2>/dev/null || true)"
+    # Pin the repo so the base check and the actual merge target the SAME repo.
+    repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"
+    [ -n "$repo" ] || die "cannot resolve current repo (gh auth / not inside a gh repo?)"
+    base="$(gh pr view "$n" --repo "$repo" --json baseRefName --jq .baseRefName 2>/dev/null || true)"
     [ -n "$base" ] || die "cannot read PR #$n base branch (gh auth / wrong number?)"
     [ "$base" = "$integration" ] || die "PR #$n base is '$base', not integration '$integration' — refusing merge into an unintended branch"
     # ${args[@]+...} guards the empty-array-under-set-u case on bash 3.2 (macOS default).
-    exec gh pr merge "$n" ${args[@]+"${args[@]}"}
+    exec gh pr merge "$n" --repo "$repo" ${args[@]+"${args[@]}"}
     ;;
   *)
     echo "git-guard.sh: add <path...> | push <remote> <branch> | merge-pr <n> --integration <b> [gh args]" >&2
