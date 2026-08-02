@@ -70,7 +70,7 @@ is_protected() {
 
 mode="DRY-RUN (pass --apply to execute)"
 [ "$apply" = "1" ] && mode="APPLY"
-echo "== repo-pilot safe-cleanup =="
+echo "== pilot safe-cleanup =="
 echo "integration=$integration  current=$current_branch  mode=$mode  remote=$([ $do_remote = 1 ] && echo on || echo off)"
 echo
 

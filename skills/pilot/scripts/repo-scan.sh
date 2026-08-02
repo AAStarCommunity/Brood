@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# repo-scan.sh — read-only snapshot of a repo's git state for repo-pilot `status`.
+# repo-scan.sh — read-only snapshot of a repo's git state for pilot `status`.
 # Prints a compact, machine-friendly block. Never mutates anything.
 #
 # Usage: repo-scan.sh [--integration <branch>]
@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do
 done
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "REPO_PILOT_SCAN: not-a-git-repo"
+  echo "PILOT_SCAN: not-a-git-repo"
   exit 0
 fi
 
@@ -70,7 +70,7 @@ if git show-ref --verify --quiet "refs/heads/$integration" && [ "$current_branch
   [ -n "$counts" ] && ahead_behind="$(echo "$counts" | awk '{print "behind="$1" ahead="$2}')"
 fi
 
-echo "REPO_PILOT_SCAN: ok"
+echo "PILOT_SCAN: ok"
 echo "repo=$repo_name"
 echo "root=$repo_root"
 echo "current_branch=$current_branch"

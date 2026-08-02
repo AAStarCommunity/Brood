@@ -1,4 +1,4 @@
-# .repo-pilot.yml — 放仓库根目录。repo-pilot 各阶段读它取分支/清理策略。
+# .pilot.yml — 放仓库根目录。pilot 各阶段读它取分支/清理策略。
 # 脚本不解析 YAML；由 skill 用 Read 读取后作为 flag 传给脚本，保持确定简单。
 
 base_branch: main            # 主干，受保护，禁止直推/直合

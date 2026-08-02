@@ -1,6 +1,6 @@
 # <项目> 实时状态 — progress
 
-> 「此刻仓库真实发生了什么」。由 `repo-pilot run` 每一步更新。
+> 「此刻仓库真实发生了什么」。由 `pilot run` 每一步更新。
 > 更新时间：<YYYY-MM-DD HH:MM>
 
 ## 当前聚焦

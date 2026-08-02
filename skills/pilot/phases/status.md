@@ -4,7 +4,7 @@
 
 ## 步骤
 
-1. **读配置**：Read `.repo-pilot.yml`（不存在则用默认 `base=main` / `integration=preview`，并在末尾提示可运行 `repo-pilot doctor` 生成）。取出 `integration_branch`、`protect_patterns`、`remote`。
+1. **读配置**：Read `.pilot.yml`（不存在则用默认 `base=main` / `integration=preview`，并在末尾提示可运行 `pilot doctor` 生成）。取出 `integration_branch`、`protect_patterns`、`remote`。
 
 2. **扫描**（只读）：运行
    ```
@@ -27,10 +27,10 @@
    ```
    bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> --apply
    ```
-   - 要连带删远程已合并分支：仅当 `.repo-pilot.yml` 的 `allow_remote_cleanup: true`，且用户明确同意，才加 `--remote`。
+   - 要连带删远程已合并分支：仅当 `.pilot.yml` 的 `allow_remote_cleanup: true`，且用户明确同意，才加 `--remote`。
    - 无人值守模式（由 /loop 调用且用户已预先授权清理）：可直接 `--apply`，但**永远不加 `--remote`** 除非配置显式开启。
 
-6. **建议下一步**：基于 progress.md 指出「下一个该做的 READY task」；若没有规划文档，建议 `repo-pilot plan`。
+6. **建议下一步**：基于 progress.md 指出「下一个该做的 READY task」；若没有规划文档，建议 `pilot plan`。
 
 ## 纪律
 
