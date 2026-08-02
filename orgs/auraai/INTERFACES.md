@@ -1,16 +1,16 @@
-# AuraAI — 对外接口规范
+# iDoris.ai — 对外接口规范
 
 > 文档类型：接口契约（Interface Contracts）
-> 维护者：AuraAI 团队 | 最后更新：2026-04-27
+> 维护者：iDoris.ai 团队 | 最后更新：2026-04-27
 > 关联：`orgs/auraai/PROFILE.md`
 
 ---
 
 ## 我们提供 / What We Provide
 
-### 1. AuraAI Knowledge Base — AI 知识库
+### 1. iDoris.ai Knowledge Base — AI 知识库
 
-**仓库**: `github.com/AuraAIHQ/AuraAI`（Apache 2.0）
+**仓库**: `github.com/iDoris-ai/AuraAI`（Apache 2.0）
 **状态**: 活跃（In Progress, 35%）
 
 知识库内容：Web3 + AI 领域研究，面向 Mycelium Protocol 生态
@@ -21,7 +21,7 @@
 
 ### 2. Agent24 — 个人 AI 代理框架
 
-**仓库**: `github.com/AuraAIHQ/Agent24`
+**仓库**: `github.com/iDoris-ai/Agent24`
 **状态**: 活跃（Claude Code 代理执行框架 + eval system + memory）
 
 | 能力 | 说明 |
@@ -34,7 +34,7 @@
 
 ### 3. agent-speaker — Nostr 通信层
 
-**仓库**: `github.com/AuraAIHQ/agent-speaker`
+**仓库**: `github.com/iDoris-ai/agent-speaker`
 **版本**: v0.25.0
 **状态**: 活跃（NIP-44 加密 + TUI + SQLite）
 
@@ -61,9 +61,9 @@
 
 ---
 
-### 5. AuraAI Courses — AI/编程教育内容
+### 5. iDoris.ai Courses — AI/编程教育内容
 
-**仓库**: `github.com/AuraAIHQ/courses`（Apache 2.0）
+**仓库**: `github.com/iDoris-ai/courses`（Apache 2.0）
 **状态**: 活跃（5门课程，面向儿童）
 
 | 课程 | 说明 |
@@ -89,7 +89,7 @@
 
 ## 待完善 / To Be Defined
 
-> 以下接口规范尚在规划中，欢迎 AuraAI 团队补充：
+> 以下接口规范尚在规划中，欢迎 iDoris.ai 团队补充：
 
 - **iDoris AI 推理接口**: 边缘计算 AI 模型的 API 规范
 - **AI 激励结算**: AI 服务如何通过 SuperPaymaster 收费
@@ -99,5 +99,5 @@
 
 ## 联系 / Contact
 
-- GitHub Org: https://github.com/AuraAIHQ
+- GitHub Org: https://github.com/iDoris-ai
 - 主要维护者: @jhfnetboy (jason)

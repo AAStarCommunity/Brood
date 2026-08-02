@@ -21,12 +21,12 @@ allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run b
 | 本地目录 | GitHub 组织 | 说明 |
 |:---|:---|:---|
 | `~/Dev/aastar/` | `AAStarCommunity` | 区块链基础设施（SuperPaymaster、AirAccount、SuperRelay 等） |
-| `~/Dev/auraai/` | `AuraAIHQ` | AI 基础设施（iDoris、Agent24、agent-speaker 等） |
+| `~/Dev/auraai/` | `iDoris-ai` | AI 基础设施（iDoris、Agent24、agent-speaker 等） |
 | `~/Dev/mycelium/` | `MushroomDAO` | 社区/个人/城市 OS（Sin90、Cos72、CometENS、Expresser 等） |
 
 当用户在 GitHub 新建仓库并 clone 到本地时，**必须**放在对应组织的目录下。例如：
 - `git clone git@github.com:AAStarCommunity/NewRepo.git ~/Dev/aastar/NewRepo`
-- `git clone git@github.com:AuraAIHQ/NewRepo.git ~/Dev/auraai/NewRepo`
+- `git clone git@github.com:iDoris-ai/NewRepo.git ~/Dev/auraai/NewRepo`
 - `git clone git@github.com:MushroomDAO/NewRepo.git ~/Dev/mycelium/NewRepo`
 
 Clone 备用目录（未找到本地仓库时临时 clone）：`~/Dev/tmp/`
@@ -51,7 +51,7 @@ CLONE_DIR="$HOME/Dev/tmp"
 ```
 📍 项目根目录: /Users/xxx/Dev/Brood
 🗂️  AAStarCommunity: ~/Dev/aastar/
-🗂️  AuraAIHQ:        ~/Dev/auraai/
+🗂️  iDoris-ai:        ~/Dev/auraai/
 🗂️  MushroomDAO:     ~/Dev/mycelium/
 📦 Clone 备用:       ~/Dev/tmp/
 ```
@@ -87,7 +87,7 @@ import os, subprocess
 # 固定目录 → 组织映射
 ORG_DIRS = {
     os.path.expanduser("~/Dev/aastar"):    "AAStarCommunity",
-    os.path.expanduser("~/Dev/auraai"):    "AuraAIHQ",
+    os.path.expanduser("~/Dev/auraai"):    "iDoris-ai",
     os.path.expanduser("~/Dev/mycelium"): "MushroomDAO",
 }
 
@@ -186,7 +186,7 @@ for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
 📡 生态地图扫描完成
    三大目录已有仓库: {N} 个
      ~/Dev/aastar/:    {N} 个（AAStarCommunity）
-     ~/Dev/auraai/:    {N} 个（AuraAIHQ）
+     ~/Dev/auraai/:    {N} 个（iDoris-ai）
      ~/Dev/mycelium/:  {N} 个（MushroomDAO）
    🆕 新发现: {N} 个（已加入地图 + 搜索任务匹配）
    ❓ 本地缺失: {N} 个（未 clone）

@@ -22,6 +22,9 @@ provides:
   - capability: broodbrain
     interface: 协议神经系统（任务看板 + 上下文发布）
     repo: github.com/AAStarCommunity/Brood
+  - capability: nostr-relay
+    interface: Nostr 中继节点（agent 通信基础设施，NIP-86）
+    repo: github.com/MushroomDAO/agent-speaker-relay
 depends_on: []
 contact:
   builder: jason
@@ -106,7 +109,7 @@ MushroomDAO 是协议的治理组织，致力于"构建数字公共物品——�
 ## 与其他组织的关系
 
 - AAstar: 提供 Web3 基础设施（支付 + 身份）→ 是协议的技术底层
-- AuraAI: 提供 AI 能力层 → 为 Sin90/iDoris 提供智能
+- iDoris.ai: 提供 AI 能力层 → 为 Sin90/iDoris 提供智能
 - BroodBrain: 协议神经系统（上下文 + 任务管理）→ 本仓库
 
 ## 透明与信任机制

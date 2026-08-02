@@ -387,7 +387,7 @@ BroodBrain 上下文解析
 ├── aastar-sdk/      # SDK 层
 ├── mycelium/        # Mycelium Protocol
 ├── AI/              # AI 能力层（推测为 OralAI 相关）
-├── AuraAI/          # AI 产品层
+├── auraai/          # AI 产品层（iDoris.ai 组织，本地目录仍为 auraai）
 ├── Community/       # 社区/文档
 ├── Demos/           # 演示项目
 ├── Brood/           # BroodBrain（本仓库）
