@@ -1,6 +1,6 @@
 ---
 id: TASK-34
-title: AuraAI
+title: iDoris.ai
 status: In Progress
 assignee: []
 created_date: '2026-03-07 15:39'
@@ -10,11 +10,11 @@ milestone: m-3
 dependencies: []
 references:
   - 'https://github.com/jhfnetboy/AuraAI'
-  - 'https://github.com/AuraAIHQ/Agent24'
-  - 'https://github.com/AuraAIHQ/agent-speaker'
+  - 'https://github.com/iDoris-ai/Agent24'
+  - 'https://github.com/iDoris-ai/agent-speaker'
   - 'https://github.com/MushroomDAO/agent-speaker-relay'
   - 'https://github.com/MushroomDAO/Agent-WeChat-SDK'
-  - 'https://github.com/AuraAIHQ/simple-agent'
+  - 'https://github.com/iDoris-ai/simple-agent'
 priority: low
 ---
 
@@ -28,26 +28,25 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 3. EIP-8004, x402,以及Agent经济的自动网络：Mycelium Network
 4. Skill、Swarm和Native AI的武器库：AK47
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 68%** | agent-speaker 9 天 10 次提交（TUI Chat #4 合入 + bunker 连接冲突修复 + serve flags 体系化）；其他仓库本期以合规为主
+**🚀 预估进度: 70%** | 近30天活跃仓库缩减：agent-speaker 仍在迭代（kind:1111 comment 支持 + blossom tweaks + publish fix）；Agent24 仅 1 commit（code owner）；simple-agent 仅 license；整体无重大新功能
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — `AuraAIHQ` org 全量建立
+- ✅ Aura 建立 — `iDoris-ai` org 全量建立
 - ✅ Agent24 = AgentStore 承载平台 — BoxLite service container (M3+M4) 完成
-- ✅ iDoris-SDK M2/M3/M4/M5 全部完成：WeChatBridge + InboxAgent + CLI + 集成验证
-- ✅ 包重命名整合：@auraai/ai-bridge → @auraaihq/idoris
-- ✅ Nostr 通信层：**agent-speaker TUI Chat 完整 PR #4 合入** + serve --auth/--eager-auth flags + bunker 连接冲突修复 + --jq flag on fetch/event commands
-- 🔧 AgentSocial：Paper3 设计 + milestone plan 已就绪（5-29 起）
+- ✅ iDoris-SDK M2/M3/M4/M5 全部完成
+- ✅ Nostr 通信层：TUI Chat + NIP-86 role commands + jq helpers + serve --auth/--eager-auth
+- ✅ agent-speaker：kind:1111 comment publish + blossom ipv6 fix + profile flags
+- 🔧 AgentSocial：Paper3 设计就绪，工程化待启动
 - ⬜ iDoris 三层结构（云端大模型 + 训练服务）、Mycelium Network、AK47 — 未启动
 
-**📝 近期动态** (6 仓库聚合):
-- agent-speaker 2026-06-20: fix conflicts with running bunker connections (client/server) through authorization
-- agent-speaker 2026-06-?: bunker: remove duplicated --sec flags interfering with everything
-- agent-speaker 2026-06-?: serve: --auth and --eager-auth flags
-- agent-speaker 2026-06-?: feat: TUI Chat Interface (PR #4)
-- agent-speaker 2026-06-?: support --jq flag on fetch and event commands
-- AuraAI / Agent24 / simple-agent / OpenCrab / courses 本期主要为 license 合规（Apache 2.0 五件套）
+**📝 近期动态** (iDoris-ai/agent-speaker):
+- 2026-07-07: publish: allow kind:1111 comment, force --comment flag
+- 2026-07-06: two blossom tweaks（ipv6 + blossom）
+- 2026-07-06: publish: proper root/reply tags + read from arguments
+- 2026-07-05: admin: color flag is int now
+- Agent24/simple-agent: 静默（仅 license/owner 维护提交）
 
-💡 agent-speaker 进入工程化第二阶段（TUI + serve auth + bunker 修复），是 Mycelium Nostr 网络的关键 UX 与底座推进。剩余 32% 主要为 iDoris 云端三层结构 + Mycelium Network 启动。
+💡 agent-speaker 功能稳定扩展中（Nostr 发布层细化）。iDoris.ai 其他仓库进入静默期，大功能（iDoris 云端 + Mycelium Network）尚未启动。剩余 30%：核心平台工程化。
 <!-- SECTION:DESCRIPTION:END -->

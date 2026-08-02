@@ -13,10 +13,12 @@ dependencies:
   - TASK-2
   - TASK-3
 references:
+  - 'https://github.com/AAStarCommunity/AirAccount'
   - 'https://github.com/AAStarCommunity/YetAnotherAA'
   - 'https://github.com/AAStarCommunity/aastar-sdk'
   - 'https://github.com/AAStarCommunity/YetAnotherAA-Validator'
   - 'https://github.com/AAStarCommunity/aastar-docs'
+  - 'https://github.com/AAStarCommunity/airaccount-contract'
 ordinal: 6000
 ---
 
@@ -27,28 +29,28 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 
 注：本仓库 reference 指向 AAStarCommunity/YetAnotherAA（用户确认：以 AAStar 版本为主，jhfnetboy 版本已停止更新）
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 88%** | 关联 5 仓库（AirAccount + YetAnotherAA + aastar-sdk + YetAnotherAA-Validator + aastar-docs）9 天累计 **440+ 次提交**；**SDK 主干 v0.20.9 → v0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + **passkey-guardian 端到端 UI/recovery**
+**🚀 预估进度: 95%** | 关联 6 仓库（含新增 airaccount-contract）近30天极度活跃：**airaccount-contract v0.24.0→v0.27.0**（DVT validator unification）+ **aastar-sdk v0.37.2→v0.39.0**（DVT registration API）+ YetAnotherAA DVT wizard + Validator BLS gossip quorum live
 
 **✅ AC 完成情况**:
-- 🔧 #1 Support Social Login — WebAuthn passkey + v0.6.0 lazy KMS（已完成）
-- ✅ **passkey-guardian 完整流程上线**（YetAnotherAA #332-336）：UI account creation + backend recovery (proposeRecoveryWithSig, relayed) + WebAuthn ceremony 中继 + in-UI guide + ETH 限额 presets
-- ✅ **aastar-sdk v0.24.1 GA-ready**：DVT through-EntryPoint + validator-router + default nodes + Gap B deployAndWireValidator（一调部署 + setValidator on-chain e2e）+ DVT pin v1.5.0
-- ✅ **YetAnotherAA-Validator v1.5.0 (aNode DVT)**：testnet always-on + clone-and-deploy + dvt-testnet.sh（管理 3 testnet 节点 + cloudflared tunnel）+ prod-node E2E verifier（3 独立节点 → 链上 validate===0）
-- ✅ **aastar-docs SDK 文档站持续 sync**：0.20.9 → 0.22.0 → 0.23.0 → 0.24.0 同步完毕 + SDK release runbook 入仓
-- ✅ **AirAccount v0.23.1 + v0.23.2 (Beta5)** 发布：API key 强制 + operator-configurable RP + api-key CLI scriptable + #102 guardian KMS 依赖风险 + P-256 迁移路径文档
-- 🔧 Implement Session Keys — AgentSessionKey 在 airaccount-contract 中实现
+- ✅ #1 Support Social Login — WebAuthn passkey Tier-2/3 完整实现；passkey-guardian 全链路
+- ✅ **airaccount-contract v0.27.0**：DVT validator unification — 挂载 authoritative BLS validator 于 algId 0x01；900 tests + E2E 31/31 + 4/4 real UserOp PASS；Sepolia 已部署 (`0xf25621DF…`)
+- ✅ **aastar-sdk v0.39.0**：DVT operator registration SDK API (`buildDvtPop` + `dvtOperatorActions`)；agent-session phantom deprecation（fail-closed）
+- ✅ **YetAnotherAA-Validator**：live gossip BLS quorum co-signer (#179 CC-13 inc-2)；ownerAuth tag fix + CC-22 hardening
+- ✅ **YetAnotherAA**：DVT node-registration wizard + tier-setup self-pay + create-with-tier-profile
+- 🔧 Implement Session Keys — SessionKeyValidator 已统一为 algId 0x08；agent-session phantom 已清理
 - ⬜ Enable Cross-Chain Operations — 未启动
 
-**📝 近期动态** (5 仓库聚合):
-- aastar-sdk 2026-06-20: v0.24.1 (Gap B deployAndWireValidator one-call deploy + wire) + v0.24.0 (DVT through-EntryPoint + validator-router + default nodes; DVT pin v1.5.0)
-- YetAnotherAA-Validator 2026-06-20: v1.5.0 testnet always-on DVT + clone-and-deploy + dvt-testnet.sh + prod-node E2E verifier
-- aastar-docs 2026-06-20: sync SDK 0.24.0 + SDK release runbook in CLAUDE.md
-- AirAccount 2026-06-20: release v0.23.2 (Beta5) api-key CLI scriptable + KMS deps risk docs
-- YetAnotherAA #332-336 (2026-06-20): passkey-guardian end-to-end UI + backend + recovery
+**📝 近期动态** (6 仓库聚合):
+- 07-07: AirAccount — DVT BLS TEE 托管 Variant B 成型（blst TA + KMS+DVT joint deploy）
+- 07-05: airaccount-contract v0.27.0 — DVT validator unification，Sepolia `0xf25621DF` 部署
+- 07-06: aastar-sdk v0.39.0 — agent-session phantom 清理；v0.38.0 DVT registerWithProof API
+- 07-07: YetAnotherAA-Validator — BLS gossip quorum co-signer live (PR #179)
+- 07-06: YetAnotherAA — DVT wizard + @aastar/sdk 0.38.0 接入 (CC-17)
+- 07-07: airaccount-contract v0.26.0 — HIGH-1 module-route tier fix；v0.24.0 security hardening
 
-💡 Account 全栈（合约 + SDK + DVT 节点 + 文档 + UI）在 9 天内集中突破：SDK 进入 0.24.x，aNode DVT 进入 always-on testnet 可复制部署，passkey-guardian 全链路打通。剩余 12% 为 Cross-Chain Operations 启动 + Session Keys 收口 + mainnet GA。
+💡 6 仓库全线突破性进展：DVT validator 生态统一完成（airaccount-contract + SDK + UI + Validator 四端对齐），BLS TEE 托管路径打通。剩余 5%：Cross-Chain Operations + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

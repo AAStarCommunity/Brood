@@ -1,6 +1,6 @@
 ---
 id: TASK-35
-title: AuraAI：Courses
+title: iDoris.ai：Courses
 status: In Progress
 assignee: []
 created_date: '2026-03-08 04:44'
@@ -8,7 +8,7 @@ labels: []
 milestone: m-r
 dependencies: []
 references:
-  - 'https://github.com/AuraAIHQ/courses'
+  - 'https://github.com/iDoris-ai/courses'
 priority: low
 ---
 
@@ -25,7 +25,7 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 - [Course 4 - Workshop](https://docs.google.com/presentation/d/1hDTDav9pyJCirTRWr82akpcY4ftXTY96JOGHX3onJhM/edit?usp=sharing)
 -
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 50%** | `AuraAIHQ/courses` 9 天 1 次提交：chore Apache 2.0 license 五件套 (#1 2026-06-20)。课程内容仍未更新
+**🚀 预估进度: 55%** | `iDoris-ai/AI_Beginner_Courses`（新发现活跃仓库）近9天 2 次提交，最近 2026-07-05；Agent Loop/Loop Engineering 讲义新增 + Learning in Public 结构建立；原 `iDoris-ai/courses` 仍静默（最近 2026-04-29）
 <!-- SECTION:DESCRIPTION:END -->

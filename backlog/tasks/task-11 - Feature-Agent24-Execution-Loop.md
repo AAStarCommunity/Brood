@@ -13,10 +13,10 @@ milestone: m-2
 dependencies:
   - TASK-7
 references:
-  - 'https://github.com/AuraAIHQ/Agent24'
-  - 'https://github.com/AuraAIHQ/agent-speaker'
+  - 'https://github.com/iDoris-ai/Agent24'
+  - 'https://github.com/iDoris-ai/agent-speaker'
   - 'https://github.com/MushroomDAO/agent-speaker-relay'
-  - 'https://github.com/AuraAIHQ/simple-agent'
+  - 'https://github.com/iDoris-ai/simple-agent'
 priority: medium
 ordinal: 3000
 ---
