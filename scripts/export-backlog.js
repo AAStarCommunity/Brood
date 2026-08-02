@@ -573,9 +573,14 @@ async function exportStaticBacklog() {
 }
 
 function generateProgressChartHtml(historyData) {
-  const history = historyData.history;
+  const history = (historyData && historyData.history) || [];
+  // Guard: with <2 entries, history[length-2] is undefined and the delta math crashes
+  // the chart client-side. Empty -> placeholder; single entry -> prev falls back to last (delta 0).
+  if (history.length === 0) {
+    return `<!DOCTYPE html>\n<html lang="zh"><head><meta charset="UTF-8"><title>Mycelium Protocol — Phase Progress History</title></head>\n<body style="font-family:-apple-system,system-ui,sans-serif;padding:24px;color:#8B9AB0;background:#0D1117">暂无进度历史数据。</body></html>`;
+  }
   const last = history[history.length - 1];
-  const prev = history[history.length - 2];
+  const prev = history.length >= 2 ? history[history.length - 2] : last;
 
   return `<!DOCTYPE html>
 <html lang="zh">
