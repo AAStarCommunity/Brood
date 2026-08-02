@@ -1,6 +1,6 @@
 ---
 title: "Hyphae"
-author: "Mycelium Protocol / AuraAI"
+author: "Mycelium Protocol / iDoris.ai"
 date: "2026 年 6 月"
 documentclass: article
 classoption:
@@ -48,7 +48,7 @@ Hyphae 是中小组织的"专属智能菌丝" —— 开源全栈（模型 + 微
 | | |
 |:---|:---|
 | **产品** | Hyphae —— 开源全栈 AI 基础设施 |
-| **所属** | AuraAI / Mycelium Protocol（数字公共物品共建生态） |
+| **所属** | iDoris.ai / Mycelium Protocol（数字公共物品共建生态） |
 | **阶段** | Seed（v0.1 草稿，2026 年 6 月）|
 | **联系** | jhfnetboy@gmail.com |
 
@@ -76,7 +76,7 @@ Hyphae 是中小组织的"专属智能菌丝" —— 开源全栈（模型 + 微
 \hline
 \textbf{业务 Agent 层}：客服 / 邮件 / 报销 / 知识库 / 报表 / 行业定制 \\
 \hline
-\textbf{Agent 编排}（复用 AuraAI Agent24）：工具调用 / 工作流 / 多 Agent 协作 \\
+\textbf{Agent 编排}（复用 iDoris.ai Agent24）：工具调用 / 工作流 / 多 Agent 协作 \\
 \hline
 \textbf{推理引擎}（开源）：vLLM / Ollama / llama.cpp \\
 \hline
@@ -99,7 +99,7 @@ Hyphae 是中小组织的"专属智能菌丝" —— 开源全栈（模型 + 微
 4. **团队使用**：浏览器 / IDE / 钉钉 / 飞书直接用，数据 100\% 不出门，token 永久免费
 5. **溢出调云**：做图 / 视频走 Hyphae 云端 API，脱敏后传
 
-**与 AuraAI 姊妹品的关系**：iDoris = 个人 AI（个体细胞）/ Agent24 = Agent 框架 / **Hyphae = 组织 AI 全栈**（一根菌丝里跑多个 iDoris 服务组织成员）。
+**与 iDoris.ai 姊妹品的关系**：iDoris = 个人 AI（个体细胞）/ Agent24 = Agent 框架 / **Hyphae = 组织 AI 全栈**（一根菌丝里跑多个 iDoris 服务组织成员）。
 
 \pagebreak
 
@@ -185,14 +185,14 @@ Firework = **AWS 模型**（中心化大算力）；Hyphae = **比特币网络�
 
 | 角色 | 背景 |
 |:---|:---|
-| **创始人 / CEO** | jhfnetboy —— **10 年 ERP 经验 + 20 年软件工程实践** + Mycelium Protocol 创始人 + AAStar / AuraAI 体系搭建者 |
+| **创始人 / CEO** | jhfnetboy —— **10 年 ERP 经验 + 20 年软件工程实践** + Mycelium Protocol 创始人 + AAStar / iDoris.ai 体系搭建者 |
 | **CTO** | **David** —— AI 基础设施 + 系统编排 |
 | **行业顾问** | 医疗 / 律所 / 制造 / 教育各 1-2 位（创始人 ERP 网络）|
 | **区域/行业运营合伙人** | 分润制（非雇佣）—— 带本地资源 + 行业经验做落地，破解人力成本陷阱 |
 
 ## 5.2 Mycelium 共建生态 —— 我们不是普通软件公司
 
-**Hyphae 背后不是一家公司，而是 Mycelium Protocol 数字公共物品共建生态**：协议层共建（MushroomDAO 治理 + 全球开源贡献者 + Apache 2.0）+ 兄弟产品复用（AirAccount / SuperPaymaster / aPNTs / iDoris / Agent24 / FangPay / Cos72 / HyperCapital，节省 60-80\% 工程投入）+ MushroomDAO Treasury 链上财务支持 + AAStar + AuraAI + MushroomDAO 三组织联合研发 + 协议层共享法务。**普通 Series A 创业公司从零搭这些需 \$10-30M + 12-18 个月；Hyphae 直接接入，节省 \$8-25M**。
+**Hyphae 背后不是一家公司，而是 Mycelium Protocol 数字公共物品共建生态**：协议层共建（MushroomDAO 治理 + 全球开源贡献者 + Apache 2.0）+ 兄弟产品复用（AirAccount / SuperPaymaster / aPNTs / iDoris / Agent24 / FangPay / Cos72 / HyperCapital，节省 60-80\% 工程投入）+ MushroomDAO Treasury 链上财务支持 + AAStar + iDoris.ai + MushroomDAO 三组织联合研发 + 协议层共享法务。**普通 Series A 创业公司从零搭这些需 \$10-30M + 12-18 个月；Hyphae 直接接入，节省 \$8-25M**。
 
 ## 5.3 12 个月里程碑
 

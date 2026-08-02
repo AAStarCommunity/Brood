@@ -464,7 +464,7 @@
 | **FangPay** | 客户用 FangPay 付款 → 自动获积分 → 引导回购 | 一站式 GTM 工具 |
 | **AAStar AirAccount** | 海外客户用 Passkey 一键创建账号 | 跨境客户零摩擦 |
 | **SuperPaymaster** | 海外端兑换 gasless | 用户体验丝滑 |
-| **AuraAI iDoris / Agent24** | AI 智能营销 / 商品推荐 | 商家不用自己学营销 |
+| **iDoris.ai iDoris / Agent24** | AI 智能营销 / 商品推荐 | 商家不用自己学营销 |
 | **MushroomDAO Cos72** | 社区/会员卡基础设施 | 商家可发会员卡 + 积分 + 权益 |
 | **PGL Charter** | 商家入网时签数字承诺 | 商家承诺有约束力 |
 | **HyperCapital 商业服务** | onboarding + 运维 | 商家不用懂技术 |
