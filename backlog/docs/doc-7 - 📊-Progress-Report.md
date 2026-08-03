@@ -79,7 +79,7 @@ updated_date: '2026-06-21 10:00'
 - Hangzhou roadshow 5-18 为近期里程碑
 
 #### TASK-34 · AuraAI · 35% · Phase 3
-- **仓库**: `jhfnetboy/AuraAI`、`iDoris-ai/Agent24`、`iDoris-ai/agent-speaker`、`MushroomDAO/agent-speaker-relay`、`MushroomDAO/Agent-WeChat-SDK`
+- **仓库**: `jhfnetboy/AuraAI`、`iDoris-ai/Agent24`、`iDoris-ai/agent-speaker`、`iDoris-ai/agent-speaker-relay`、`iDoris-ai/iDoris-SDK`
 - **最新动态**: 2026-04-27 agent-speaker TUI fix（PR review）；2026-04-26 WeChat SDK @agent-wechat/core + CLI
 - agent-speaker：group chat + TUI Bubble Tea + SQLite + NIP-44 加密（PR #3 merge 完成）
 - relay：strfry Docker + restart.sh + Alpine/Ubuntu 双构建，稳定运行

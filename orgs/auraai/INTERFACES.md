@@ -40,17 +40,17 @@
 
 | 接口 | 说明 |
 |-----|------|
-| Nostr relay | NIP-44 加密消息（Agent-WeChat-SDK 使用） |
+| Nostr relay | NIP-44 加密消息（iDoris-SDK 使用） |
 | TUI 界面 | 终端用户交互 |
 | SQLite 存储 | 消息持久化 |
 
-**集成方式**：配合 `agent-speaker-relay`（MushroomDAO Nostr relay）
+**集成方式**：配合 `agent-speaker-relay`（iDoris-ai Nostr relay）
 
 ---
 
-### 4. Agent-WeChat-SDK — 微信 Agent 桥接
+### 4. iDoris-SDK — 微信 Agent 桥接（前 Agent-WeChat-SDK）
 
-**仓库**: `github.com/MushroomDAO/Agent-WeChat-SDK`
+**仓库**: `github.com/iDoris-ai/iDoris-SDK`
 **状态**: 活跃（@agent-wechat/core 已发布）
 
 | 接口 | 说明 |
@@ -82,7 +82,7 @@
 |--------|------|------|------|
 | AAstar / AirAccount | 账户身份 | AI 代理身份管理（规划中） | 可选 |
 | AAstar / SuperPaymaster | Gas 抽象 | AI 代理 gasless 操作（规划中） | 可选 |
-| MushroomDAO / agent-speaker-relay | Nostr relay | agent 通信基础设施 | 核心 |
+| iDoris-ai / agent-speaker-relay | Nostr relay | agent 通信基础设施 | 核心 |
 | MushroomDAO / Cos72 | 社区 OS | 课程内容分发平台（规划中） | 可选 |
 
 ---

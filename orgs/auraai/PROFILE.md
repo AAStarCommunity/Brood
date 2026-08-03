@@ -15,7 +15,7 @@ provides:
     repo: github.com/iDoris-ai/agent-speaker
   - capability: wechat-agent-bridge
     interface: 微信 ↔ Nostr agent 桥接（@agent-wechat/core npm 包）
-    repo: github.com/MushroomDAO/Agent-WeChat-SDK
+    repo: github.com/iDoris-ai/iDoris-SDK
   - capability: ai-knowledge-base
     interface: Web3 + AI 领域知识库（Markdown，可作 RAG 数据源）
     repo: github.com/iDoris-ai/AuraAI
@@ -61,7 +61,7 @@ iDoris.ai 是 Mycelium Protocol 生态中的 **AI 能力层**，专注于构建�
 ## 我们需要什么
 
 - **AAstar 集成**: 为 AI 代理提供 AirAccount 身份 + SuperPaymaster gasless 执行
-- **Nostr relay**: 依赖 MushroomDAO/agent-speaker-relay 作为通信基础设施
+- **Nostr relay**: 依赖 iDoris-ai/agent-speaker-relay 作为通信基础设施
 - **社区使用场景**: 真实的社区 AI 代理应用场景，推动 Agent24 演进
 
 ## 当前路线图

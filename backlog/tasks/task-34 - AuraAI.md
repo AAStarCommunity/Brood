@@ -12,8 +12,8 @@ references:
   - 'https://github.com/jhfnetboy/AuraAI'
   - 'https://github.com/iDoris-ai/Agent24'
   - 'https://github.com/iDoris-ai/agent-speaker'
-  - 'https://github.com/MushroomDAO/agent-speaker-relay'
-  - 'https://github.com/MushroomDAO/Agent-WeChat-SDK'
+  - 'https://github.com/iDoris-ai/agent-speaker-relay'
+  - 'https://github.com/iDoris-ai/iDoris-SDK'
   - 'https://github.com/iDoris-ai/simple-agent'
 priority: low
 ---

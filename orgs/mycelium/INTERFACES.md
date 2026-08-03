@@ -81,7 +81,7 @@ import { MyShop } from '@mushroom/cos72-shop';
 
 ### 5. Nostr Relay — Agent 通信基础设施
 
-**仓库**: `github.com/MushroomDAO/agent-speaker-relay`
+**仓库**: `github.com/iDoris-ai/agent-speaker-relay`
 **状态**: 活跃（strfry Docker）
 
 | 接口 | 说明 |

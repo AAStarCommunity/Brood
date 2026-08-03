@@ -160,16 +160,32 @@ repo_name = os.path.basename(new_repo_path).lower()
 for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
     content = open(task_file).read()
     # 检查任务是否已有 references 指向该 repo
-    # 按 owner/repo 的 repo 名归一化比较，而非整条 URL 子串匹配——
-    # 这样即使 org 改名（如 AuraAIHQ→iDoris-ai）导致 new_repo_remote 与
-    # 文件里的旧 URL org 段不同，也不会误判为"未存在"而重复追加 references。
-    new_repo_slug = new_repo_remote.rstrip("/").split("/")[-1].lower()
+    # 按「归一化的 owner/repo 全名」比较——既不是 basename，也不是整条 URL 子串。
+    # ⚠️ 严禁只比较 basename（repo 名）：不同 org 下的同名仓库是两个不同的真实
+    #    仓库（如 AAStarCommunity/Cos72 与 MushroomDAO/Cos72，GitHub repo id 不同），
+    #    basename 匹配会把它们误判为同一个而永久漏加——比重复追加更隐蔽、更糟。
+    # 同时对已知的 org 改名做归一化（AuraAIHQ→iDoris-ai），避免改名后 owner 段
+    #    不同而把「其实已存在」误判为「不存在」再次重复追加。
+    # ⚠️ 测试夹具（必须覆盖，否则本回归会静默复现）：
+    #    用「同 basename / 不同 owner」样例——AAStarCommunity/Cos72 与
+    #    MushroomDAO/Cos72 必须判定为“不同仓库”（不去重）。
+    ORG_ALIASES = {"auraaihq": "idoris-ai"}  # 旧 org slug → 新 org slug（均小写）
+
+    def _norm_slug(owner, repo):
+        owner = ORG_ALIASES.get(owner.lower(), owner.lower())
+        repo = repo.lower().rstrip("/")
+        if repo.endswith(".git"):
+            repo = repo[:-4]
+        return f"{owner}/{repo}"
+
+    _m = re.search(r'github\.com[:/]([^/\s]+)/([^/\s]+)', new_repo_remote)
+    new_repo_slug = _norm_slug(_m.group(1), _m.group(2)) if _m else new_repo_remote.lower()
     existing_slugs = {
-        m.lower()
-        for m in re.findall(r'github\.com/[^/\s]+/([^/\s\'"]+)', content)
+        _norm_slug(o, r)
+        for o, r in re.findall(r'github\.com/([^/\s]+)/([^/\s\'"]+)', content)
     }
     if new_repo_slug in existing_slugs:
-        continue  # 已存在（忽略 org 名差异），跳过
+        continue  # 已存在（owner/repo 全名归一化后匹配），跳过
     # 在任务标题、描述中搜索仓库名关键词（不区分大小写）
     if repo_name in content.lower() or repo_name.replace("-", "") in content.lower():
         # 提取 task ID 用于日志
