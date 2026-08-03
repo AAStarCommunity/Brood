@@ -59,15 +59,13 @@ KMS = 对外运营的签名服务
         │              香港 VPS（公网 IP: 1.2.3.4）      │
         │                                              │
         │  ┌─────────────────────────────────────┐    │
-        │  │  nginx 反向代理                       │    │
-        │  │  :443 /*  → frp → MX93:3000 KMS     │    │
-        │  │  （KMS 是根路径服务，无 /api 前缀；   │    │
-        │  │   /、/test、/portal 等 UI 页同在:3000）│    │
-        │  └─────────────────────────────────────┘    │
-        │                                              │
-        │  ┌─────────────────────────────────────┐    │
-        │  │  frp server（内部端口 7000）           │    │
-        │  │  接收来自 MX93 的主动隧道连接          │    │
+        │  │  frp server (frps) — 独占 :443        │    │
+        │  │  :443 vhostHTTPS → 隧道 → MX93:3000  │    │
+        │  │  :7000 bindPort（收 MX93 出站隧道）   │    │
+        │  │  （无 nginx；KMS 是根路径服务，无      │    │
+        │  │   /api 前缀；/、/test、/portal 同在    │    │
+        │  │   :3000；TLS 由 frpc 端 https2http     │    │
+        │  │   插件终结，见 setup 指南 Step 5）      │    │
         │  └─────────────────────────────────────┘    │
         │                                              │
         │  ┌─────────────────────────────────────┐    │
@@ -112,10 +110,11 @@ KMS = 对外运营的签名服务
 ```
 EU DVT 节点
   1. POST https://kms.domain.com/Sign   （根路径大写 /Sign，无 /api 前缀）
+     必带 -H "x-api-key: $KMS_API_KEY"（KMS fail-closed，漏带 401）
   2. DNS → A 记录 → 香港 VPS:443
-  3. nginx 直接转发根路径 → frp server（不改写路径）
+  3. frps 独占 :443（vhostHTTPS），按域名路由进对应隧道（无 nginx）
   4. frp server 通过 MX93 预先建好的隧道发送请求
-  5. MX93 frp client 收到 → 转发给 localhost:3000（KMS）
+  5. MX93 frp client 的 https2http 插件终结 TLS → 明文转发给 localhost:3000（KMS）
   6. KMS 处理签名（私钥分片在本地，不出机器）
   7. 响应原路返回
 
@@ -138,8 +137,8 @@ DVT 进程（:8080）
 ```
 操作者浏览器
   → https://kms.domain.com/（或 /test、/portal）
-  → 香港 VPS nginx
-  → frp → MX93:3000（KMS 自身页面，无独立 UI 服务）
+  → 香港 VPS frps :443（vhostHTTPS，无 nginx）
+  → frp 隧道 → frpc https2http 插件终结 TLS → MX93:3000（KMS 自身页面，无独立 UI 服务）
   → KMS 内置的状态 / 测试 / 下载页
 ```
 

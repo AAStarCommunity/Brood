@@ -221,7 +221,7 @@ your-kms.your-domain.com    A    1.2.3.4    TTL 300
 
 KMS 在 IMX93 上只监听明文 HTTP（`:3000`）。frp 的 vhost HTTPS（`type = "https"`）默认是 **SNI 透传**，TLS 在本地服务侧终结——所以证书要用 frpc 端的 **`https2http` 插件**来加载并终结 TLS，再明文转发给 `127.0.0.1:3000`。
 
-> ⚠️ **注意**：frps.toml **没有** `vhostHTTPSCertFile`/`vhostHTTPSKeyFile` 这类字段；`[[httpPlugins]]` 是 frps 的**服务端管理插件**块（给 dashboard/OIDC 用），**不是** vhost 证书配置位——放证书进去永远接不进来。frp 原生的 vhost HTTPS 证书终结只有 frpc 端 `https2http`/`https2https` 插件这一条路。
+> ⚠️ **注意**：frps **不做** vhost HTTPS 的服务端 TLS 终结——`ServerConfig`（`pkg/config/v1/server.go`）只有 `vhostHTTPPort`/`vhostHTTPSPort`/`vhostHTTPTimeout`，**没有** `vhostHTTPSCertFile`/`vhostHTTPSKeyFile` 这类证书字段（截至 frp v0.70.1 仍无；服务端终结 vhost TLS 是官方 issue #3007 尚未实现的 feature request）。`[[httpPlugins]]` 是 frps 的**服务端 manager 插件**（`HTTPPluginOptions{name,addr,path,ops}`，用 HTTP 回调拦截 `Login`/`NewProxy`/`NewUserConn` 等操作），跟 dashboard 和证书都无关。因此 vhost HTTPS 的证书终结走 **frpc 端 `https2http`/`https2https` 插件**（`crtPath`/`keyPath`，见 `pkg/config/v1/proxy_plugin.go`），证书也正好留在 IMX93（NAT 后）。
 
 **申请证书（IMX93 在 NAT 后，用 DNS-01；HTTP-01 standalone 打不进来）**：
 
@@ -254,21 +254,49 @@ keyPath = "/etc/letsencrypt/live/your-kms.your-domain.com/privkey.pem"
 
 ---
 
-### Step 6：验证连通性
+### Step 6：配置 KMS API 鉴权（暴露公网前**必做**）
+
+AirAccount KMS 默认 **fail-closed**：`api_server.rs` 的 `db_api_key_filter` 一旦 `kms.db` 里存在任意 API key，就强制校验每个受保护路由（`/CreateKey`、`/Sign`、`/KeyStatus` 等）的 `x-api-key` 请求头；若一把 key 都没 provision、又没开 open mode，服务启动就会把**所有请求直接 REJECT**（启动日志原文：`No API key provisioned — all requests will be REJECTED until you run \`kms-admin api-key generate\` or set KMS_API_KEY`）。`/health` 是开放路由，不需要 key。
+
+> 🚨 **绝不要**为了"跑通"去设 `KMS_ALLOW_OPEN_MODE=1`。open mode 会**关闭鉴权**（源码注释：DEV/TEST ONLY），把一条公网隧道直接变成**开放签名预言机**——任何人都能调 `/Sign`。生产/社区节点必须用真实 key。
+
+在 IMX93 上生成一把 key（写进 `kms.db`，**只回显一次**，事后无法找回）：
+
+```bash
+# 部署时随二进制一起装到 /usr/local/bin/api-key（见 kms/scripts/deploy.sh）
+api-key generate --label "cn-community-relay"
+# stdout 形如：kms_1a2b3c4d...（kms_ 前缀 + 32 位 hex），妥善保存
+```
+
+然后导出给后续测试与客户端使用（`KMS_API_KEY` 也是 KMS 认可的 env 回退方式）：
+
+```bash
+export KMS_API_KEY=kms_xxxx   # 换成上一步真实回显的 key
+```
+
+> 客户端（DVT 节点 / 外部调用方）每次调受保护路由都要带 `-H "x-api-key: $KMS_API_KEY"`，见下一步验证示例。
+
+---
+
+### Step 7：验证连通性
 
 ```bash
 # 在任意外部机器（非中国大陆）测试
+# /health 是开放路由，无需 x-api-key
 curl -X GET https://your-kms.your-domain.com/health
 # 期望返回：{"status":"healthy","service":"kms-api","version":"0.29.0",...}
 
 # 测试建密钥接口（参考 AirAccount kms/test-full-api.sh 的真实请求体）
+# 受保护路由必须带 x-api-key（Step 6 生成的 key）；漏带直接 401
 # PasskeyPublicKey = 04 + 64 字节 hex 的 P-256/secp256k1 公钥
 TEST_PK="04$(openssl rand -hex 64)"
 curl -X POST https://your-kms.your-domain.com/CreateKey \
+  -H "x-api-key: $KMS_API_KEY" \
   -H "x-amz-target: TrentService.CreateKey" \
   -H "Content-Type: application/json" \
   -d "{\"Description\":\"test\",\"KeyUsage\":\"SIGN_VERIFY\",\"KeySpec\":\"ECC_SECG_P256K1\",\"Origin\":\"EXTERNAL\",\"PasskeyPublicKey\":\"$TEST_PK\"}"
 # 提交前用 jq 校验请求体合法：echo '{...}' | jq . 或 python3 -m json.tool
+# 同理，调 /Sign 也要带 -H "x-api-key: $KMS_API_KEY"
 ```
 
 ---

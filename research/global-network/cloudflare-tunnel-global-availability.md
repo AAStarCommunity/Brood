@@ -110,6 +110,7 @@ Cloudflare 边缘 PoP（全球 330+ 节点）
 ```toml
 # frp server 配置（香港 VPS，frps.toml）
 bindPort = 7000
+vhostHTTPSPort = 443               # frps 独占 :443 对外（type="https" vhost）；不要再叠 nginx
 auth.token = "your-secret-token"   # v0.52+ 必须放 [auth] 段；顶层 token= 会被静默忽略
 
 # 管理面板：默认 admin/admin，绝不能裸暴露公网
@@ -133,6 +134,10 @@ customDomains = ["cn-node.your-domain.com"]
 ```
 
 DNS：`cn-node.your-domain.com` → 指向香港 VPS IP（不走 Cloudflare）
+
+**TLS 终结**：上面的 `type="https"` 是 SNI 透传骨架；vhost HTTPS 的证书要在 **frpc 端 `https2http` 插件**（`crtPath`/`keyPath`）终结——frps 不做服务端 vhost TLS 终结。完整步骤见 `china-kms-tunnel-setup.md` Step 5。
+
+**鉴权**：KMS 默认 fail-closed，外部调 `/Sign`、`/CreateKey` 等受保护路由必须带 `-H "x-api-key: <key>"`（`api-key generate` 生成）；暴露公网前务必 provision key，切勿开 `KMS_ALLOW_OPEN_MODE=1`（否则成开放签名预言机）。详见 setup 指南 Step 6。
 
 **注意**：frp 的连接流量本身用 TCP，出境到 443 端口可伪装为 HTTPS，被封概率低。如需更高抗检测性，在 frp 外层套 wstunnel（WebSocket over TLS）。
 
