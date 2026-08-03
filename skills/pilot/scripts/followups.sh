@@ -131,11 +131,8 @@ case "$sub" in
     acquire_lock          # serialize read-modify-write of the ledger against concurrent add/done
     tmp="$ledger.tmp.$$"
     awk -v id="$pos" -v pr="$pr" '
-      $0 ~ ("^- \\[ \\] " id " ") && index($0, "["id"") == 0 {
-        # match the exact FU id token (avoid FU-1 matching FU-12)
-      }
       {
-        # exact-token match: line has "] <id> ·"
+        # exact-token match: line has "] <id> ·" (the " · " boundary avoids FU-1 matching FU-12)
         if ($0 ~ ("^- \\[ \\] " id " · ")) {
           sub(/^- \[ \]/, "- [x]", $0)
           $0 = $0 " · done=PR#" pr

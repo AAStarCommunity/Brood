@@ -13,11 +13,22 @@
 # Exit codes: 2 = usage error, 3 = BLOCKED by a rail. On success it execs the real command.
 set -euo pipefail
 
-# Branches that must never be pushed to directly. Callers may extend via $PILOT_PROTECTED
-# (comma-separated) so a repo's real base/integration branches are covered too. The pre-rename
-# name $REPO_PILOT_PROTECTED is still honored as a fallback (with a one-time deprecation notice)
-# so a shell that exported the old name doesn't silently lose protection after the rename.
-_extra="${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
+# Optional `--protect <csv>` flag BEFORE the subcommand: the caller passes the repo's real
+# protected branches (base_branch/integration_branch/protect_patterns from .pilot.yml) HERE,
+# in the same invocation. Preferred over the $PILOT_PROTECTED env, which an `export` in an
+# earlier step does NOT carry into a later, separately-invoked shell — silently degrading the
+# rail to the hardcoded defaults with no warning.
+flag_protect=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --protect) [ $# -ge 2 ] || { echo "git-guard: --protect needs a comma-separated branch list" >&2; exit 2; }; flag_protect="$2"; shift 2 ;;
+    *) break ;;
+  esac
+done
+
+# Branches that must never be pushed to / merged onto directly. Extended by --protect (preferred)
+# and/or $PILOT_PROTECTED (the pre-rename $REPO_PILOT_PROTECTED still honored as a fallback).
+_extra="${flag_protect:+$flag_protect,}${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
 if [ -z "${PILOT_PROTECTED:-}" ] && [ -n "${REPO_PILOT_PROTECTED:-}" ]; then
   echo "git-guard: note: REPO_PILOT_PROTECTED is deprecated — rename it to PILOT_PROTECTED" >&2
 fi
@@ -91,6 +102,10 @@ case "$sub" in
         # Prefix/attached-value forms bypass an exact-string blocklist: --admin=true, --repo=o/r,
         # -Ro/r all defeat the rail, so match those shapes too.
         --admin|--admin=*|--repo|--repo=*|-R|-R*) die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
+        # --delete-branch/-d deletes the PR's HEAD branch after merge; a PR with head=main would
+        # delete trunk. The head-branch protected-check below is the real guard; also refuse the
+        # flag outright so branch cleanup stays an explicit, separate safe-cleanup.sh decision.
+        -d|--delete-branch|--delete-branch=*) die "refusing '$1' on merge-pr — deletes the PR head branch; clean up branches via safe-cleanup.sh" ;;
         *) args+=("$1"); shift ;;
       esac
     done
@@ -103,6 +118,10 @@ case "$sub" in
     base="$(gh pr view "$n" --repo "$repo" --json baseRefName --jq .baseRefName 2>/dev/null || true)"
     [ -n "$base" ] || die "cannot read PR #$n base branch (gh auth / wrong number?)"
     [ "$base" = "$integration" ] || die "PR #$n base is '$base', not integration '$integration' — refusing merge into an unintended branch"
+    # Also validate the HEAD branch: a PR opened with head=a protected branch (e.g. head=main,
+    # base=preview) passes the base check, and merging/cleaning it up could damage trunk.
+    head_ref="$(gh pr view "$n" --repo "$repo" --json headRefName --jq .headRefName 2>/dev/null || true)"
+    [ -n "$head_ref" ] && is_protected "$head_ref" && die "PR #$n head branch '$head_ref' is protected — refusing (merging/deleting a protected head is unsafe)"
     # ${args[@]+...} guards the empty-array-under-set-u case on bash 3.2 (macOS default).
     exec gh pr merge "$n" --repo "$repo" ${args[@]+"${args[@]}"}
     ;;

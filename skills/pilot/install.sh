@@ -41,15 +41,26 @@ done
 place() {  # place <target-dir>
   local dest_parent="$1" dest="$1/$NAME"
   mkdir -p "$dest_parent"
+  # An install is "ours" if its SKILL.md carries name: pilot OR the pre-rename name: repo-pilot.
+  local old="$dest_parent/repo-pilot"
   if [ "$uninstall" = 1 ]; then
     if [ -L "$dest" ]; then rm -rf "$dest"; echo "removed  $dest (symlink)"
-    elif [ -f "$dest/SKILL.md" ] && grep -q '^name: pilot' "$dest/SKILL.md" 2>/dev/null; then rm -rf "$dest"; echo "removed  $dest"
+    elif [ -f "$dest/SKILL.md" ] && grep -qE '^name: (pilot|repo-pilot)' "$dest/SKILL.md" 2>/dev/null; then rm -rf "$dest"; echo "removed  $dest"
     elif [ -e "$dest" ]; then echo "SKIP (exists, not a pilot install): $dest"
     else echo "absent   $dest"; fi
+    # Also remove a lingering old repo-pilot install at the sibling path.
+    if [ "$old" != "$dest" ] && { [ -L "$old" ] || { [ -f "$old/SKILL.md" ] && grep -qE '^name: (pilot|repo-pilot)' "$old/SKILL.md" 2>/dev/null; }; }; then
+      rm -rf "$old"; echo "removed  $old (old repo-pilot name)"
+    fi
     return
   fi
+  # Migrate: an old `repo-pilot`-named install lingers at the sibling path with overlapping trigger
+  # phrases but NONE of git-guard.sh's rails — remove it so the renamed `pilot` fully supersedes it.
+  if [ "$old" != "$dest" ] && { [ -L "$old" ] || { [ -f "$old/SKILL.md" ] && grep -qE '^name: (pilot|repo-pilot)' "$old/SKILL.md" 2>/dev/null; }; }; then
+    rm -rf "$old"; echo "migrated: removed old $old (superseded by $dest)"
+  fi
   # refuse to clobber a real dir that isn't ours (symlink or a dir carrying our marker are safe to replace)
-  if [ -e "$dest" ] && [ ! -L "$dest" ] && ! grep -q '^name: pilot' "$dest/SKILL.md" 2>/dev/null; then
+  if [ -e "$dest" ] && [ ! -L "$dest" ] && ! grep -qE '^name: (pilot|repo-pilot)' "$dest/SKILL.md" 2>/dev/null; then
     echo "SKIP (exists, not a pilot install): $dest" >&2; return
   fi
   rm -rf "$dest"

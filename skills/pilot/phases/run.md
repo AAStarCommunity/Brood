@@ -12,22 +12,25 @@
 - `git status` 看当前分支与改动。若在主干（main/master）且有未提交改动 → 停下报告，不自动处理。
 - 绝不 `git add -A`；绝不直推主干；一个 task 一个分支一个 PR。
 - **暂存/推送/合并三个危险动作一律走 `scripts/git-guard.sh`**（脚本层硬拦截），不要裸用 `git add`/`git push`/`gh pr merge`。
-- **本轮开始先把本仓库的受保护分支喂给 git-guard**，让默认列表之外的 `base_branch`/`integration_branch`/`protect_patterns` 也被拦：
+- **把本仓库受保护分支用 `--protect` 传给 git-guard 的每次 push/merge-pr 调用**（默认列表之外的 `base_branch`/`integration_branch`/`protect_patterns` 也被拦）。**不要用 `export PILOT_PROTECTED`**——env 不跨独立的分步 Bash 调用存活，护栏会静默退化成只剩内置默认。记住这个 csv，**每次调用都带上**：
   ```bash
-  export PILOT_PROTECTED="<base_branch>,<integration_branch>,<protect_patterns 逗号分隔>"
+  PROT="<base_branch>,<integration_branch>,<protect_patterns 逗号分隔>"   # 从 .pilot.yml 取
+  # 之后每次危险动作都在 subcommand 前加 --protect "$PROT":
+  #   bash <skill>/scripts/git-guard.sh --protect "$PROT" push <remote> <branch>
+  #   bash <skill>/scripts/git-guard.sh --protect "$PROT" merge-pr <n> --integration <b> --squash
   ```
-  （git-guard 内置 main/master/develop/preview/integration/release/hotfix，前缀匹配；这里把仓库实际值补进去。）
+  （git-guard 内置 main/master/develop/preview/integration/release/hotfix，前缀匹配；`--protect` 把仓库实际值补进去。）
 
 ### 1. 有 PR 已被 review → 先处理回执
 运行 `bash <skill>/scripts/pr-monitor.sh`，对我的每个 open PR：
 - **`decision=APPROVED` 且 checks 通过** → 合并进**集成分支**（不是主干）：
-  `bash <skill>/scripts/git-guard.sh merge-pr <n> --integration <integration_branch> --squash`
+  `bash <skill>/scripts/git-guard.sh --protect "$PROT" merge-pr <n> --integration <integration_branch> --squash`
   （git-guard 会先校验 PR base == `integration_branch`，base 是主干或其它分支会被拒绝；**不加 `--delete-branch`**——远程分支删除统一交给 §合并后的 safe-cleanup，受 `allow_remote_cleanup` 与 dirty-worktree 检查约束）。
   合并后：把对应 Task 在 `tasks.md` 标 `DONE`、更新 `progress.md`，运行
   `bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--protect "<protect_patterns>"] [--remote-name <remote>] --apply`
   清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**本轮结束。**
 - **`decision=CHANGES_REQUESTED`** → 读全部 review 意见（`gh pr view <n> --comments`），**先做中立 triage（见 `reference/review-triage.md`）**：装上本仓库业务上下文（CLAUDE.md / docs/agent / 领域文档），把每条意见分成 A 该修 / B 不重要 / C 缺业务上下文判错了 / D 过激 nitpick。评审 daemon 是独立进程、没有业务背景,你有——**既不盲改也不盲拒**。
-  - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh push <remote> <branch>`（新 commit 触发 daemon 再评审）。
+  - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh --protect "$PROT" push <remote> <branch>`（新 commit 触发 daemon 再评审）。
   - **B（真问题但不阻塞）/ 非 trivial 的 D 里决定要做的** → **记进跟进账本,绝不丢**：
     `bash <skill>/scripts/followups.sh add --docs-dir <docs_dir> --class B --source "PR#<n>" --desc "<要做什么>"`。
     **不在本 PR 里做**——留到主线全清后批量合成一个 cleanup PR（见 §2.5）。

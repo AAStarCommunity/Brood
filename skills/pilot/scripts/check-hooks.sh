@@ -24,8 +24,14 @@ else
 fi
 hp_abs="$(cd "$hp" 2>/dev/null && pwd || echo "$hp")"
 
-# Is the active hooks dir inside THIS repo?
-case "$hp_abs/" in "$top/"*) inside=1 ;; *) inside=0 ;; esac
+# Is the active hooks dir legitimately this repo's own? Accept it if it lives inside the
+# worktree top OR inside the SHARED git dir (`--git-common-dir`). For a linked worktree (pilot's
+# core one-worktree-per-task flow) the default `.git/hooks` lives in the MAIN repo's git dir —
+# that's correct and shared, not "bypassed"; comparing only against the worktree top false-flags.
+gcd="$(git rev-parse --git-common-dir 2>/dev/null || echo "$top/.git")"
+case "$gcd" in /*) : ;; *) gcd="$top/$gcd" ;; esac
+gcd_abs="$(cd "$gcd" 2>/dev/null && pwd || echo "$gcd")"
+case "$hp_abs/" in "$top/"*|"$gcd_abs/"*) inside=1 ;; *) inside=0 ;; esac
 
 # Active pre-commit present + executable?
 if [ -f "$hp_abs/pre-commit" ] && [ -x "$hp_abs/pre-commit" ]; then has_pc=1; else has_pc=0; fi

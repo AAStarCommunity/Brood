@@ -67,7 +67,10 @@ case "$sub" in
     fi
     echo "PR_DAEMON: down — starting the review watcher (detached background)…"
     # watch.sh start -> start_review_watch.sh start, with AUTO_REVIEW env set. Idempotent.
-    bash "$watch" start 2>&1 | grep -E 'started review watcher|already running|pid ' | head -3 || true
+    # Capture first, THEN filter — piping a mutating `start` into `grep|head` lets head close
+    # early and SIGPIPE-kill watch.sh mid-startup under pipefail (same hazard is_running avoids).
+    start_out="$(bash "$watch" start 2>&1 || true)"
+    printf '%s\n' "$start_out" | grep -E 'started review watcher|already running|pid ' | head -3 || true
     if is_running; then
       echo "PR_DAEMON: started ✓ — it now reviews open PRs across the configured repos."
       exit 0
