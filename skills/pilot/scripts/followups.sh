@@ -68,7 +68,15 @@ acquire_lock() {
   mkdir -p "$docs_dir"
   local i=0
   until mkdir "$lock_dir" 2>/dev/null; do
-    i=$((i+1)); [ "$i" -gt 300 ] && { echo "ERROR: cannot acquire $lock_dir (stale lock? rm it)" >&2; exit 3; }
+    i=$((i+1))
+    # Stale-lock self-heal: a killed holder would otherwise wedge the ledger forever. A legit
+    # add/done holds the lock for milliseconds, so 30s of no progress ⇒ the holder is dead —
+    # steal it (rmdir is atomic; only one waiter wins the re-mkdir) and retry, don't hard-fail.
+    if [ "$i" -gt 600 ]; then
+      echo "followups: stealing stale lock $lock_dir (held >30s — prior run likely killed)" >&2
+      rmdir "$lock_dir" 2>/dev/null || rm -rf "$lock_dir" 2>/dev/null || true
+      i=0
+    fi
     sleep 0.05
   done
   trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT

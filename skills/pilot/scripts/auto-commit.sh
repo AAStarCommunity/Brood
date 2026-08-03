@@ -24,20 +24,38 @@ cd "$(git rev-parse --show-toplevel)"
 # Refuse to run on protected branches — checkpoints belong on feature/WIP branches, not main.
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo)"
 case "$branch" in
-  main|master|preview|integration|release*|hotfix*) echo "auto-commit: on protected '$branch' — skipping (checkpoints only on feature branches)"; exit 0 ;;
+  main|master|develop|preview|integration|release*|hotfix*) echo "auto-commit: on protected '$branch' — skipping (checkpoints only on feature branches)"; exit 0 ;;
 esac
+# Honor the same configured protection as git-guard (PILOT_PROTECTED / old REPO_PILOT_PROTECTED
+# fallback) so a repo with a custom trunk name doesn't get unattended `git add -A` checkpoints
+# landing on trunk via auto-commit-loop.sh. Prefix match mirrors git-guard's is_protected.
+_prot="${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
+if [ -n "$_prot" ]; then
+  _oIFS="$IFS"; IFS=','
+  for p in $_prot; do
+    [ -n "$p" ] || continue
+    case "$branch" in "$p"|"$p"[-_/.0-9]*) echo "auto-commit: on protected '$branch' (via PILOT_PROTECTED) — skipping"; exit 0 ;; esac
+  done
+  IFS="$_oIFS"
+fi
 
 # Nothing to do?
 [ -n "$(git status --porcelain)" ] || { echo "auto-commit: clean working tree — nothing to commit"; exit 0; }
 
-# Secret guard: if a would-be-staged file looks like a secret and isn't gitignored, STOP and warn
-# rather than snapshotting it. (.gitignore is the primary defense; this is belt-and-suspenders.)
-secretish='(^|/)\.env($|\.)|\.(pem|key|p12|pfx|keystore)$|(secret|token|credential|password)'
-# NOTE: build the array with a read loop, NOT `mapfile` — mapfile is a bash 4+ builtin and
-# macOS ships bash 3.2 as /bin/bash; `#!/usr/bin/env bash` may resolve to it. read is portable.
+# Secret guard: if an UNTRACKED file being newly captured looks like a secret and isn't
+# gitignored, STOP and warn rather than snapshotting it. (.gitignore is the primary defense.)
+# Scan untracked-only: tracked files are already in git so re-snapshotting them leaks nothing,
+# and this stops a tracked source path like lib/tokenizer.py from wholesale-disabling every
+# checkpoint. `-z` (NUL-delimited) so paths with spaces/quotes (e.g. "cfg/prod key.pem") parse
+# intact instead of being split by awk and slipping through. Matched against basename to avoid
+# path-substring false positives.
+# NOTE: read loop, NOT `mapfile` — mapfile is bash 4+ and macOS ships 3.2 as /bin/bash.
+secret_re='(^\.env($|\.)|\.(pem|key|p12|pfx|keystore|asc)$|^\.(npmrc|netrc|pgpass)$|^(id_rsa|id_dsa|id_ecdsa|id_ed25519)$|^authorized_keys$|^known_hosts$|(^|[._-])(secret|secrets|credential|credentials|passwd|service-account)([._-]|$))'
 risky=()
-while IFS= read -r rf; do [ -n "$rf" ] && risky+=("$rf"); done \
-  < <(git status --porcelain --untracked-files=all | awk '{print $2}' | grep -iE "$secretish" || true)
+while IFS= read -r -d '' rf; do
+  base="${rf##*/}"
+  printf '%s' "$base" | grep -iqE "$secret_re" && risky+=("$rf")
+done < <(git ls-files --others --exclude-standard -z)
 if [ "${#risky[@]}" -gt 0 ]; then
   echo "auto-commit: REFUSING — secret-looking files would be staged; .gitignore them first:" >&2
   printf '  %s\n' "${risky[@]}" >&2

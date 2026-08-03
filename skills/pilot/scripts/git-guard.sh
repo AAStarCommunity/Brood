@@ -59,6 +59,13 @@ case "$sub" in
     { [ -n "$remote" ] && [ -n "$branch" ]; } || die "usage: git-guard.sh push <remote> <branch>"
     [ $# -eq 2 ] || die "push takes exactly <remote> <branch> — refusing extra refspecs/flags"
     case "$branch" in -*) die "refusing flag-like ref '$branch'" ;; esac
+    # Validate the REMOTE (1st arg) too — leaving it unchecked lets flag injection defeat the
+    # rail: `push --force origin` (remote=--force, branch=origin, which isn't protected) would
+    # exec `git push -u --force origin` and force-overwrite the CURRENT branch (e.g. main).
+    # `--all`/`--mirror` are worse. Refuse flag-like remotes, and require a real configured remote
+    # name (not a URL) so a typo'd/hostile remote can't push or exfiltrate the repo past the rail.
+    case "$remote" in -*) die "refusing flag-like remote '$remote' (e.g. --force/--all/--mirror) — pass a real remote name" ;; esac
+    git remote | grep -qx -- "$remote" || die "unknown remote '$remote' — not a configured \`git remote\`; refusing"
     # Resolve the DESTINATION ref from any refspec form (src:dst, +dst, refs/heads/dst) so
     # `push origin HEAD:main` can't smuggle a protected branch past an exact-name check.
     dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"
@@ -68,7 +75,7 @@ case "$sub" in
       HEAD|@) dst="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo HEAD)" ;;
     esac
     is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
-    exec git push -u "$remote" "$branch"
+    exec git push -u -- "$remote" "$branch"
     ;;
   merge-pr)
     n="${1:-}"; [ $# -gt 0 ] && shift

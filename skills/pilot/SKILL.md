@@ -35,7 +35,7 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 
 这些是「有经验的程序员」的底线，写死在这里，任何子命令都遵守。**约束 1/2/4 不只靠自觉——`scripts/git-guard.sh` 在脚本层硬拦截 `add -A`、直推主干、合并 base≠集成分支；`scripts/safe-cleanup.sh` 在脚本层保证只 `-d` 删已合并+干净。危险动作一律走这两个脚本，不裸用 git/gh。**
 
-1. **绝不 `git add -A` / `git add .`**。只 `git-guard.sh add <显式路径>`（裸 `git add -A` 会被 git-guard 拒绝）。理由：`-A` 会把未确认是否该跟踪的文件（密钥、`.env`、构建产物、临时文件）一起提交，是最危险的日常动作。提交前先 `git status` 看清，逐一列出要提交的路径。
+1. **绝不 `git add -A` / `git add .`**。只 `git-guard.sh add <显式路径>`（裸 `git add -A` 会被 git-guard 拒绝）。理由：`-A` 会把未确认是否该跟踪的文件（密钥、`.env`、构建产物、临时文件）一起提交，是最危险的日常动作。提交前先 `git status` 看清，逐一列出要提交的路径。**唯一例外**：`scripts/auto-commit.sh` 的 WIP 安全 checkpoint 有意用 `git add -A` 抓未跟踪工作（防丢失），但只在 **feature 分支**跑、且有**未跟踪文件密钥防护**（`.env`/key/credential 会被拒绝），见该脚本 header —— 这是受控例外，日常提交仍走 `git-guard.sh add`。
 2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。
 3. **一个 task = 一个分支 = 一个（可选）worktree = 一个 PR**。不在一个分支里顺手做别的 task。
 4. **删除分支只用 `git branch -d`，永不 `-D`**；删除只针对「已合并 + 干净」的分支/worktree；一切经 `scripts/safe-cleanup.sh`，默认 dry-run。
