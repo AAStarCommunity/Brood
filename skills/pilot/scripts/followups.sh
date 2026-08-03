@@ -102,8 +102,9 @@ case "$sub" in
     ensure_ledger
     id="FU-$(next_id)"
     day="$(date +%F)"
-    src="${source_ref:-manual}"
-    # strip pipes/newlines from desc to keep one line
+    # strip newlines from BOTH src and desc — a multi-line value would forge an extra ledger line
+    # (poisoning next_id) or truncate this record.
+    src="$(printf '%s' "${source_ref:-manual}" | tr '\n' ' ' | tr -d '\r')"
     desc_clean="$(printf '%s' "$desc" | tr '\n' ' ' | tr -d '\r')"
     printf -- '- [ ] %s · %s · src=%s · %s · %s\n' "$id" "$cls" "$src" "$day" "$desc_clean" >> "$ledger"
     echo "$id"
@@ -124,6 +125,9 @@ case "$sub" in
   done)
     [ -n "$pos" ] || { echo "usage: followups.sh done <FU-n> --pr <n>" >&2; exit 2; }
     [ -n "$pr" ] || { echo "ERROR: done requires --pr <n>" >&2; exit 2; }
+    # Validate --pr as digits: it's passed via `awk -v pr=...` (which does escape-processing), so a
+    # newline/backslash value could inject a second forged line into the ledger during the rewrite.
+    [[ "$pr" =~ ^[0-9]+$ ]] || { echo "ERROR: --pr must be a number" >&2; exit 2; }
     [ -f "$ledger" ] || { echo "ERROR: no ledger at $ledger" >&2; exit 2; }
     # Regex (not a `case` glob): a glob like FU-[0-9]* lets metacharacters through, and $pos is
     # interpolated straight into the awk ERE below — `done 'FU-1.*'` would mass-close FU-1/10/11/…

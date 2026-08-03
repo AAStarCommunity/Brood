@@ -36,7 +36,7 @@
     **不在本 PR 里做**——留到主线全清后批量合成一个 cleanup PR（见 §2.5）。
   - **C / 不做的 D** → **不改**，`gh pr comment <n>` 回一条讲清业务理由（让 daemon 下一轮和人类都看到）。
   - 把 Task 标 `CHANGES_REQUESTED→IN_PROGRESS`，更新 progress.md。**把 followups.md 一起 `git-guard.sh add` 进本次 commit**（账本随分支合并落库,不留在工作区）。**本轮结束。**
-- **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**本轮结束。**
+- **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add --docs-dir <docs_dir>` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**本轮结束。**
 - **`decision=PENDING`**（还没被 review）→ 说明还没轮到或 daemon 没在跑。**先确保 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（没在跑就拉起，在跑就 no-op），然后按 §PR 监控节奏等 5–10 分钟再看回执。不要在 PENDING 的 PR 上瞎改。
 
 > review 由**外部 pr-daemon** 做（见 `reference/pr-review-loop.md`），本 skill 不自评自审 PR 的最终裁决。我只负责：开好 PR、按回执修、approve 后合并。
@@ -57,15 +57,15 @@
 **只有当 §2 没有可开工的主线 READY task**（都 DONE 或在 PR_OPEN/BLOCKED）时，才处理跟进账本：
 1. `n=$(bash <skill>/scripts/followups.sh count-open --docs-dir <docs_dir>)`。为 0 → 跳到 §3。
 2. `>0` → **把这些小项合并成一个 cleanup PR 一次做掉**（不是一项一个 PR）：
-   - `followups.sh list --open` 拿到全部 OPEN 项；建一个分支 `chore/followups-<date>`（从集成分支）。
+   - `followups.sh list --open --docs-dir <docs_dir>` 拿到全部 OPEN 项；建一个分支 `chore/followups-<date>`（从集成分支）。
    - 逐条修复（都是小/非阻塞项）；一个 commit 或按主题分几个 commit，`git-guard.sh add` 显式路径（**含 followups.md**）。
-   - 对每条修好的 `followups.sh done FU-<n> --pr <本PR号>` 标掉（append-only,只翻 [x] 不删行）。
+   - 对每条修好的 `followups.sh done FU-<n> --pr <本PR号> --docs-dir <docs_dir>` 标掉（append-only,只翻 [x] 不删行）。
    - `git-guard.sh push` → `gh pr create`（title 如 `chore: batch followup fixes (FU-3, FU-7…)`，body 列清每条对应的原 PR/comment）→ 走正常评审→合并。
    - **判断力**：某条其实是真 feature/bug 规模的 → 不塞进批量,**提升为 tasks.md 里的正常 READY task**,走单独流程。批量只装小/相关的。
 3. 账本里还有 OPEN 项没清完 → 下一轮继续；**清空前不进 §3**。
 
 ### 3. 无 READY task、无待办 PR、且跟进账本已清空 → 停止条件
-先确认 `followups.sh count-open` 为 0（否则回 §2.5,**不许在有 OPEN 跟进项时宣布停止**）。都满足才报告「本轮无可推进项」。若由 /loop 驱动：说明所有 task 已 DONE 或在 PR_OPEN/BLOCKED、跟进账本已清空，建议停止 loop 或等待 review。不要制造无意义的空 commit。
+先确认 `followups.sh count-open --docs-dir <docs_dir>` 为 0（否则回 §2.5,**不许在有 OPEN 跟进项时宣布停止**）。都满足才报告「本轮无可推进项」。若由 /loop 驱动：说明所有 task 已 DONE 或在 PR_OPEN/BLOCKED、跟进账本已清空，建议停止 loop 或等待 review。不要制造无意义的空 commit。
 
 ## PR 监控节奏（提交 PR 后怎么等回执）
 

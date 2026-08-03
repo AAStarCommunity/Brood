@@ -70,6 +70,10 @@ case "$sub" in
     { [ -n "$remote" ] && [ -n "$branch" ]; } || die "usage: git-guard.sh push <remote> <branch>"
     [ $# -eq 2 ] || die "push takes exactly <remote> <branch> — refusing extra refspecs/flags"
     case "$branch" in -*) die "refusing flag-like ref '$branch'" ;; esac
+    # Reject wildcard/glob refspecs: `push origin 'refs/heads/*:refs/heads/*'` resolves below to a
+    # literal `*` that is_protected can't match and would push (or force-rewrite) EVERY branch incl.
+    # main. A script-driven push here has no legitimate use for a glob.
+    case "$branch" in *'*'*|*'?'*|*'['*) die "refusing wildcard/glob refspec '$branch' — pass one plain branch name" ;; esac
     # Validate the REMOTE (1st arg) too — leaving it unchecked lets flag injection defeat the
     # rail: `push --force origin` (remote=--force, branch=origin, which isn't protected) would
     # exec `git push -u --force origin` and force-overwrite the CURRENT branch (e.g. main).
@@ -84,6 +88,11 @@ case "$sub" in
     # name, else being on `main` + `push origin HEAD` would smuggle a trunk push past the guard.
     case "$dst" in
       HEAD|@) dst="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo HEAD)" ;;
+    esac
+    # Whitelist the resolved destination: it must be a plain branch name. Anything with leftover
+    # refspec punctuation / glob chars never had a legitimate single-branch form and is refused.
+    case "$dst" in
+      ''|*[!A-Za-z0-9._/@+-]*) die "refusing non-plain push destination '$dst' (from '$branch') — pass a simple branch name" ;;
     esac
     is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
     exec git push -u -- "$remote" "$branch"
@@ -111,6 +120,13 @@ case "$sub" in
     done
     [ -n "$n" ] || die "usage: git-guard.sh merge-pr <n> --integration <branch> [gh args]"
     [ -n "$integration" ] || die "merge-pr requires --integration <branch>"
+    # The integration target must NOT be trunk. `.pilot.yml` falls back integration→base_branch,
+    # and a stale `.repo-pilot.yml` can carry integration=master — either would merge PRs straight
+    # into trunk (violating "绝不直接合并到主干"). PRs merge into an integration branch (preview),
+    # never main/master/develop/release/hotfix.
+    case "$integration" in
+      main|master|develop|release|release*|hotfix|hotfix*) die "integration '$integration' is a trunk branch — merge PRs into an integration branch (e.g. preview), not trunk" ;;
+    esac
     command -v gh >/dev/null 2>&1 || die "gh not installed"
     # Pin the repo so the base check and the actual merge target the SAME repo.
     repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"
