@@ -39,11 +39,11 @@ followups.sh done  FU-<n> --pr <合并的PR号> --docs-dir <dir>          # 翻 
 
 ## 完整生命周期
 
-1. **记录**（run §1 triage）：B 类 → `followups.sh add` 写入账本 →
+1. **记录**（run §1 triage）：B 类 → `followups.sh add --docs-dir <dir>` 写入账本 →
    把 `followups.md` 和当前分支的其它改动一起 `git-guard.sh add` 进 commit，**随分支 PR 合并落库**（别留工作区）。
 2. **回忆 / 强制不丢**（run §2.5 + §3 停止条件）：run 每轮 §2.5 先 `count-open` 看还剩几条；**§3 停止条件在 `count-open != 0` 时拒绝宣布收工**——账本没清空就不会停 loop，这才是"绝不丢"的强制层（不依赖任何 `status` 步骤）。
 3. **完成**（run §2.5，主线全清后）：把小/相关的 OPEN 项**合并成一个 `chore/followups-<date>` 分支 → 一个 cleanup PR**，
-   逐条 `followups.sh done`，走正常评审合并。规模其实是真 feature/bug 的 → 提升为 `tasks.md` 正常 READY task，不塞批量。
+   逐条 `followups.sh done --docs-dir <dir>`，走正常评审合并。规模其实是真 feature/bug 的 → 提升为 `tasks.md` 正常 READY task，不塞批量。
 
 ## 铁律
 

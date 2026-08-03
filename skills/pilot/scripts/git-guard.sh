@@ -89,10 +89,13 @@ case "$sub" in
     case "$dst" in
       HEAD|@) dst="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo HEAD)" ;;
     esac
-    # Whitelist the resolved destination: it must be a plain branch name. Anything with leftover
-    # refspec punctuation / glob chars never had a legitimate single-branch form and is refused.
+    # Reject only the DANGEROUS shapes in the resolved destination — glob (`*?[`), leftover
+    # refspec punctuation (`: ~ ^ \`), whitespace, or empty. A denylist (not a strict ASCII
+    # allowlist) so legitimate branch names git itself allows — `fix/issue-#42`, `feat(scope)`,
+    # CJK slugs like `feat/中文分支` (run.md §2 builds `<type>/<taskid>-<slug>` in a 中文 project) —
+    # are NOT hard-blocked, while every refspec/wildcard bypass shape still is.
     case "$dst" in
-      ''|*[!A-Za-z0-9._/@+-]*) die "refusing non-plain push destination '$dst' (from '$branch') — pass a simple branch name" ;;
+      ''|*'*'*|*'?'*|*'['*|*':'*|*'~'*|*'^'*|*'\'*|*[[:space:]]*) die "refusing non-plain push destination '$dst' (from '$branch') — pass one simple branch name (no refspec/glob)" ;;
     esac
     is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
     exec git push -u -- "$remote" "$branch"
@@ -131,6 +134,12 @@ case "$sub" in
     # Pin the repo so the base check and the actual merge target the SAME repo.
     repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"
     [ -n "$repo" ] || die "cannot resolve current repo (gh auth / not inside a gh repo?)"
+    # Also refuse if integration IS the repo's DEFAULT (trunk) branch — catches ANY trunk name
+    # (e.g. `trunk`/`production`), not just the hardcoded list above. NB: is_protected() can't be
+    # used for this — the integration branch itself is in $PROTECTED (run.md §0 threads it in via
+    # --protect for push-protection), so is_protected("$integration") would always be true.
+    def_branch="$(gh repo view --repo "$repo" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null || true)"
+    [ -n "$def_branch" ] && [ "$integration" = "$def_branch" ] && die "integration '$integration' is the repo's default (trunk) branch — merge PRs into an integration branch, not trunk"
     base="$(gh pr view "$n" --repo "$repo" --json baseRefName --jq .baseRefName 2>/dev/null || true)"
     [ -n "$base" ] || die "cannot read PR #$n base branch (gh auth / wrong number?)"
     [ "$base" = "$integration" ] || die "PR #$n base is '$base', not integration '$integration' — refusing merge into an unintended branch"

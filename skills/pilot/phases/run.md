@@ -49,7 +49,7 @@
 4. **自测**：先针对性测试，再 lint → typecheck → build → 集成测试。有失败就修到全绿。
 5. **对抗式 review**（PR 前必做，见 `reference/pr-quality.md`）：换新上下文/子 agent 或 Codex（`/codex:rescue`），以「找 race/安全/错误处理/边界/生产失败」的挑剔视角审这段 diff。有阻塞问题 → 修 → 重新自测 → 再挑战，直到无阻塞。
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
-7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
+7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh --protect "$PROT" push <remote> <branch>`**（推主干会被硬拒绝）。
 8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`（body 写清 task、验收命令、自测结果）。**绝不 `--admin` 直合，绝不推主干。**
 9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**开完 PR 立刻确保评审 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（否则没人 review，PR 会一直挂着）。**本轮结束**，进入 §PR 监控节奏等回执。
 
@@ -60,7 +60,7 @@
    - `followups.sh list --open --docs-dir <docs_dir>` 拿到全部 OPEN 项；建一个分支 `chore/followups-<date>`（从集成分支）。
    - 逐条修复（都是小/非阻塞项）；一个 commit 或按主题分几个 commit，`git-guard.sh add` 显式路径（**含 followups.md**）。
    - 对每条修好的 `followups.sh done FU-<n> --pr <本PR号> --docs-dir <docs_dir>` 标掉（append-only,只翻 [x] 不删行）。
-   - `git-guard.sh push` → `gh pr create`（title 如 `chore: batch followup fixes (FU-3, FU-7…)`，body 列清每条对应的原 PR/comment）→ 走正常评审→合并。
+   - `git-guard.sh --protect "$PROT" push` → `gh pr create --base <integration_branch>`（title 如 `chore: batch followup fixes (FU-3, FU-7…)`，body 列清每条对应的原 PR/comment）→ 走正常评审→合并。
    - **判断力**：某条其实是真 feature/bug 规模的 → 不塞进批量,**提升为 tasks.md 里的正常 READY task**,走单独流程。批量只装小/相关的。
 3. 账本里还有 OPEN 项没清完 → 下一轮继续；**清空前不进 §3**。
 
