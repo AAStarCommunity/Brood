@@ -74,7 +74,7 @@ const PAD={top:20,right:24,bottom:40,left:44};
 const MAX_Y=100;
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
 function buildSummary(){
-  const last=HISTORY[HISTORY.length-1],prev=HISTORY[HISTORY.length-2];
+  const last=HISTORY[HISTORY.length-1],prev=HISTORY[HISTORY.length-2]||last;
   const row=document.getElementById('summaryRow');
   [{key:'p1',cls:'p1',label:'Phase 1'},{key:'p2',cls:'p2',label:'Phase 2'},{key:'p3',cls:'p3',label:'Phase 3'}].forEach(p=>{
     const val=last[p.key],diff=val-prev[p.key];
@@ -92,7 +92,7 @@ function resize(){
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(dpr,dpr);chartW=W-PAD.left-PAD.right;chartH=H-PAD.top-PAD.bottom;draw();
 }
-function xOf(i){return PAD.left+(i/(HISTORY.length-1))*chartW}
+function xOf(i){return PAD.left+(HISTORY.length>1?i/(HISTORY.length-1):0)*chartW}
 function yOf(v){return PAD.top+(1-v/MAX_Y)*chartH}
 function fmtDate(d){const[y,m,day]=d.split('-');const mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mo[parseInt(m)]+' '+parseInt(day)+', '+y}
 function draw(){
@@ -118,7 +118,7 @@ function draw(){
   });
   if(activeIdx>=0){ctx.strokeStyle=c.border;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(xOf(activeIdx),PAD.top);ctx.lineTo(xOf(activeIdx),PAD.top+chartH);ctx.stroke();ctx.setLineDash([]);}
 }
-function nearest(mx){return Math.max(0,Math.min(HISTORY.length-1,Math.round((mx-PAD.left)/chartW*(HISTORY.length-1))))}
+function nearest(mx){if(HISTORY.length<2)return 0;return Math.max(0,Math.min(HISTORY.length-1,Math.round((mx-PAD.left)/chartW*(HISTORY.length-1))))}
 canvas.addEventListener('mousemove',e=>{
   const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
   if(mx<PAD.left||mx>PAD.left+chartW||my<PAD.top||my>PAD.top+chartH){activeIdx=-1;tooltip.classList.remove('visible');draw();return;}

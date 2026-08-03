@@ -123,13 +123,6 @@ async function exportStaticBacklog() {
     const milestoneProgress = await computeMilestoneProgress();
     console.log('Milestone weighted progress:', milestoneProgress);
 
-    // Load progress history for chart injection
-    let progressHistory = [];
-    try {
-      const histPath = path.join(process.cwd(), 'backlog', 'data', 'progress-history.json');
-      progressHistory = JSON.parse(await fs.readFile(histPath, 'utf-8')).history || [];
-    } catch (_) { /* optional, skip if missing */ }
-
     console.log('Downloading assets:', assets);
     for (const asset of assets) {
       const assetData = await fetchFromLocal(`/${asset}`);
@@ -200,8 +193,6 @@ async function exportStaticBacklog() {
     <script>
       // Weighted milestone progress: Done=100%, InProgress=estimate, ToDo=0%
       window.__milestoneProgress = ${JSON.stringify(milestoneProgress)};
-      // Phase progress history for /statistics chart
-      window.__progressHistory = ${JSON.stringify(progressHistory)};
 
       window.originalFetch = window.fetch;
       window.fetch = async function(resource, init) {
@@ -574,13 +565,12 @@ async function exportStaticBacklog() {
 
 function generateProgressChartHtml(historyData) {
   const history = (historyData && historyData.history) || [];
-  // Guard: with <2 entries, history[length-2] is undefined and the delta math crashes
-  // the chart client-side. Empty -> placeholder; single entry -> prev falls back to last (delta 0).
+  // Empty history -> static placeholder (no canvas to render).
+  // Single-entry history is handled client-side: buildSummary falls back prev->last (delta 0),
+  // and xOf/nearest guard against the length-1===0 division that would produce NaN.
   if (history.length === 0) {
     return `<!DOCTYPE html>\n<html lang="zh"><head><meta charset="UTF-8"><title>Mycelium Protocol — Phase Progress History</title></head>\n<body style="font-family:-apple-system,system-ui,sans-serif;padding:24px;color:#8B9AB0;background:#0D1117">暂无进度历史数据。</body></html>`;
   }
-  const last = history[history.length - 1];
-  const prev = history.length >= 2 ? history[history.length - 2] : last;
 
   return `<!DOCTYPE html>
 <html lang="zh">
@@ -658,7 +648,7 @@ const PAD={top:20,right:24,bottom:40,left:44};
 const MAX_Y=100;
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
 function buildSummary(){
-  const last=HISTORY[HISTORY.length-1],prev=HISTORY[HISTORY.length-2];
+  const last=HISTORY[HISTORY.length-1],prev=HISTORY[HISTORY.length-2]||last;
   const row=document.getElementById('summaryRow');
   [{key:'p1',cls:'p1',label:'Phase 1'},{key:'p2',cls:'p2',label:'Phase 2'},{key:'p3',cls:'p3',label:'Phase 3'}].forEach(p=>{
     const val=last[p.key],diff=val-prev[p.key];
@@ -676,7 +666,7 @@ function resize(){
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(dpr,dpr);chartW=W-PAD.left-PAD.right;chartH=H-PAD.top-PAD.bottom;draw();
 }
-function xOf(i){return PAD.left+(i/(HISTORY.length-1))*chartW}
+function xOf(i){return PAD.left+(HISTORY.length>1?i/(HISTORY.length-1):0)*chartW}
 function yOf(v){return PAD.top+(1-v/MAX_Y)*chartH}
 function fmtDate(d){const[y,m,day]=d.split('-');const mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mo[parseInt(m)]+' '+parseInt(day)+', '+y}
 function draw(){
@@ -702,7 +692,7 @@ function draw(){
   });
   if(activeIdx>=0){ctx.strokeStyle=c.border;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(xOf(activeIdx),PAD.top);ctx.lineTo(xOf(activeIdx),PAD.top+chartH);ctx.stroke();ctx.setLineDash([]);}
 }
-function nearest(mx){return Math.max(0,Math.min(HISTORY.length-1,Math.round((mx-PAD.left)/chartW*(HISTORY.length-1))))}
+function nearest(mx){if(HISTORY.length<2)return 0;return Math.max(0,Math.min(HISTORY.length-1,Math.round((mx-PAD.left)/chartW*(HISTORY.length-1))))}
 canvas.addEventListener('mousemove',e=>{
   const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
   if(mx<PAD.left||mx>PAD.left+chartW||my<PAD.top||my>PAD.top+chartH){activeIdx=-1;tooltip.classList.remove('visible');draw();return;}

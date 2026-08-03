@@ -1,5 +1,5 @@
 {
-  "description": "Phase progress history — updated by sync-progress each scan",
+  "description": "Phase progress history — manually maintained; append a dated {p1,p2,p3} row when refreshing progress (no automated writer yet)",
   "algorithm": "Done=100%, In Progress=actual estimated %, To Do=0%; arithmetic average per phase",
   "history": [
     {"date": "2026-03-18", "p1": 36, "p2": 2,  "p3": 3},
