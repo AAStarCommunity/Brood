@@ -117,7 +117,7 @@
 | OpenCrab | auraai/OpenCrab | 2026-04-29 | 个人 Agent 框架（设计阶段）|
 | simple-agent | auraai/simple-agent | 2026-04-29 | Level 1 agent（StorageAgent）|
 | agent-speaker | auraai/agent-speaker | 2026-06-20 | Nostr 通信层 v0.25.0 |
-| agent-speaker-relay | iDoris-ai/agent-speaker-relay | 2026-04-12 | Nostr relay |
+| agent-speaker-relay | auraai/agent-speaker-relay | 2026-04-12 | Nostr relay |
 | auraai-packages | auraai/auraai-packages | 2026-05-29 | 共享包 |
 | courses | auraai/courses | 2026-04-29 | AI/编程教育课程 |
 | AI_Beginner_Courses | auraai/AI_Beginner_Courses | 2026-07-05 | 入门课程（Agent Loop 讲义新增）|
