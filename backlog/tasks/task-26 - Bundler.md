@@ -32,18 +32,18 @@ enhance a close integration with AAStar infrastructure.
 
 ### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 40%** | 静默 62 天（最近 2026-05-06），UltraRelay stuck-bundle rotation 已实现
+**🚀 预估进度: 40%** | `AAStarCommunity/UltraRelay-AAStar` (aastar-dev) 静默约 34 天（最近 2026-06-03 chore: add @clestons as code owner）；UltraRelay bundle submission 加固已合入
 
 **✅ AC 完成情况**:
 - ✅ Accept standard ERC-4337 useroperation — 基础 bundler 能力稳定
-- ✅ stuck bundle 轮换至新钱包 + 替代 gas 设置（2026-05-06 feature）
+- ✅ bundle submission 加固：max-bundle-count/max-executors + partial-failure continue（2026-05-06）
 - ⬜ Accept aPNTs and ETH to pay the service — 未启动
 - 🔧 Accept EIP-7702 request — authorizationList 维护中
 - ⬜ Be any relay server with permission service — 未启动
 
 **📝 近期动态**:
-- 2026-05-06: feat: rotate stuck bundles to fresh wallet + max-priority-fee-per-gas-cap
-- 2026-04-15: chore: add @clestons code owner
+- 2026-06-03: chore: add @clestons as code owner（治理调整，无 feature 进展）
+- 2026-05-06: fix: guard bundle submission + max-bundle-count/max-executors cap（debug handler）
 
-💡 ⚠️ 静默超 53 天，Phase 2 aPNTs 支付路径依赖 Bundler，建议优先评估是否需要重新激活。
+💡 ⚠️ 静默约 34 天，Phase 2 aPNTs 支付路径依赖 Bundler，建议优先评估是否需要重新激活。
 <!-- SECTION:DESCRIPTION:END -->

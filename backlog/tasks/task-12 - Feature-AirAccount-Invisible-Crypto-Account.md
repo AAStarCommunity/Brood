@@ -22,9 +22,9 @@ ordinal: 2000
 <!-- SECTION:DESCRIPTION:BEGIN -->
 A standalone abstract account project embedded in Chrome Plugin, solving basic crypto account hurdles.
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-04-27 扫描)
 
-**🚀 预估进度: 20%** | AAStarCommunity/demo 静默 ≥ 83 天
+**🚀 预估进度: 72%** | `AAStarCommunity/AirAccount` 近 30 天仅 Apache 2.0 license 合规提交（14次），最近功能提交 2026-03-26（v0.16.8）
 
 **✅ AC 完成情况**:
 - ✅ Hide private key management from user — WebAuthn passkey 实现，TX 描述隐私遮蔽（v0.16.6），Apache 2.0 license 合规

@@ -43,14 +43,14 @@ User account abstraction layer (AirAccount) providing seamless onboarding and in
 - ⬜ Enable Cross-Chain Operations — 未启动
 
 **📝 近期动态** (6 仓库聚合):
-- 07-07: AirAccount — DVT BLS TEE 托管 Variant B 成型（blst TA + KMS+DVT joint deploy）
+- 07-07/08: AirAccount — 社区自助上手程序 onboarding（Phase 1-3 web 向导 + setup token 认证 + KMS 门户 + installer 覆盖安装）
 - 07-05: airaccount-contract v0.27.0 — DVT validator unification，Sepolia `0xf25621DF` 部署
 - 07-06: aastar-sdk v0.39.0 — agent-session phantom 清理；v0.38.0 DVT registerWithProof API
 - 07-07: YetAnotherAA-Validator — BLS gossip quorum co-signer live (PR #179)
 - 07-06: YetAnotherAA — DVT wizard + @aastar/sdk 0.38.0 接入 (CC-17)
 - 07-07: airaccount-contract v0.26.0 — HIGH-1 module-route tier fix；v0.24.0 security hardening
 
-💡 6 仓库全线突破性进展：DVT validator 生态统一完成（airaccount-contract + SDK + UI + Validator 四端对齐），BLS TEE 托管路径打通。剩余 5%：Cross-Chain Operations + mainnet GA。
+💡 6 仓库全线突破性进展：DVT validator 生态统一完成（airaccount-contract v0.27.0 + SDK v0.39.0 + UI + Validator 四端对齐）；AirAccount 侧推进社区 onboarding 自助部署。剩余 5%：Cross-Chain Operations + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

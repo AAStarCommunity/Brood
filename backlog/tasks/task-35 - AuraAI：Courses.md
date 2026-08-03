@@ -27,5 +27,5 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 
 ### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 55%** | `iDoris-ai/AI_Beginner_Courses`（新发现活跃仓库）近9天 2 次提交，最近 2026-07-05；Agent Loop/Loop Engineering 讲义新增 + Learning in Public 结构建立；原 `iDoris-ai/courses` 仍静默（最近 2026-04-29）
+**🚀 预估进度: 50%** | `iDoris-ai/courses`（默认分支 master）静默 ≥ 17 天，最近 2026-06-20 `chore: Apache 2.0 license compliance (#1)`；课程内容仍未更新（gh-api 200-OK 校验：iDoris-ai 名下无 `AI_Beginner_Courses` 仓库）
 <!-- SECTION:DESCRIPTION:END -->

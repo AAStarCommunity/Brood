@@ -30,23 +30,19 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 
 ### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 70%** | 近30天活跃仓库缩减：agent-speaker 仍在迭代（kind:1111 comment 支持 + blossom tweaks + publish fix）；Agent24 仅 1 commit（code owner）；simple-agent 仅 license；整体无重大新功能
+**🚀 预估进度: 68%** | agent-speaker 最近提交 2026-06-20 `feat: TUI Chat Interface (#4)`（静默 ≈ 17 天，本期 main 无新提交）；Agent24/simple-agent 仅 license/owner 维护，整体无重大新功能
 
 **✅ AC 完成情况**:
 - ✅ Aura 建立 — `iDoris-ai` org 全量建立
 - ✅ Agent24 = AgentStore 承载平台 — BoxLite service container (M3+M4) 完成
-- ✅ iDoris-SDK M2/M3/M4/M5 全部完成
-- ✅ Nostr 通信层：TUI Chat + NIP-86 role commands + jq helpers + serve --auth/--eager-auth
-- ✅ agent-speaker：kind:1111 comment publish + blossom ipv6 fix + profile flags
-- 🔧 AgentSocial：Paper3 设计就绪，工程化待启动
+- ✅ iDoris-SDK M2/M3/M4/M5 全部完成：WeChatBridge + InboxAgent + CLI + 集成验证
+- ✅ Nostr 通信层：agent-speaker TUI Chat 完整 PR #4 合入 + serve --auth/--eager-auth flags + bunker 连接冲突修复 + --jq flag on fetch/event commands
+- 🔧 AgentSocial：Paper3 设计 + milestone plan 已就绪
 - ⬜ iDoris 三层结构（云端大模型 + 训练服务）、Mycelium Network、AK47 — 未启动
 
 **📝 近期动态** (iDoris-ai/agent-speaker):
-- 2026-07-07: publish: allow kind:1111 comment, force --comment flag
-- 2026-07-06: two blossom tweaks（ipv6 + blossom）
-- 2026-07-06: publish: proper root/reply tags + read from arguments
-- 2026-07-05: admin: color flag is int now
-- Agent24/simple-agent: 静默（仅 license/owner 维护提交）
+- 2026-06-20: feat: TUI Chat Interface (PR #4) — 合入 main（本期唯一 feature 提交）
+- Agent24 / simple-agent / OpenCrab / courses 本期主要为 license 合规（Apache 2.0 五件套）+ @clestons code owner
 
-💡 agent-speaker 功能稳定扩展中（Nostr 发布层细化）。iDoris.ai 其他仓库进入静默期，大功能（iDoris 云端 + Mycelium Network）尚未启动。剩余 30%：核心平台工程化。
+💡 agent-speaker 完成工程化第二阶段（TUI + serve auth + bunker 修复）后进入静默；iDoris.ai 其他仓库亦静默，大功能（iDoris 云端三层结构 + Mycelium Network）尚未启动。剩余 32%：核心平台工程化 + 三层结构启动。
 <!-- SECTION:DESCRIPTION:END -->

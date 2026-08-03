@@ -33,7 +33,7 @@ Implement the three core modules for Cos72 Chrome Plugin.
 - ✅ #4 MyShop: Redeem points for goods/services — MushroomDAO/MyShop M1 功能完整
 
 **📝 近期动态**:
-- 2026-04-29: chore: Apache 2.0 license 合规五件套 — 最近功能性 commit
+- 2026-06-20: MushroomDAO/Cos72 badge #2 + MushroomDAO/MyTask Apache 2.0 license 合规五件套 (#8) — 最近提交
 
 💡 连续两轮静默，feature 维度无进展。⚠️ 建议关注 MyVote 是否还需开发，否则 Phase 1 Cos72 目标会悬空。
 <!-- SECTION:DESCRIPTION:END -->
