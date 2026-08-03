@@ -65,7 +65,7 @@ case "$sub" in
     # `--all`/`--mirror` are worse. Refuse flag-like remotes, and require a real configured remote
     # name (not a URL) so a typo'd/hostile remote can't push or exfiltrate the repo past the rail.
     case "$remote" in -*) die "refusing flag-like remote '$remote' (e.g. --force/--all/--mirror) — pass a real remote name" ;; esac
-    git remote | grep -qx -- "$remote" || die "unknown remote '$remote' — not a configured \`git remote\`; refusing"
+    git remote | grep -qxF -- "$remote" || die "unknown remote '$remote' — not a configured \`git remote\`; refusing"
     # Resolve the DESTINATION ref from any refspec form (src:dst, +dst, refs/heads/dst) so
     # `push origin HEAD:main` can't smuggle a protected branch past an exact-name check.
     dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"

@@ -61,25 +61,37 @@ next_id() {
 }
 
 lock_dir="$ledger.lock"
+my_token="$$-$(date +%s)-${RANDOM:-0}"
 acquire_lock() {
   # mkdir is atomic → a portable mutex (macOS ships no flock). Serialize read-then-write so
   # concurrent `add`s can't compute the same next id (observed: 6 parallel adds → all FU-1),
   # and a `done` can't race a concurrent write of the ledger.
   mkdir -p "$docs_dir"
-  local i=0
+  local i=0 steals=0 owner opid
   until mkdir "$lock_dir" 2>/dev/null; do
     i=$((i+1))
-    # Stale-lock self-heal: a killed holder would otherwise wedge the ledger forever. A legit
-    # add/done holds the lock for milliseconds, so 30s of no progress ⇒ the holder is dead —
-    # steal it (rmdir is atomic; only one waiter wins the re-mkdir) and retry, don't hard-fail.
-    if [ "$i" -gt 600 ]; then
-      echo "followups: stealing stale lock $lock_dir (held >30s — prior run likely killed)" >&2
-      rmdir "$lock_dir" 2>/dev/null || rm -rf "$lock_dir" 2>/dev/null || true
+    if [ "$i" -gt 600 ]; then      # ~30s of no progress on this lock
+      owner="$(cat "$lock_dir/owner" 2>/dev/null || echo)"
+      opid="${owner%%-*}"
+      steals=$((steals+1))
+      # Bounded: don't spin forever if the lock can't be removed / holder stays alive.
+      if [ "$steals" -gt 3 ]; then
+        echo "ERROR: cannot acquire $lock_dir after 3 attempts (holder alive or lock undeletable) — rm it manually" >&2
+        exit 3
+      fi
+      # Steal ONLY if the recorded holder PID is dead (or none recorded). NEVER steal a LIVE
+      # holder's lock — that let two concurrent adds both mint the same FU id. The owner token
+      # ($$-ts-rand) also stops our EXIT trap from deleting a lock a later waiter re-acquired.
+      if [ -z "$owner" ] || ! kill -0 "$opid" 2>/dev/null; then
+        echo "followups: stealing stale lock $lock_dir (dead owner '${owner:-none}')" >&2
+        rm -rf "$lock_dir" 2>/dev/null || true
+      fi
       i=0
     fi
     sleep 0.05
   done
-  trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
+  printf '%s' "$my_token" > "$lock_dir/owner"
+  trap 'if [ "$(cat "$lock_dir/owner" 2>/dev/null || echo)" = "$my_token" ]; then rm -rf "$lock_dir" 2>/dev/null || true; fi' EXIT
 }
 
 case "$sub" in
@@ -113,7 +125,9 @@ case "$sub" in
     [ -n "$pos" ] || { echo "usage: followups.sh done <FU-n> --pr <n>" >&2; exit 2; }
     [ -n "$pr" ] || { echo "ERROR: done requires --pr <n>" >&2; exit 2; }
     [ -f "$ledger" ] || { echo "ERROR: no ledger at $ledger" >&2; exit 2; }
-    case "$pos" in FU-[0-9]*) : ;; *) echo "ERROR: id must look like FU-<n>" >&2; exit 2 ;; esac
+    # Regex (not a `case` glob): a glob like FU-[0-9]* lets metacharacters through, and $pos is
+    # interpolated straight into the awk ERE below — `done 'FU-1.*'` would mass-close FU-1/10/11/…
+    [[ "$pos" =~ ^FU-[0-9]+$ ]] || { echo "ERROR: id must look like FU-<n> (digits only)" >&2; exit 2; }
     acquire_lock          # serialize read-modify-write of the ledger against concurrent add/done
     tmp="$ledger.tmp.$$"
     awk -v id="$pos" -v pr="$pr" '

@@ -23,6 +23,13 @@ cd "$(git rev-parse --show-toplevel)"
 
 # Refuse to run on protected branches — checkpoints belong on feature/WIP branches, not main.
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo)"
+# Detached HEAD (rev-parse returns the literal "HEAD") or an in-progress rebase/bisect/merge: a
+# checkpoint here lands on a dangling/transient commit lost on the next checkout — never do it.
+# This also defeats the protected-branch checks below, which would see "HEAD" not a real branch.
+git_dir="$(git rev-parse --git-dir 2>/dev/null || echo .git)"
+if [ "$branch" = "HEAD" ] || [ -e "$git_dir/rebase-merge" ] || [ -e "$git_dir/rebase-apply" ] || [ -e "$git_dir/BISECT_LOG" ] || [ -e "$git_dir/MERGE_HEAD" ]; then
+  echo "auto-commit: detached HEAD or in-progress rebase/bisect/merge — skipping (would create a lost commit)"; exit 0
+fi
 case "$branch" in
   main|master|develop|preview|integration|release*|hotfix*) echo "auto-commit: on protected '$branch' — skipping (checkpoints only on feature branches)"; exit 0 ;;
 esac
@@ -50,16 +57,17 @@ fi
 # intact instead of being split by awk and slipping through. Matched against basename to avoid
 # path-substring false positives.
 # NOTE: read loop, NOT `mapfile` — mapfile is bash 4+ and macOS ships 3.2 as /bin/bash.
-secret_re='(^\.env($|\.)|\.(pem|key|p12|pfx|keystore|asc)$|^\.(npmrc|netrc|pgpass)$|^(id_rsa|id_dsa|id_ecdsa|id_ed25519)$|^authorized_keys$|^known_hosts$|(^|[._-])(secret|secrets|credential|credentials|passwd|service-account)([._-]|$))'
+secret_re='(^|[._-])env(rc)?($|[._-])|\.(pem|key|p12|pfx|keystore|asc)$|^\.(npmrc|netrc|pgpass)$|(^|[._-])id_(rsa|dsa|ecdsa|ed25519)|^authorized_keys$|^known_hosts$|(^|[._-])key($|[._-])|(^|[._-])(secret|secrets|credential|credentials|passwd|service-account)([._-]|$)'
 risky=()
 while IFS= read -r -d '' rf; do
   base="${rf##*/}"
   printf '%s' "$base" | grep -iqE "$secret_re" && risky+=("$rf")
 done < <(git ls-files --others --exclude-standard -z)
 if [ "${#risky[@]}" -gt 0 ]; then
-  echo "auto-commit: REFUSING — secret-looking files would be staged; .gitignore them first:" >&2
+  # WARN loudly but DO NOT abort: one false positive (e.g. docs/secrets-guide.md) must never
+  # silently disable the whole safety net. The flagged paths are excluded from staging below.
+  echo "auto-commit: WARNING — secret-looking untracked file(s) EXCLUDED from this checkpoint (.gitignore them):" >&2
   printf '  %s\n' "${risky[@]}" >&2
-  exit 3
 fi
 
 changed_files="$(git status --porcelain | wc -l | tr -d ' ')"
@@ -93,7 +101,16 @@ fi
 
 reason="$(IFS='; '; echo "${reasons[*]}")"
 git add -A
+# Exclude the secret-looking untracked files from the checkpoint (unstage only those) so a false
+# positive can't disable the net. If that leaves nothing staged, skip gracefully (don't error).
+if [ "${#risky[@]}" -gt 0 ]; then
+  git reset -q -- "${risky[@]}" 2>/dev/null || true
+fi
+if git diff --cached --quiet; then
+  echo "auto-commit: nothing to checkpoint after excluding secret-looking file(s) — skip"; exit 0
+fi
 git commit -q -m "chore(wip): auto-commit checkpoint — $reason
 
 Safety checkpoint (squash before merge). Triggered by pilot auto-commit."
 echo "auto-commit: ✓ checkpoint committed on '$branch' — $reason"
+[ "${#risky[@]}" -gt 0 ] && echo "  (excluded ${#risky[@]} secret-looking untracked file(s))" >&2 || true
