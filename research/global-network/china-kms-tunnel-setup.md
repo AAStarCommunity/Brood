@@ -52,8 +52,8 @@ your-kms.your-domain.com
         ▼
 家里的 NXP FRDM-IMX93
   └── KMS 服务（:3000）
-      ├── POST /kms/Sign
-      ├── POST /kms/CreateKey
+      ├── POST /Sign
+      ├── POST /CreateKey
       └── GET  /health
 ```
 
@@ -111,8 +111,11 @@ log.to = "/var/log/frps.log"
 log.level = "info"
 EOF
 
+# 把二进制和配置拷到 systemd 单元引用的路径 /opt/frp/
+mkdir -p /opt/frp && cp frps frps.toml /opt/frp/
+
 # 启动（生产环境用 systemd）
-./frps -c frps.toml
+/opt/frp/frps -c /opt/frp/frps.toml
 ```
 
 **systemd 服务（开机自启）**：
@@ -133,6 +136,7 @@ WantedBy=multi-user.target
 ```
 
 ```bash
+systemctl daemon-reload
 systemctl enable frps && systemctl start frps
 ```
 
@@ -167,8 +171,11 @@ localPort = 3000            # KMS 服务监听端口
 customDomains = ["your-kms.your-domain.com"]   # 你的域名
 EOF
 
+# 把二进制和配置拷到 systemd 单元引用的路径 /opt/frp/
+mkdir -p /opt/frp && cp frpc frpc.toml /opt/frp/
+
 # 测试启动
-./frpc -c frpc.toml
+/opt/frp/frpc -c /opt/frp/frpc.toml
 ```
 
 **systemd 服务**（IMX93 上）：
@@ -190,6 +197,7 @@ WantedBy=multi-user.target
 ```
 
 ```bash
+systemctl daemon-reload
 systemctl enable frpc && systemctl start frpc
 ```
 
@@ -241,10 +249,10 @@ certbot certonly --standalone -d your-kms.your-domain.com
 ```bash
 # 在任意外部机器（非中国大陆）测试
 curl -X GET https://your-kms.your-domain.com/health
-# 期望返回：{"status":"ok","version":"0.27.3",...}
+# 期望返回：{"status":"healthy","service":"kms-api","version":"0.29.0",...}
 
 # 测试签名接口（参考 AirAccount kms/test-full-api.sh）
-curl -X POST https://your-kms.your-domain.com/kms/CreateKey \
+curl -X POST https://your-kms.your-domain.com/CreateKey \
   -H "x-amz-target: TrentService.CreateKey" \
   -H "Content-Type: application/json" \
   -d '{"KeySpec":"ECC_NIST_P256","KeyUsage":"SIGN_VERIFY","Description":"test",...}'

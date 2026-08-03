@@ -125,7 +125,7 @@ token = "your-secret-token"
 name = "kms-node"
 type = "https"
 localIP = "127.0.0.1"
-localPort = 8080
+localPort = 3000
 customDomains = ["cn-node.your-domain.com"]
 ```
 
