@@ -300,6 +300,28 @@ async function exportStaticBacklog() {
         const style = document.createElement('style');
         style.innerHTML = 'button[title*="Delete"], button[aria-label*="Delete"] { display: none !important; }';
         document.head.appendChild(style);
+
+        // Add progress chart link to left sidebar nav
+        (function() {
+          var DONE = false;
+          var tries = 0;
+          var t = setInterval(function() {
+            if (DONE || ++tries > 40) { clearInterval(t); return; }
+            var navLinks = document.querySelectorAll('nav a, aside a');
+            if (!navLinks.length) return;
+            var parent = navLinks[0].closest('ul') || navLinks[0].parentElement;
+            if (!parent) return;
+            clearInterval(t);
+            DONE = true;
+            var el = document.createElement(parent.tagName === 'UL' ? 'li' : 'div');
+            el.id = '__prog_nav_link';
+            el.style.cssText = 'list-style:none;margin-top:4px;border-top:1px solid rgba(128,128,128,0.15);padding-top:4px';
+            el.innerHTML = '<a href="/progress-chart.html" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:6px 12px;text-decoration:none;color:inherit;font-size:13px;opacity:0.75;border-radius:4px;transition:opacity .15s">📈 <span>Progress Chart</span></a>';
+            el.querySelector('a').addEventListener('mouseenter', function(){this.style.opacity='1';this.style.background='rgba(128,128,128,0.1)';});
+            el.querySelector('a').addEventListener('mouseleave', function(){this.style.opacity='0.75';this.style.background='';});
+            parent.appendChild(el);
+          }, 400);
+        })();
       });
     </script>
     `;
@@ -519,12 +541,175 @@ async function exportStaticBacklog() {
       }
     }
 
+    // Generate progress-chart.html from backlog/data/progress-history.json
+    try {
+      const historyPath = path.join(process.cwd(), 'backlog', 'data', 'progress-history.json');
+      const historyData = JSON.parse(await fs.readFile(historyPath, 'utf-8'));
+      // Also copy to dist/api/ for programmatic access
+      await fs.writeFile(path.join(apiDir, 'progress-history.json'), JSON.stringify(historyData));
+
+      const chartHtml = generateProgressChartHtml(historyData);
+      await fs.writeFile(path.join(distDir, 'progress-chart.html'), chartHtml);
+      console.log('✅ Generated dist/progress-chart.html');
+    } catch (err) {
+      console.warn('Warning: could not generate progress-chart.html:', err.message);
+    }
+
     console.log('✨ Static export complete! Saved to dist/');
     console.log('🚀 You can preview it locally by running: npx serve dist');
   } finally {
     console.log('Shutting down local server...');
     server.kill('SIGINT');
   }
+}
+
+function generateProgressChartHtml(historyData) {
+  const history = (historyData && historyData.history) || [];
+  // Empty history -> static placeholder (no canvas to render).
+  // Single-entry history is handled client-side: buildSummary falls back prev->last (delta 0),
+  // and xOf/nearest guard against the length-1===0 division that would produce NaN.
+  if (history.length === 0) {
+    return `<!DOCTYPE html>\n<html lang="zh"><head><meta charset="UTF-8"><title>Mycelium Protocol — Phase Progress History</title></head>\n<body style="font-family:-apple-system,system-ui,sans-serif;padding:24px;color:#8B9AB0;background:#0D1117">暂无进度历史数据。</body></html>`;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mycelium Protocol — Phase Progress History</title>
+<style>
+:root{--bg:#0D1117;--card-bg:#161B22;--border:#21293A;--grid:#1D2433;--text-primary:#E6EDF3;--text-secondary:#8B9AB0;--text-muted:#4A5568;--p1:#F59E0B;--p2:#22D3EE;--p3:#A78BFA;--p1-bg:rgba(245,158,11,0.10);--p2-bg:rgba(34,211,238,0.10);--p3-bg:rgba(167,139,250,0.10);--chip-border:#2D3748;--tooltip-bg:#1E2433;--tooltip-border:#2D3A50}
+@media(prefers-color-scheme:light){:root{--bg:#F6F8FA;--card-bg:#FFFFFF;--border:#D0D7DE;--grid:#E8EDF4;--text-primary:#1F2937;--text-secondary:#576070;--text-muted:#9CA3AF;--p1:#D97706;--p2:#0891B2;--p3:#7C3AED;--p1-bg:rgba(217,119,6,0.08);--p2-bg:rgba(8,145,178,0.08);--p3-bg:rgba(124,58,237,0.08);--chip-border:#E5E7EB;--tooltip-bg:#FFFFFF;--tooltip-border:#D0D7DE}}
+:root[data-theme="light"]{--bg:#F6F8FA;--card-bg:#FFFFFF;--border:#D0D7DE;--grid:#E8EDF4;--text-primary:#1F2937;--text-secondary:#576070;--text-muted:#9CA3AF;--p1:#D97706;--p2:#0891B2;--p3:#7C3AED;--p1-bg:rgba(217,119,6,0.08);--p2-bg:rgba(8,145,178,0.08);--p3-bg:rgba(124,58,237,0.08);--chip-border:#E5E7EB;--tooltip-bg:#FFFFFF;--tooltip-border:#D0D7DE}
+:root[data-theme="dark"]{--bg:#0D1117;--card-bg:#161B22;--border:#21293A;--grid:#1D2433;--text-primary:#E6EDF3;--text-secondary:#8B9AB0;--text-muted:#4A5568;--p1:#F59E0B;--p2:#22D3EE;--p3:#A78BFA;--p1-bg:rgba(245,158,11,0.10);--p2-bg:rgba(34,211,238,0.10);--p3-bg:rgba(167,139,250,0.10);--chip-border:#2D3748;--tooltip-bg:#1E2433;--tooltip-border:#2D3A50}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;transition:background 0.2s,color 0.2s}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;width:100%;max-width:820px;overflow:hidden}
+.card-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.card-eyebrow{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.card-title{font-size:16px;font-weight:600;color:var(--text-primary)}
+.summary-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.phase-chip{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:4px;border:1px solid var(--chip-border)}
+.phase-chip.p1{background:var(--p1-bg);border-color:rgba(245,158,11,0.25)}
+.phase-chip.p2{background:var(--p2-bg);border-color:rgba(34,211,238,0.25)}
+.phase-chip.p3{background:var(--p3-bg);border-color:rgba(167,139,250,0.25)}
+.chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.p1 .chip-dot{background:var(--p1)}.p2 .chip-dot{background:var(--p2)}.p3 .chip-dot{background:var(--p3)}
+.chip-label{font-size:11px;color:var(--text-secondary);white-space:nowrap}
+.chip-value{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.p1 .chip-value{color:var(--p1)}.p2 .chip-value{color:var(--p2)}.p3 .chip-value{color:var(--p3)}
+.chip-delta{font-size:10px;font-variant-numeric:tabular-nums;color:var(--text-muted)}
+.chip-delta.up{color:#34D399}
+.chart-wrap{position:relative;padding:20px 24px 8px}
+canvas{display:block;width:100%;cursor:crosshair}
+.tooltip{position:absolute;pointer-events:none;background:var(--tooltip-bg);border:1px solid var(--tooltip-border);border-radius:4px;padding:10px 12px;font-size:12px;white-space:nowrap;display:none;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.tooltip.visible{display:block}
+.tooltip-date{font-size:11px;color:var(--text-muted);margin-bottom:6px;letter-spacing:0.03em}
+.tooltip-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;font-variant-numeric:tabular-nums}
+.tooltip-row:last-child{margin-bottom:0}
+.tooltip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tooltip-name{color:var(--text-secondary);min-width:52px}
+.tooltip-val{font-weight:700;color:var(--text-primary)}
+.card-footer{padding:10px 24px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border)}
+.footer-note{font-size:11px;color:var(--text-muted);flex:1}
+.footer-scan{font-size:11px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.back-link{position:fixed;top:16px;left:16px;font-size:12px;color:var(--text-muted);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)}
+.back-link:hover{color:var(--text-primary)}
+</style>
+</head>
+<body>
+<a class="back-link" href="/">← Dashboard</a>
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-eyebrow">Mycelium Protocol</div>
+      <div class="card-title">Phase Progress — Historical Trend</div>
+    </div>
+    <div class="summary-row" id="summaryRow"></div>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="chart" height="300"></canvas>
+    <div class="tooltip" id="tooltip">
+      <div class="tooltip-date" id="tipDate"></div>
+      <div class="tooltip-row"><div class="tooltip-dot" style="background:var(--p1)"></div><span class="tooltip-name">Phase 1</span><span class="tooltip-val" id="tipP1"></span></div>
+      <div class="tooltip-row"><div class="tooltip-dot" style="background:var(--p2)"></div><span class="tooltip-name">Phase 2</span><span class="tooltip-val" id="tipP2"></span></div>
+      <div class="tooltip-row"><div class="tooltip-dot" style="background:var(--p3)"></div><span class="tooltip-name">Phase 3</span><span class="tooltip-val" id="tipP3"></span></div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <span class="footer-note">进度算法：Done=100%，In Progress=实际估算值，To Do=0%，取 Phase 内所有任务算术平均</span>
+    <span class="footer-scan" id="footerScan"></span>
+  </div>
+</div>
+<script>
+const HISTORY=${JSON.stringify(history)};
+const PAD={top:20,right:24,bottom:40,left:44};
+const MAX_Y=100;
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function buildSummary(){
+  const last=HISTORY[HISTORY.length-1],prev=HISTORY[HISTORY.length-2]||last;
+  const row=document.getElementById('summaryRow');
+  [{key:'p1',cls:'p1',label:'Phase 1'},{key:'p2',cls:'p2',label:'Phase 2'},{key:'p3',cls:'p3',label:'Phase 3'}].forEach(p=>{
+    const val=last[p.key],diff=val-prev[p.key];
+    row.innerHTML+=\`<div class="phase-chip \${p.cls}"><div class="chip-dot"></div><span class="chip-label">\${p.label}</span><span class="chip-value">\${val}%</span><span class="chip-delta \${diff>0?'up':'same'}">\${diff>0?'+'+diff+'%':diff<0?diff+'%':'—'}</span></div>\`;
+  });
+}
+document.getElementById('footerScan').textContent='最后扫描: '+HISTORY[HISTORY.length-1].date+'  |  '+HISTORY.length+' 次记录';
+const canvas=document.getElementById('chart'),ctx=canvas.getContext('2d');
+const tooltip=document.getElementById('tooltip');
+let W,H,chartW,chartH,activeIdx=-1;
+function resize(){
+  const rect=canvas.parentElement.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  W=rect.width-48;H=300;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);chartW=W-PAD.left-PAD.right;chartH=H-PAD.top-PAD.bottom;draw();
+}
+function xOf(i){return PAD.left+(HISTORY.length>1?i/(HISTORY.length-1):0)*chartW}
+function yOf(v){return PAD.top+(1-v/MAX_Y)*chartH}
+function fmtDate(d){const[y,m,day]=d.split('-');const mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mo[parseInt(m)]+' '+parseInt(day)+', '+y}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const c={p1:css('--p1'),p2:css('--p2'),p3:css('--p3'),grid:css('--grid'),tm:css('--text-muted'),border:css('--border'),cbg:css('--card-bg')};
+  [0,20,40,60,80,100].forEach(v=>{
+    const y=yOf(v);ctx.strokeStyle=c.grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+chartW,y);ctx.stroke();
+    ctx.textAlign='right';ctx.textBaseline='middle';ctx.font='11px system-ui,sans-serif';ctx.fillStyle=c.tm;ctx.fillText(v+'%',PAD.left-8,y);
+  });
+  ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle=c.tm;
+  const step=Math.ceil(HISTORY.length/5);
+  HISTORY.forEach((d,i)=>{if(i%step!==0&&i!==HISTORY.length-1)return;const[,m,day]=d.date.split('-');const mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];ctx.fillText(mo[parseInt(m)]+' '+parseInt(day),xOf(i),PAD.top+chartH+8);});
+  [{key:'p1',color:c.p1},{key:'p2',color:c.p2},{key:'p3',color:c.p3}].forEach(s=>{
+    ctx.beginPath();ctx.moveTo(xOf(0),yOf(HISTORY[0][s.key]));HISTORY.forEach((d,i)=>{if(i)ctx.lineTo(xOf(i),yOf(d[s.key]));});ctx.lineTo(xOf(HISTORY.length-1),yOf(0));ctx.lineTo(xOf(0),yOf(0));ctx.closePath();
+    const g=ctx.createLinearGradient(0,PAD.top,0,PAD.top+chartH);const h=s.color.replace('#','');const r=parseInt(h.substr(0,2),16),gr=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
+    g.addColorStop(0,'rgba('+r+','+gr+','+b+',0.12)');g.addColorStop(1,'rgba('+r+','+gr+','+b+',0.01)');ctx.fillStyle=g;ctx.fill();
+  });
+  [{key:'p1',color:c.p1},{key:'p2',color:c.p2},{key:'p3',color:c.p3}].forEach(s=>{
+    ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+    HISTORY.forEach((d,i)=>{const x=xOf(i),y=yOf(d[s.key]);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+    const di=[HISTORY.length-1];if(activeIdx>=0&&activeIdx!==HISTORY.length-1)di.push(activeIdx);
+    di.forEach(i=>{ctx.beginPath();ctx.arc(xOf(i),yOf(HISTORY[i][s.key]),activeIdx===i?5:4,0,Math.PI*2);ctx.fillStyle=s.color;ctx.fill();ctx.strokeStyle=c.cbg;ctx.lineWidth=2;ctx.stroke();});
+  });
+  if(activeIdx>=0){ctx.strokeStyle=c.border;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(xOf(activeIdx),PAD.top);ctx.lineTo(xOf(activeIdx),PAD.top+chartH);ctx.stroke();ctx.setLineDash([]);}
+}
+function nearest(mx){if(HISTORY.length<2)return 0;return Math.max(0,Math.min(HISTORY.length-1,Math.round((mx-PAD.left)/chartW*(HISTORY.length-1))))}
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  if(mx<PAD.left||mx>PAD.left+chartW||my<PAD.top||my>PAD.top+chartH){activeIdx=-1;tooltip.classList.remove('visible');draw();return;}
+  activeIdx=nearest(mx);const d=HISTORY[activeIdx];
+  document.getElementById('tipDate').textContent=fmtDate(d.date);
+  document.getElementById('tipP1').textContent=d.p1+'%';document.getElementById('tipP2').textContent=d.p2+'%';document.getElementById('tipP3').textContent=d.p3+'%';
+  const tx=xOf(activeIdx)+48,tipW=180,left=(tx+tipW>W+48)?tx-tipW-16:tx;
+  tooltip.style.left=left+'px';tooltip.style.top=(PAD.top+8)+'px';tooltip.classList.add('visible');draw();
+});
+canvas.addEventListener('mouseleave',()=>{activeIdx=-1;tooltip.classList.remove('visible');draw();});
+buildSummary();resize();
+window.addEventListener('resize',()=>{ctx.resetTransform();resize();});
+new MutationObserver(()=>draw()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>draw());
+<\/script>
+</body>
+</html>`;
 }
 
 exportStaticBacklog().catch(console.error);

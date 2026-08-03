@@ -210,6 +210,28 @@
         const style = document.createElement('style');
         style.innerHTML = 'button[title*="Delete"], button[aria-label*="Delete"] { display: none !important; }';
         document.head.appendChild(style);
+
+        // Add progress chart link to left sidebar nav
+        (function() {
+          var DONE = false;
+          var tries = 0;
+          var t = setInterval(function() {
+            if (DONE || ++tries > 40) { clearInterval(t); return; }
+            var navLinks = document.querySelectorAll('nav a, aside a');
+            if (!navLinks.length) return;
+            var parent = navLinks[0].closest('ul') || navLinks[0].parentElement;
+            if (!parent) return;
+            clearInterval(t);
+            DONE = true;
+            var el = document.createElement(parent.tagName === 'UL' ? 'li' : 'div');
+            el.id = '__prog_nav_link';
+            el.style.cssText = 'list-style:none;margin-top:4px;border-top:1px solid rgba(128,128,128,0.15);padding-top:4px';
+            el.innerHTML = '<a href="/progress-chart.html" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:6px 12px;text-decoration:none;color:inherit;font-size:13px;opacity:0.75;border-radius:4px;transition:opacity .15s">📈 <span>Progress Chart</span></a>';
+            el.querySelector('a').addEventListener('mouseenter', function(){this.style.opacity='1';this.style.background='rgba(128,128,128,0.1)';});
+            el.querySelector('a').addEventListener('mouseleave', function(){this.style.opacity='0.75';this.style.background='';});
+            parent.appendChild(el);
+          }, 400);
+        })();
       });
     </script>
     </head>
