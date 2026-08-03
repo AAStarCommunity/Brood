@@ -26,9 +26,24 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# Branches that must never be pushed to / merged onto directly. Extended by --protect (preferred)
-# and/or $PILOT_PROTECTED (the pre-rename $REPO_PILOT_PROTECTED still honored as a fallback).
-_extra="${flag_protect:+$flag_protect,}${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
+# SELF-CONTAINED protection: read the repo's real protected branches from .pilot.yml (or the old
+# .repo-pilot.yml) DIRECTLY. run.md is executed as separate per-step Bash calls that share neither
+# variables nor env, so a caller-threaded --protect/$PILOT_PROTECTED silently vanishes between
+# steps — reading the config here means the rail can't degrade that way. --protect/env still ADD.
+_cfg_extra=""
+_top="$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
+for _f in "$_top/.pilot.yml" "$_top/.repo-pilot.yml"; do
+  [ -f "$_f" ] || continue
+  _bb="$(sed -n 's/^base_branch:[[:space:]]*//p' "$_f" | head -1 | tr -d " \"'[]")"
+  _ib="$(sed -n 's/^integration_branch:[[:space:]]*//p' "$_f" | head -1 | tr -d " \"'[]")"
+  _pp="$(sed -n 's/^protect_patterns:[[:space:]]*//p' "$_f" | head -1 | tr -d " \"'[]")"
+  _cfg_extra="${_bb:+$_bb,}${_ib:+$_ib,}${_pp}"
+  break
+done
+
+# Branches that must never be pushed to / merged onto directly. Built from the hardcoded defaults +
+# .pilot.yml config + --protect (preferred) + $PILOT_PROTECTED ($REPO_PILOT_PROTECTED as fallback).
+_extra="${flag_protect:+$flag_protect,}${_cfg_extra:+$_cfg_extra,}${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
 if [ -z "${PILOT_PROTECTED:-}" ] && [ -n "${REPO_PILOT_PROTECTED:-}" ]; then
   echo "git-guard: note: REPO_PILOT_PROTECTED is deprecated — rename it to PILOT_PROTECTED" >&2
 fi
@@ -83,7 +98,10 @@ case "$sub" in
     git remote | grep -qxF -- "$remote" || die "unknown remote '$remote' — not a configured \`git remote\`; refusing"
     # Resolve the DESTINATION ref from any refspec form (src:dst, +dst, refs/heads/dst) so
     # `push origin HEAD:main` can't smuggle a protected branch past an exact-name check.
-    dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"
+    # Strip every ref-prefix form git accepts for a branch dst — `refs/heads/main`, the SHORT
+    # `heads/main`, and a plain `main` — so all normalize to the bare branch name before the
+    # protected check. Missing `heads/` let `+refs/heads/x:heads/main` force-overwrite/delete main.
+    dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"; dst="${dst#heads/}"
     # `HEAD`/`@` (incl. a bare `push origin HEAD`) resolve to the CURRENT branch — check that real
     # name, else being on `main` + `push origin HEAD` would smuggle a trunk push past the guard.
     case "$dst" in
@@ -139,14 +157,16 @@ case "$sub" in
     # used for this — the integration branch itself is in $PROTECTED (run.md §0 threads it in via
     # --protect for push-protection), so is_protected("$integration") would always be true.
     def_branch="$(gh repo view --repo "$repo" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null || true)"
-    [ -n "$def_branch" ] && [ "$integration" = "$def_branch" ] && die "integration '$integration' is the repo's default (trunk) branch — merge PRs into an integration branch, not trunk"
+    [ -n "$def_branch" ] || die "cannot resolve repo default branch — refusing merge-pr until the trunk check is verifiable"
+    [ "$integration" = "$def_branch" ] && die "integration '$integration' is the repo's default (trunk) branch — merge PRs into an integration branch, not trunk"
     base="$(gh pr view "$n" --repo "$repo" --json baseRefName --jq .baseRefName 2>/dev/null || true)"
     [ -n "$base" ] || die "cannot read PR #$n base branch (gh auth / wrong number?)"
     [ "$base" = "$integration" ] || die "PR #$n base is '$base', not integration '$integration' — refusing merge into an unintended branch"
     # Also validate the HEAD branch: a PR opened with head=a protected branch (e.g. head=main,
     # base=preview) passes the base check, and merging/cleaning it up could damage trunk.
     head_ref="$(gh pr view "$n" --repo "$repo" --json headRefName --jq .headRefName 2>/dev/null || true)"
-    [ -n "$head_ref" ] && is_protected "$head_ref" && die "PR #$n head branch '$head_ref' is protected — refusing (merging/deleting a protected head is unsafe)"
+    [ -n "$head_ref" ] || die "cannot read PR #$n head branch — refusing until verifiable"
+    is_protected "$head_ref" && die "PR #$n head branch '$head_ref' is protected — refusing (merging/deleting a protected head is unsafe)"
     # ${args[@]+...} guards the empty-array-under-set-u case on bash 3.2 (macOS default).
     exec gh pr merge "$n" --repo "$repo" ${args[@]+"${args[@]}"}
     ;;
