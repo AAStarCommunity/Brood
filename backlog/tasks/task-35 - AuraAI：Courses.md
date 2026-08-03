@@ -8,7 +8,7 @@ labels: []
 milestone: m-r
 dependencies: []
 references:
-  - 'https://github.com/AuraAIHQ/courses'
+  - 'https://github.com/iDoris-ai/courses'
 priority: low
 ---
 
@@ -27,5 +27,5 @@ Here we go! contribute your excellent courses to help children to grasp or get s
 
 ### 📊 进度报告 (2026-06-21 扫描)
 
-**🚀 预估进度: 50%** | `AuraAIHQ/courses` 9 天 1 次提交：chore Apache 2.0 license 五件套 (#1 2026-06-20)。课程内容仍未更新
+**🚀 预估进度: 50%** | `iDoris-ai/courses` 9 天 1 次提交：chore Apache 2.0 license 五件套 (#1 2026-06-20)。课程内容仍未更新
 <!-- SECTION:DESCRIPTION:END -->

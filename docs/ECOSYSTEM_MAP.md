@@ -73,7 +73,7 @@
 | SuperRelay | aastar/super-relay | 2026-04-29 | 核心产品（Bundler 网关）|
 | UltraRelay-AAStar | aastar/UltraRelay-AAStar | 2026-05-06 | Bundler（Alto fork, aastar-dev）|
 | YetAnotherAA | aastar/YetAnotherAA | 2026-07-06 | AL Account（DVT wizard + tier-setup）|
-| YetAnotherAA-Validator | aastar/YetAnotherAA-Validator | 2026-07-07 | BLS 验证合约 v1.3.0 live gossip quorum |
+| YetAnotherAA-Validator | aastar/YetAnotherAA-Validator | 2026-07-07 | BLS 验证合约 v1.12.0 live gossip quorum |
 | Cos72 | aastar/Cos72 | 2026-04-29 | 社区 OS（关联 MushroomDAO）|
 | aastar-sdk | aastar/aastar-sdk | 2026-07-07 | 开发者 SDK v0.39.0 |
 | aastar.io | aastar/aastar.io | 2026-04-15 | 主站 |

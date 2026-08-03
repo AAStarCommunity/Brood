@@ -134,7 +134,7 @@ const tx = await SuperPaymaster.sendGasless({
 | **失败返回** | `0xffffffff`（fail-closed，永不 revert） |
 | **宿主合约** | `AirAccountExtension`，经 `AAStarAirAccountV7` fallback 路由 |
 | **owner** | `airaccount-contract` |
-| **consumers** | DVT `YetAnotherAA-Validator` v1.9.0（`blockchain.service.ts` owner-gate）；AirAccount KMS |
+| **consumers** | DVT `YetAnotherAA-Validator` v1.12.0（`blockchain.service.ts` owner-gate）；AirAccount KMS |
 | **稳定自** | v0.23.0（issue #159）；经 v0.24/25/26/27.0 未变 |
 | **当前实现（Sepolia v0.27.0）** | impl `0x4a76dEf9eE4EE44eF6D0B2a327a068B5B7931E1C`；Extension `0xEcE87546989Da7df573b107D54a0ead0aCB49923` |
 | **参考账户** | e2e_account `0x92EA8b02D34A4D5d10f0Db9Ea894e8bC72e292e8`（owner `0xb5600060…`） |
@@ -155,7 +155,7 @@ const tx = await SuperPaymaster.sendGasless({
 
 | 来源组织 | 能力 | 用途 | 可选性 |
 |--------|------|------|------|
-| iDoris.ai | AI 推理 | AirAccount 用户行为分析 / 风险检测（规划中） | 可选 |
+| iDoris.ai | AI Agent 框架（ai-agent-framework） | AirAccount 用户行为分析 / 风险检测（规划中） | 可选 |
 | MushroomDAO | 协议治理 | 协议规范遵守 + 生态参与规则 | 可选 |
 | OpenPNTs | 积分协议 | SuperPaymaster 积分支付基础 | 核心 |
 

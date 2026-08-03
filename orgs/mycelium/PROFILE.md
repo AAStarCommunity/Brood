@@ -24,7 +24,7 @@ provides:
     repo: github.com/AAStarCommunity/Brood
   - capability: nostr-relay
     interface: Nostr 中继节点（agent 通信基础设施，NIP-86）
-    repo: github.com/MushroomDAO/agent-speaker-relay
+    repo: github.com/iDoris-ai/agent-speaker-relay
 depends_on: []
 contact:
   builder: jason

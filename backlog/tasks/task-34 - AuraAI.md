@@ -10,11 +10,11 @@ milestone: m-3
 dependencies: []
 references:
   - 'https://github.com/jhfnetboy/AuraAI'
-  - 'https://github.com/AuraAIHQ/Agent24'
-  - 'https://github.com/AuraAIHQ/agent-speaker'
+  - 'https://github.com/iDoris-ai/Agent24'
+  - 'https://github.com/iDoris-ai/agent-speaker'
   - 'https://github.com/MushroomDAO/agent-speaker-relay'
   - 'https://github.com/MushroomDAO/Agent-WeChat-SDK'
-  - 'https://github.com/AuraAIHQ/simple-agent'
+  - 'https://github.com/iDoris-ai/simple-agent'
 priority: low
 ---
 
@@ -33,7 +33,7 @@ AI（社区AI+个人AI+AI workshop）, bot(tele第一位，wechat第二位，找
 **🚀 预估进度: 68%** | agent-speaker 9 天 10 次提交（TUI Chat #4 合入 + bunker 连接冲突修复 + serve flags 体系化）；其他仓库本期以合规为主
 
 **✅ AC 完成情况**:
-- ✅ Aura 建立 — `AuraAIHQ` org 全量建立
+- ✅ Aura 建立 — `iDoris-ai` org 全量建立
 - ✅ Agent24 = AgentStore 承载平台 — BoxLite service container (M3+M4) 完成
 - ✅ iDoris-SDK M2/M3/M4/M5 全部完成：WeChatBridge + InboxAgent + CLI + 集成验证
 - ✅ 包重命名整合：@auraai/ai-bridge → @auraaihq/idoris

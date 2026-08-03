@@ -160,8 +160,16 @@ repo_name = os.path.basename(new_repo_path).lower()
 for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
     content = open(task_file).read()
     # 检查任务是否已有 references 指向该 repo
-    if new_repo_remote in content:
-        continue  # 已存在，跳过
+    # 按 owner/repo 的 repo 名归一化比较，而非整条 URL 子串匹配——
+    # 这样即使 org 改名（如 AuraAIHQ→iDoris-ai）导致 new_repo_remote 与
+    # 文件里的旧 URL org 段不同，也不会误判为"未存在"而重复追加 references。
+    new_repo_slug = new_repo_remote.rstrip("/").split("/")[-1].lower()
+    existing_slugs = {
+        m.lower()
+        for m in re.findall(r'github\.com/[^/\s]+/([^/\s\'"]+)', content)
+    }
+    if new_repo_slug in existing_slugs:
+        continue  # 已存在（忽略 org 名差异），跳过
     # 在任务标题、描述中搜索仓库名关键词（不区分大小写）
     if repo_name in content.lower() or repo_name.replace("-", "") in content.lower():
         # 提取 task ID 用于日志

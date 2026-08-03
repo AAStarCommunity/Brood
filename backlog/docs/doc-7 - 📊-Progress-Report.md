@@ -35,7 +35,7 @@ updated_date: '2026-06-21 10:00'
 | TASK-9 | CometENS 免费子域名 | **82%** | MushroomDAO/CometENS | 06-18 | **DNSSEC verify runbook** + identity-pages plan + DNS-domain integration 三连 PR |
 | TASK-5 | Account 全栈 (AirAccount+SDK+aNode+UI) | **88%** | 5 repos | 06-20 | **SDK v0.20.9→0.24.1 五连发** + **aNode DVT v1.5.0 testnet always-on** + passkey-guardian 端到端 |
 | TASK-34 | AuraAI | **68%** | agent-speaker + 5 repos | 06-20 | **agent-speaker TUI Chat #4 合入** + bunker 修复 + serve auth flags |
-| TASK-35 | AuraAI Courses | **50%** | AuraAIHQ/courses | 06-20 | 1 commit（license 合规） |
+| TASK-35 | AuraAI Courses | **50%** | iDoris-ai/courses | 06-20 | 1 commit（license 合规） |
 | TASK-26 | Bundler (UltraRelay) | **40%** | UltraRelay-AAStar aastar-dev | 06-03 | 9 天 0 commit，进入静默期 |
 | TASK-13 | Cos72 Core Modules | **35%** | MushroomDAO/{MyTask,Cos72} | 06-20 | 4 commit（badge + license + code owner） |
 | TASK-32 | CommunityFi | **30%** | jhfnetboy/DSR-Research-Flow | 06-16 | research-writing skill 工具链，无新论文产出 |
@@ -43,7 +43,7 @@ updated_date: '2026-06-21 10:00'
 | TASK-30 | EOA Bridge | **20%** | jhfnetboy/DSR-Research-Flow | 06-16 | DSR 工具链增强；Paper6 仍未启动 |
 | TASK-19 | Spores SDK | **20%** | MushroomDAO/Spores | 06-07 | 静默 |
 | TASK-2 | Cos72 Cards/Points/Perks | **20%** | AAStarCommunity/demo | 04-15 | 静默 ≥ 60 天 |
-| TASK-28 | OpenCrab Agent | **15%** | AuraAIHQ/OpenCrab | 06-20 | 1 commit（license #2） |
+| TASK-28 | OpenCrab Agent | **15%** | iDoris-ai/OpenCrab | 06-20 | 1 commit（license #2） |
 | TASK-29 | Asset3 Protocol | **10%** | MushroomDAO/Asset3 | 06-07 | 静默 |
 
 ---
@@ -79,7 +79,7 @@ updated_date: '2026-06-21 10:00'
 - Hangzhou roadshow 5-18 为近期里程碑
 
 #### TASK-34 · AuraAI · 35% · Phase 3
-- **仓库**: `jhfnetboy/AuraAI`、`AuraAIHQ/Agent24`、`AuraAIHQ/agent-speaker`、`MushroomDAO/agent-speaker-relay`、`MushroomDAO/Agent-WeChat-SDK`
+- **仓库**: `jhfnetboy/AuraAI`、`iDoris-ai/Agent24`、`iDoris-ai/agent-speaker`、`MushroomDAO/agent-speaker-relay`、`MushroomDAO/Agent-WeChat-SDK`
 - **最新动态**: 2026-04-27 agent-speaker TUI fix（PR review）；2026-04-26 WeChat SDK @agent-wechat/core + CLI
 - agent-speaker：group chat + TUI Bubble Tea + SQLite + NIP-44 加密（PR #3 merge 完成）
 - relay：strfry Docker + restart.sh + Alpine/Ubuntu 双构建，稳定运行
