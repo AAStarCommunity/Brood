@@ -167,8 +167,10 @@ auth.token = "your-strong-secret-token"   # 与 frps 一致
 name = "kms-https"
 type = "https"
 localIP = "127.0.0.1"
-localPort = 3000            # KMS 服务监听端口
+localPort = 3000            # KMS 服务监听端口（明文 HTTP）
 customDomains = ["your-kms.your-domain.com"]   # 你的域名
+# ⚠️ KMS 是明文 HTTP，vhost HTTPS 需在 Step 5 用 https2http 插件终结 TLS
+#    （加插件后用 [proxies.plugin] 的 localAddr 取代上面的 localIP/localPort）
 EOF
 
 # 把二进制和配置拷到 systemd 单元引用的路径 /opt/frp/
@@ -215,32 +217,40 @@ your-kms.your-domain.com    A    1.2.3.4    TTL 300
 
 ---
 
-### Step 5：TLS 证书（香港 VPS 上）
+### Step 5：TLS 证书（在 frpc 端 = IMX93 上终结）
 
-frp 的 vhost HTTPS 模式需要在香港 VPS 上配置 TLS 证书：
+KMS 在 IMX93 上只监听明文 HTTP（`:3000`）。frp 的 vhost HTTPS（`type = "https"`）默认是 **SNI 透传**，TLS 在本地服务侧终结——所以证书要用 frpc 端的 **`https2http` 插件**来加载并终结 TLS，再明文转发给 `127.0.0.1:3000`。
+
+> ⚠️ **注意**：frps.toml **没有** `vhostHTTPSCertFile`/`vhostHTTPSKeyFile` 这类字段；`[[httpPlugins]]` 是 frps 的**服务端管理插件**块（给 dashboard/OIDC 用），**不是** vhost 证书配置位——放证书进去永远接不进来。frp 原生的 vhost HTTPS 证书终结只有 frpc 端 `https2http`/`https2https` 插件这一条路。
+
+**申请证书（IMX93 在 NAT 后，用 DNS-01；HTTP-01 standalone 打不进来）**：
 
 ```bash
-# 安装 certbot
+# 在 IMX93 上（或任一能跑 certbot 的机器签好后 rsync 到 IMX93）
 apt install certbot
-
-# 申请证书
-certbot certonly --standalone -d your-kms.your-domain.com
-
-# 证书路径
+certbot certonly --preferred-challenges dns --manual -d your-kms.your-domain.com
+# 证书路径：
 # /etc/letsencrypt/live/your-kms.your-domain.com/fullchain.pem
 # /etc/letsencrypt/live/your-kms.your-domain.com/privkey.pem
 ```
 
-在 frps.toml 中指定证书：
+**在 frpc.toml 的 `[[proxies]]` 下改用 `https2http` 插件**（替换 Step 3 里的 `localIP`/`localPort` 直连，二者互斥）：
 
 ```toml
-# 追加到 frps.toml
-[[httpPlugins]]
-# 或者直接在 vhost 层配置证书
-# frp v0.50+ 支持 wildcardDomain + TLS
+[[proxies]]
+name = "kms-https"
+type = "https"
+customDomains = ["your-kms.your-domain.com"]
+
+# 插件终结 TLS 并把明文转发给本机 KMS
+[proxies.plugin]
+type = "https2http"
+localAddr = "127.0.0.1:3000"
+crtPath = "/etc/letsencrypt/live/your-kms.your-domain.com/fullchain.pem"
+keyPath = "/etc/letsencrypt/live/your-kms.your-domain.com/privkey.pem"
 ```
 
-> **简化方案**：如果 TLS 配置复杂，可以先用 HTTP（80端口）验证通路，再加证书。KMS 客户端通常可配置 skipVerify 用于测试。
+> **简化验证**：调通链路阶段可先不加插件、用 `type = "tcp"` + `remotePort` 裸转发 `:3000`，从 VPS 本机 `curl http://127.0.0.1:<remotePort>/health` 验证通路，再补 TLS 证书。
 
 ---
 
@@ -251,11 +261,14 @@ certbot certonly --standalone -d your-kms.your-domain.com
 curl -X GET https://your-kms.your-domain.com/health
 # 期望返回：{"status":"healthy","service":"kms-api","version":"0.29.0",...}
 
-# 测试签名接口（参考 AirAccount kms/test-full-api.sh）
+# 测试建密钥接口（参考 AirAccount kms/test-full-api.sh 的真实请求体）
+# PasskeyPublicKey = 04 + 64 字节 hex 的 P-256/secp256k1 公钥
+TEST_PK="04$(openssl rand -hex 64)"
 curl -X POST https://your-kms.your-domain.com/CreateKey \
   -H "x-amz-target: TrentService.CreateKey" \
   -H "Content-Type: application/json" \
-  -d '{"KeySpec":"ECC_NIST_P256","KeyUsage":"SIGN_VERIFY","Description":"test",...}'
+  -d "{\"Description\":\"test\",\"KeyUsage\":\"SIGN_VERIFY\",\"KeySpec\":\"ECC_SECG_P256K1\",\"Origin\":\"EXTERNAL\",\"PasskeyPublicKey\":\"$TEST_PK\"}"
+# 提交前用 jq 校验请求体合法：echo '{...}' | jq . 或 python3 -m json.tool
 ```
 
 ---

@@ -110,16 +110,19 @@ Cloudflare 边缘 PoP（全球 330+ 节点）
 ```toml
 # frp server 配置（香港 VPS，frps.toml）
 bindPort = 7000
-token = "your-secret-token"
+auth.token = "your-secret-token"   # v0.52+ 必须放 [auth] 段；顶层 token= 会被静默忽略
 
+# 管理面板：默认 admin/admin，绝不能裸暴露公网
 [webServer]
-addr = "0.0.0.0"
+addr = "127.0.0.1"          # 仅本机；如需远程访问请走 SSH 隧道，勿改 0.0.0.0
 port = 7500
+user = "admin"
+password = "改成强随机口令"   # 未设口令 = 公网可被扫库接管
 
 # frp client 配置（中国境内 MX93，frpc.toml）
 serverAddr = "hk-vps-ip"
 serverPort = 7000
-token = "your-secret-token"
+auth.token = "your-secret-token"   # 与 frps 的 auth.token 一致
 
 [[proxies]]
 name = "kms-node"

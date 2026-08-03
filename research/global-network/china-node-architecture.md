@@ -17,7 +17,7 @@
 KMS = 对外运营的签名服务
   ├── 公网域名（如 kms.your-domain.com）
   ├── 账户注册 / API Key 管理
-  ├── 签名 API（POST /sign，DVT 节点调用）
+  ├── 签名 API（POST /Sign，根路径大写，DVT 节点调用）
   └── 运行在用户自己的 MX93 上（用户掌控私钥分片，不托管给第三方）
 ```
 
@@ -31,7 +31,7 @@ KMS = 对外运营的签名服务
 | 组件 | 需要外网访问？ | 当前方案在中国的问题 |
 |------|------------|------------------|
 | KMS API（签名接口） | ✅ 是，全球 DVT 节点都要调用 | Cloudflare Tunnel 被封，无法穿透 GFW 入站 |
-| KMS 管理 UI | ✅ 是，操作者需要访问 | 同上 |
+| KMS 内置 Web UI（KMS 自身 :3000 上的 `/`、`/test`、`/portal` 页面，无独立服务） | ✅ 是，操作者需要访问 | 同上 |
 | DVT 节点 p2p 端口 | ✅ 是，其他 DVT 节点通信 | 同上 |
 
 三个都需要外网访问，三个都被 GFW 封锁入站。
@@ -60,8 +60,9 @@ KMS = 对外运营的签名服务
         │                                              │
         │  ┌─────────────────────────────────────┐    │
         │  │  nginx 反向代理                       │    │
-        │  │  :443 /api/* → frp → MX93:3000 KMS  │    │
-        │  │  :443 /ui/*  → frp → MX93:8080 UI   │    │
+        │  │  :443 /*  → frp → MX93:3000 KMS     │    │
+        │  │  （KMS 是根路径服务，无 /api 前缀；   │    │
+        │  │   /、/test、/portal 等 UI 页同在:3000）│    │
         │  └─────────────────────────────────────┘    │
         │                                              │
         │  ┌─────────────────────────────────────┐    │
@@ -83,14 +84,11 @@ KMS = 对外运营的签名服务
         │             中国境内 MX93 主板                 │
         │                                              │
         │  ┌──────────────────────────────────────┐   │
-        │  │  KMS 服务（:3000）                    │   │
-        │  │  ├── POST /sign（签名接口）            │   │
-        │  │  ├── POST /account/register           │   │
-        │  │  └── GET  /health                    │   │
-        │  └──────────────────────────────────────┘   │
-        │                                              │
-        │  ┌──────────────────────────────────────┐   │
-        │  │  管理 UI（:8080）                     │   │
+        │  │  KMS 服务（:3000，根路径服务）         │   │
+        │  │  ├── POST /Sign（签名接口）            │   │
+        │  │  ├── POST /CreateKey（创建密钥）       │   │
+        │  │  ├── GET  /health                    │   │
+        │  │  └── GET  / , /test , /portal（Web UI）│   │
         │  └──────────────────────────────────────┘   │
         │                                              │
         │  ┌──────────────────────────────────────┐   │
@@ -113,9 +111,9 @@ KMS = 对外运营的签名服务
 
 ```
 EU DVT 节点
-  1. POST https://kms.domain.com/sign
+  1. POST https://kms.domain.com/Sign   （根路径大写 /Sign，无 /api 前缀）
   2. DNS → A 记录 → 香港 VPS:443
-  3. nginx 按路径路由 → frp server
+  3. nginx 直接转发根路径 → frp server（不改写路径）
   4. frp server 通过 MX93 预先建好的隧道发送请求
   5. MX93 frp client 收到 → 转发给 localhost:3000（KMS）
   6. KMS 处理签名（私钥分片在本地，不出机器）
@@ -135,14 +133,14 @@ DVT 进程（:8080）
   → 私钥分片永不离开 MX93
 ```
 
-### 路径 C：操作者访问管理 UI
+### 路径 C：操作者访问 KMS 内置 Web UI
 
 ```
 操作者浏览器
-  → https://ui.domain.com（或 kms.domain.com/ui）
+  → https://kms.domain.com/（或 /test、/portal）
   → 香港 VPS nginx
-  → frp → MX93:8080
-  → 管理界面
+  → frp → MX93:3000（KMS 自身页面，无独立 UI 服务）
+  → KMS 内置的状态 / 测试 / 下载页
 ```
 
 ### 路径 D：其他 DVT 节点 p2p 通信
@@ -160,7 +158,7 @@ SG DVT 节点
 
 ```
 kms.domain.com    A    1.2.3.4    ; 香港 VPS，不走 CF 代理
-ui.domain.com     A    1.2.3.4    ; 同一 VPS，或 CNAME 到 kms
+ui.domain.com     A    1.2.3.4    ; 可选，CNAME 到 kms 即可（UI 就是 KMS :3000 的 / /test /portal，无独立服务）
 p2p.domain.com    A    1.2.3.4    ; libp2p relay 端口
 ```
 
