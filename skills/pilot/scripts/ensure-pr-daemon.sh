@@ -27,7 +27,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-[ -n "$root" ] || root="${PILOT_PR_DAEMON_ROOT:-$HOME/Dev/tools/PR-Daemon}"
+[ -n "$root" ] || root="${PILOT_PR_DAEMON_ROOT:-${REPO_PILOT_PR_DAEMON_ROOT:-$HOME/Dev/tools/PR-Daemon}}"
 watch="$root/watch.sh"
 
 if [ ! -x "$watch" ] && [ ! -f "$watch" ]; then

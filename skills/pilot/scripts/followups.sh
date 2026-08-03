@@ -97,7 +97,9 @@ case "$sub" in
     fi
     ;;
   count-open)
-    if [ -f "$ledger" ]; then grep -cE '^- \[ \] FU-' "$ledger" || echo 0; else echo 0; fi
+    # grep -c prints "0" AND exits 1 on no-match — a bare `|| echo 0` would print "0\n0" and
+    # break the numeric stop-condition gate. Capture, then emit exactly one number.
+    if [ -f "$ledger" ]; then c="$(grep -cE '^- \[ \] FU-' "$ledger" || true)"; echo "${c:-0}"; else echo 0; fi
     ;;
   done)
     [ -n "$pos" ] || { echo "usage: followups.sh done <FU-n> --pr <n>" >&2; exit 2; }

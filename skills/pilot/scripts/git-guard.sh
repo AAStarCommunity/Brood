@@ -14,8 +14,14 @@
 set -euo pipefail
 
 # Branches that must never be pushed to directly. Callers may extend via $PILOT_PROTECTED
-# (comma-separated) so a repo's real base/integration branches are covered too.
-PROTECTED="main,master,develop,preview,integration,release,hotfix${PILOT_PROTECTED:+,$PILOT_PROTECTED}"
+# (comma-separated) so a repo's real base/integration branches are covered too. The pre-rename
+# name $REPO_PILOT_PROTECTED is still honored as a fallback (with a one-time deprecation notice)
+# so a shell that exported the old name doesn't silently lose protection after the rename.
+_extra="${PILOT_PROTECTED:-${REPO_PILOT_PROTECTED:-}}"
+if [ -z "${PILOT_PROTECTED:-}" ] && [ -n "${REPO_PILOT_PROTECTED:-}" ]; then
+  echo "git-guard: note: REPO_PILOT_PROTECTED is deprecated — rename it to PILOT_PROTECTED" >&2
+fi
+PROTECTED="main,master,develop,preview,integration,release,hotfix${_extra:+,$_extra}"
 
 die() { echo "git-guard: BLOCKED: $*" >&2; exit 3; }
 
@@ -24,6 +30,9 @@ is_protected() {
   for p in $PROTECTED; do
     [ -z "$p" ] && continue
     [ "$name" = "$p" ] && return 0
+    # Prefix match too, so a `release`/`hotfix`/… entry also covers `release-1.2`, `hotfix/x`,
+    # `preview.2`, `release2`. Boundary set [-_/.0-9] stops `main` from swallowing `mainline`.
+    case "$name" in "$p"[-_/.0-9]*) return 0 ;; esac
   done
   return 1
 }
@@ -41,6 +50,7 @@ case "$sub" in
         :*)            die "refusing pathspec magic '$a' (e.g. ':(top)', ':/', ':!') — explicit file paths only" ;;
         *'*'*|*'?'*|*'['*) die "refusing glob '$a' — explicit file paths only" ;;
       esac
+      [ -d "$a" ] && die "refusing directory '$a' — stages its whole subtree; pass explicit files"
     done
     exec git add -- "$@"
     ;;
@@ -52,6 +62,11 @@ case "$sub" in
     # Resolve the DESTINATION ref from any refspec form (src:dst, +dst, refs/heads/dst) so
     # `push origin HEAD:main` can't smuggle a protected branch past an exact-name check.
     dst="${branch##*:}"; dst="${dst#+}"; dst="${dst#refs/heads/}"
+    # `HEAD`/`@` (incl. a bare `push origin HEAD`) resolve to the CURRENT branch — check that real
+    # name, else being on `main` + `push origin HEAD` would smuggle a trunk push past the guard.
+    case "$dst" in
+      HEAD|@) dst="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo HEAD)" ;;
+    esac
     is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
     exec git push -u "$remote" "$branch"
     ;;
@@ -66,7 +81,9 @@ case "$sub" in
           integration="$2"; shift 2 ;;
         # Refuse flags that defeat the rail: --admin bypasses branch protection; --repo/-R
         # would point the merge at a different repo than the base check validated.
-        --admin|--repo|-R) die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
+        # Prefix/attached-value forms bypass an exact-string blocklist: --admin=true, --repo=o/r,
+        # -Ro/r all defeat the rail, so match those shapes too.
+        --admin|--admin=*|--repo|--repo=*|-R|-R*) die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
         *) args+=("$1"); shift ;;
       esac
     done

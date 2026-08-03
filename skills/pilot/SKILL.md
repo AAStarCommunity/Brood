@@ -61,12 +61,17 @@ pr_daemon_root: ~/Dev/tools/PR-Daemon  # 外部 PR 评审 daemon 根目录（也
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。
 
+**迁移兜底（重要）**：本 skill 曾用 `.repo-pilot.yml`。读配置时：**先读 `.pilot.yml`；若不存在但 `.repo-pilot.yml` 存在，则读旧文件并明确警告用户「`.repo-pilot.yml` 已弃用，请 `git mv .repo-pilot.yml .pilot.yml`」**。绝不静默忽略旧文件——某些仓库的 `.repo-pilot.yml` 里 `integration_branch` 是真实的（如 `master`），静默忽略会让 `run` 用错集成分支、甚至无人值守时把 daemon 的 APPROVE 直合进主干。**若两个文件同时存在且 `integration_branch` 不一致，视为危险，停下让用户先合并/删除旧文件（见 doctor 第 2b 步）。**
+
 ## doctor（内联，不改仓库）
 
 轻量自检，只读并汇报，供用户判断能否开启无人值守：
 
 1. `git rev-parse --is-inside-work-tree` — 是否 git 仓库。
 2. `.pilot.yml` 是否存在；不存在则**询问用户**是否用默认值创建（复制 `templates/pilot.example.yml`，把 `base_branch`/`integration_branch` 填真实值）。
+2b. **配置迁移硬检查**：若旧文件 `.repo-pilot.yml` 存在——
+    - 只有旧文件、无 `.pilot.yml`：红字提示「`.repo-pilot.yml` 已弃用，运行 `git mv .repo-pilot.yml .pilot.yml`」；在迁移前 `run`/`status` 会读旧文件兜底。
+    - **两个文件都在、且 `integration_branch` 不一致：`FAIL`（阻断）**——因为哪个生效不确定、错的那个可能把 PR 直合进主干。要求用户先删掉/合并旧文件再继续，`doctor` 不擅自改。
 3. `docs/agent/` 是否存在，`roadmap.md`/`tasks.md`/`progress.md` 是否齐全 —— 缺失则建议 `pilot plan`。
 4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
 5. `gh auth status` 是否可用（PR 流程需要）。

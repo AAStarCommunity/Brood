@@ -4,7 +4,7 @@
 
 ## 步骤
 
-1. **读配置**：Read `.pilot.yml`（不存在则用默认 `base=main` / `integration=preview`，并在末尾提示可运行 `pilot doctor` 生成）。取出 `integration_branch`、`protect_patterns`、`remote`。
+1. **读配置**：Read `.pilot.yml`；**若不存在但 `.repo-pilot.yml`（旧名）存在，读旧文件并警告用户迁移**（见 SKILL.md「迁移兜底」）；两者都无则用默认 `base=main` / `integration=preview`，并在末尾提示可运行 `pilot doctor` 生成。取出 `integration_branch`、`protect_patterns`、`remote`。
 
 2. **扫描**（只读）：运行
    ```

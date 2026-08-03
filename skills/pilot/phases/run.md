@@ -4,7 +4,7 @@
 每一轮先处理待办 PR（回执优先），再考虑开新 task。绝不并行动多个 task。
 
 前置：`docs/agent/{roadmap,tasks,progress}.md` 已存在（否则先 `pilot plan`）。
-读 `.pilot.yml` 取 `base_branch`、`integration_branch`、`remote`。
+读 `.pilot.yml` 取 `base_branch`、`integration_branch`、`remote`；**若无 `.pilot.yml` 但有旧的 `.repo-pilot.yml`，读旧文件并警告迁移**（见 SKILL.md「迁移兜底」——静默忽略会用错集成分支）。
 
 ## 每一轮的决策顺序（从上到下，命中即执行，然后结束本轮）
 
