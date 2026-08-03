@@ -15,7 +15,7 @@ ordinal: 14000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-**目标仓库:PR-Daemon(~/Dev/tools/PR-Daemon)**。digest item 5:SQLite 单写锁竞争(56 次 database is locked)导致 post 完 review 后本地 last_reviewed_head_oid 的 UPDATE 偶尔失败 → PR 卡在 needs_review → 同 head 重复 dispatch。修:把 post 后的 finalize(UPDATE pr_watch_targets + 归档 md)做成不可被 SIGTERM 打断的短事务、并 promptly commit;手动单-PR review 前先查 current-review.json/运行中 PID 防自撞。
+**目标仓库:PR-Daemon(~/Dev/tools/PR-Daemon)**。digest item 4:SQLite 单写锁竞争(56 次 database is locked)导致 post 完 review 后本地 last_reviewed_head_oid 的 UPDATE 偶尔失败 → PR 卡在 needs_review → 同 head 重复 dispatch。修:把 post 后的 finalize(UPDATE pr_watch_targets + 归档 md)做成不可被 SIGTERM 打断的短事务、并 promptly commit;手动单-PR review 前先查 current-review.json/运行中 PID 防自撞。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
