@@ -20,6 +20,6 @@ YetAnotherAA#450 的 gas-retry 任务验收只有 type-check/lint,review 指出�
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 涉钱任务模板含'机器可验证断言'字段
-- [ ] #2 至少一个可执行的数值边界检查(如 gas 上限)
+- [ ] #1 在 `.claude/skills/pilot/templates/`(或 backlog 任务模板)新增/扩展"涉钱任务"模板,含'机器可验证断言'字段
+- [ ] #2 至少一个可执行的数值边界检查(如 gas 上限),以断言脚本或测试形式落地、可在 CI 跑
 <!-- AC:END -->
