@@ -20,20 +20,16 @@ Keep on tracing the Ethereum roadmap and techs.
 
 May use this: https://github.com/zeroclaw-labs/zeroclaw
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 25%** | 关联仓库 `zeroclaw-labs/zeroclaw` 已本地 clone，**9 天 30+ 次提交活跃迭代**：Node24 digest pin / providers replay fix / install PATH 自动接入 / CI provider-dispatch gate 全 features build / runtime cache-hit 测试稳定化
+**🚀 预估进度: 25%** | zeroclaw-labs/zeroclaw 本地未 clone；MushroomDAO/blog 近9天 12 commits（AI 工具系列文章）
 
 **✅ AC 完成情况**:
-- 🔧 追踪 Ethereum roadmap — zeroclaw 上游持续高频迭代，外部研究观察价值上升
-- 🔧 候选工具仓库 zeroclaw 已 clone 并进入活跃监视
+- 🔧 追踪 Ethereum roadmap — zeroclaw 上游持续迭代，外部研究观察价值上升
+- 🔧 zeroclaw 上期已高频活跃，本期无法获取本地 diff
 
-**📝 近期动态** (zeroclaw-labs/zeroclaw):
-- 2026-06-21: fix(docker) correct Node 24 digest pins (#7932)
-- 2026-06-?: test(runtime) pin system prompt in cache-hit test to kill date flake (#8036)
-- 2026-06-?: fix(providers) strip assistant reasoning on outbound replay for Groq (#7616)
-- 2026-06-?: feat(install) add zeroclaw to PATH automatically, --no-modify-path opt-out (#8038)
-- 2026-06-?: fix(ci) pass provider-dispatch gate and --all-features build on master (#8019)
+**📝 近期动态**:
+- 本期无法获取（zeroclaw-labs/zeroclaw 不在本地三大 org 目录）
 
-💡 zeroclaw 工程化节奏明显加快，可作为账号抽象/agent 工具链外部参考。剩余研究类任务仍建议明确产出形式（research note / blog）以便量化进度。
+💡 研究类任务建议明确产出形式（research note / blog），以便量化进度而非持续"观察中"状态。
 <!-- SECTION:DESCRIPTION:END -->

@@ -9,6 +9,7 @@ labels: []
 milestone: m-r
 dependencies: []
 references:
+  - 'https://github.com/AAStarCommunity/SuperPaymaster'
   - 'https://github.com/jhfnetboy/DSR-Research-Flow'
 priority: high
 ---
@@ -29,27 +30,25 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 95%** | 9 天 ≥20 次提交，最近一次 2026-06-16；**v5.4.0-beta.1 mainnet GA prep 完成**：Sepolia fresh redeploy + TX-Value-Verification 5 文档 + release-process 模板 + 18 个 v5.4 issue 推进
+**🚀 预估进度: 98%** | 近30天 22 次提交，最近一次 2026-07-07；**slash-threshold-evidence-unify (#329)** + BLS modules 全部 wired on Sepolia；aastar-sdk BLSAggregator ABI 已同步 (#285)
 
 **✅ AC 完成情况**:
 - ✅ **Paper3: SuperPaymaster AOA in ERC-4337 — 已正式投稿 BRA 期刊**
-- ✅ 合约实现 v5.4.0-beta.1：mainnet-dry-run Sepolia 完整 fresh redeploy + clean-deploy gap fixes + 真实 on-chain E2E tx hashes 回填
-- ✅ **TX-Value-Verification 5 文档套件**（PR #297）+ harness nonce-retry fix（PR #295）
-- ✅ **release-process 模板**（PR #291）+ v5.4.0-beta.1 release log
-- ✅ X402Facilitator 在部署时原子转移 ownership 到 governor
-- ✅ Sepolia addresses 同步到 v5.4.0-beta.1-redeploy（PR #298）
-- ✅ runbook 修正：Mycelium/MushroomDAO 是真实 mainnet 社区（非 demo）
-- 🔧 Paper7 第二版数据收集中（CommunityFi 见 TASK-32）
+- ✅ 合约 v5.4.1-rc.1：S1/S2/S3 HIGH 安全修复；Sepolia 验证通过
+- ✅ **#329 slash-threshold-evidence-unify**：per-severity thresholds + evidence binding (H-1 closure)；`queueSlashWithConsensus` 新接口
+- ✅ xpnts H-2 — emergency kill switch halts all non-SP autoApproved spenders
+- ✅ BLS module Sepolia migration wiring 完整（SP + Registry + staking 三模块对齐）
+- ✅ SDK v0.37.3 — BLSAggregator/DVTValidator ABI 已同步 (#285)
+- 🔧 Mainnet GA 正式部署（仅余最后 2% — 等待 SP.applyBLSAggregator() 最终切换）
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-06-16: docs(addresses): update Sepolia to v5.4.0-beta.1-redeploy (#298)
-- 2026-06-?: docs(e2e): TX-Value-Verification 5-doc for v5.4.0-beta.1 fresh redeploy + Codex 2-axis (#297)
-- 2026-06-?: deploy(rehearsal): fresh v5.4.0 mainnet-dry-run on Sepolia + fixes for clean-deploy gaps (#296)
-- 2026-06-?: release(v5.4.0): bump version() 5.3.3→5.4.0 + mainnet GA prep
-- 2026-06-?: fix(v5.4-deploy): transfer X402Facilitator ownership to governor atomically at deploy
-- 2026-06-?: docs: backfill real on-chain E2E tx hashes into v5.4 deploy-record
+- 2026-07-07: deploy(sepolia): BLS modules migration wiring 完整 (SP+Registry+staking)
+- 2026-07-06: fix(slash): slash-threshold-evidence-unify (#329) + xpnts H-2 kill switch
+- 2026-07-06: docs(security): 2026-07-03 multi-agent audit report + slash design
+- 2026-07-03: fix(p0): CEI order in PaymasterFactory + Registry unchecked call (#319)
+- 2026-07-03: chore(goutou): pin repoId for Cooperation-Center label
 
-💡 v5.3.3 → v5.4.0-beta.1 mainnet GA prep 跨越，配套 release-process / TX 验证 / addresses / deploy script 全面规范化。距离 mainnet GA 仅一步之遥。剩余 5% 为 mainnet 正式部署 + Paper7 投稿提交。
+💡 #329 slash 机制统一完成，BLS modules Sepolia fully wired。SDK ABI 已同步。剩余 2%：SP.applyBLSAggregator() 最终切换 + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->
