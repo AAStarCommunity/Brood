@@ -12,7 +12,7 @@
 - 版本：v0.1 草稿（2026-06-23）
 - 维护：Brood orchestrator
 - License：MIT（研究文档）/ Apache 2.0（参考实现）
-- 关联生态：AuraAI（姊妹品 iDoris / Agent24）+ AAStar 基础设施 + MushroomDAO 协议
+- 关联生态：iDoris.ai（姊妹品 iDoris / Agent24）+ AAStar 基础设施 + MushroomDAO 协议
 
 ## 1. 定位的三个钉子
 
@@ -22,10 +22,10 @@
 | **什么** | **完整智能栈**：硬件 + OS + 模型 + 微调 + 推理 + Agent | 不是 wrapper、不是 API 中间商，**是一整套交付**|
 | **怎么收钱** | 订阅式产品价值（碎片流程AI化+数据同步+持续进化+判断推送）+ 行业模型训练；落地由运营合伙人分润完成 | **本地 token 永久免费**；数据不出门；**不靠贴身人力服务**（见 POSITIONING）|
 
-## 2. 与 iDoris / AuraAI 的关系（必须钉死）
+## 2. 与 iDoris / iDoris.ai 的关系（必须钉死）
 
 ```
-AuraAI 体系（同 org）
+iDoris.ai 体系（同 org）
    │
    ├─ iDoris：个人 AI（手机/笔电边缘，自进化，Token Free）
    │

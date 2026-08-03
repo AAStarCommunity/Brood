@@ -164,7 +164,7 @@ Cherry Studio（壳）
 |:---|:---|
 | **hyphae（主项目）** | 本调研为 Hyphae 的 Agent 技术选型，填充主 BP 的"技术栈"细节 |
 | **hyphae-training** | L2 模型层（行业 LoRA + 客户 LoRA + TEE 训练）由 training 研究覆盖 |
-| **AuraAI iDoris / Agent24** | Agent24 可作为 L5 桌面壳的自研替代；iDoris 是组织内个人 AI |
+| **iDoris.ai iDoris / Agent24** | Agent24 可作为 L5 桌面壳的自研替代；iDoris 是组织内个人 AI |
 | **AAStar AirAccount** | 组织成员 passkey 登录 agent |
 | **HyperCapital** | L5-L0 全栈的部署 + 运维服务承接 |
 | **MCP 生态** | L4 编排层统一用 MCP 接入工具（与 Claude / 生态对齐）|
