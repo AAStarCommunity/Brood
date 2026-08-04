@@ -58,7 +58,7 @@ Mycelium Protocol 为这些角色提供数字基础设施，让他们在意义�
 
 ```
 1. 松散的社区群（Loose Community Networks）
-   自由加入，目前有 AAstar（区块链基础设施）和 AuraAI（AI infra）
+   自由加入，目前有 AAstar（区块链基础设施）和 iDoris.ai（AI infra）
    提供技术基础支持
 
 2. DAO 组织（MushroomDAO）
@@ -97,7 +97,7 @@ Mycelium Protocol 为这些角色提供数字基础设施，让他们在意义�
 | 组织 | 角色 | 状态 |
 |-----|------|------|
 | AAstar | Web3 基础设施（ERC-4337） | 活跃 |
-| AuraAI | AI 能力层 | 建设中 |
+| iDoris.ai | AI 能力层 | 建设中 |
 | MushroomDAO | 协议治理 + 数字公共物品 | 活跃 |
 | BroodBrain | 协议神经系统 | 活跃 |
 

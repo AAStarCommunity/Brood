@@ -1,6 +1,6 @@
 # 贡献指南 / Contributing Guide
 
-> 适用于所有 Mycelium Protocol 生态仓库（AAStarCommunity · AuraAIHQ · MushroomDAO）
+> 适用于所有 Mycelium Protocol 生态仓库（AAStarCommunity · iDoris-ai · MushroomDAO）
 
 ---
 

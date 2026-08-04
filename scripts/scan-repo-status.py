@@ -23,7 +23,7 @@ from datetime import datetime
 
 ORG_DIRS = [
     (os.path.expanduser("~/Dev/aastar"),   "AAStarCommunity", "aastar"),
-    (os.path.expanduser("~/Dev/auraai"),   "AuraAIHQ",        "auraai"),
+    (os.path.expanduser("~/Dev/auraai"),   "iDoris-ai",        "auraai"),
     (os.path.expanduser("~/Dev/mycelium"), "MushroomDAO",     "mycelium"),
 ]
 
@@ -165,7 +165,7 @@ def to_markdown(repos):
 
     for org_short, org_full, _ in [
         ("aastar", "AAStarCommunity", None),
-        ("auraai", "AuraAIHQ", None),
+        ("auraai", "iDoris-ai", None),
         ("mycelium", "MushroomDAO", None),
         ("personal", "jhfnetboy (个人/研究 — 仅 watched)", None),
     ]:

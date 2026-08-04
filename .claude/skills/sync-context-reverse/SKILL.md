@@ -141,7 +141,7 @@ AAstar / SuperPaymaster:
   🆕 新增: mintTicket (Solidity) — 合约中存在但 INTERFACES.md 未记录
   📝 变更: burnTicket → 签名新增 amount 参数
 
-AuraAI / agent-speaker:
+iDoris.ai / agent-speaker:
   ✅ 无接口变更
 
 MushroomDAO / CometENS:

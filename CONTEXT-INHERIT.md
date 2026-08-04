@@ -38,7 +38,7 @@ BroodBrain 是 Mycelium Protocol 的神经系统，存放了三层上下文：
 ...（repo 专属配置、指令）
 ```
 
-### AuraAI 组织下的 repo
+### iDoris.ai 组织下的 repo
 
 ```markdown
 ## Mycelium Protocol 生态上下文
@@ -164,8 +164,8 @@ Claude 会直接编辑 `/Users/jason/Dev/Brood/orgs/aastar/INTERFACES.md`。
 | `protocol/HOW_TO_JOIN.md` | 如何加入协议 |
 | `orgs/aastar/PROFILE.md` | AAstar 组织名片 |
 | `orgs/aastar/INTERFACES.md` | AAstar 接口规范 |
-| `orgs/auraai/PROFILE.md` | AuraAI 组织名片 |
-| `orgs/auraai/INTERFACES.md` | AuraAI 接口规范 |
+| `orgs/auraai/PROFILE.md` | iDoris.ai 组织名片 |
+| `orgs/auraai/INTERFACES.md` | iDoris.ai 接口规范 |
 | `orgs/mycelium/PROFILE.md` | MushroomDAO 名片 |
 | `orgs/mycelium/INTERFACES.md` | MushroomDAO 接口规范 |
 | `docs/ECOSYSTEM_MAP.md` | 仓库级生态地图（含本地路径） |

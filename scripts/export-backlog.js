@@ -89,14 +89,121 @@ async function fetchFromLocal(endpoint, retries = 5) {
   }
 }
 
+// Refuse to scrape a server we did not start. PORT is fixed, `spawn` used stdio:'ignore' with no
+// error handler, and the only readiness check was a blind 4s sleep — so when something else already
+// held the port, our spawn failed silently and every fetch below hit the STRANGER. That happened
+// for real: a `backlog browser` left running since 2026-07-07 answered the whole export from a
+// month-old cached index, and its data was committed into dist/ and deployed verbatim.
+async function assertPortFree(port) {
+  const inUse = await new Promise(resolve => {
+    const probe = http.get({ host: '127.0.0.1', port, path: '/', timeout: 1500 }, res => {
+      res.resume();
+      resolve(true);
+    });
+    probe.on('error', () => resolve(false));
+    probe.on('timeout', () => { probe.destroy(); resolve(false); });
+  });
+  if (inUse) {
+    throw new Error(
+      `Port ${port} is already serving something. Refusing to export — the scrape would read that\n` +
+      `process's data, not this checkout's. Find and stop it first:\n` +
+      `  lsof -nP -iTCP:${port} -sTCP:LISTEN\n` +
+      `(a stale \`backlog browser\` from an earlier session is the usual culprit)`
+    );
+  }
+}
+
+// Fail the build rather than commit a self-contradicting snapshot. dist/ is committed and deployed
+// verbatim (no CI build step), so anything wrong here ships straight to the live site. Two checks:
+//   1. the three "how many tasks" numbers must agree — they diverged (39 / 37 / 40) when a foreign
+//      server answered the export, and nothing downstream noticed;
+//   2. no task may carry a blank id/title — invalid YAML frontmatter (e.g. an unquoted `: ` inside
+//      a title) makes the parser emit an empty record that still carries the full rawContent, which
+//      then ships into the public search index.
+async function assertExportConsistent() {
+  const read = async name => JSON.parse(await fs.readFile(path.join(apiDir, name), 'utf8'));
+  const [stats, tasks, search] = await Promise.all([
+    read('statistics.json'), read('tasks.json'), read('search.json'),
+  ]);
+  // search.json wraps each hit as {type, score, task:{...}} — read through the `task` key, or every
+  // record looks blank and the check "fails" for the wrong reason.
+  const searchTasks = (Array.isArray(search) ? search : search.results || [])
+    .filter(x => x && x.type === 'task')
+    .map(x => x.task || x);
+
+  const problems = [];
+  if (!(stats.totalTasks === tasks.length && tasks.length === searchTasks.length)) {
+    problems.push(
+      `task counts disagree: statistics.totalTasks=${stats.totalTasks} ` +
+      `tasks.json=${tasks.length} search.json(type=task)=${searchTasks.length}`
+    );
+  }
+  const malformed = [...tasks, ...searchTasks].filter(t => !t.id || t.id === 'TASK-' || !t.title);
+  if (malformed.length) {
+    problems.push(
+      `${malformed.length} task record(s) with blank id/title — check the YAML frontmatter of the ` +
+      `matching backlog/tasks/*.md (an unquoted ':' in the title breaks parsing): ` +
+      malformed.slice(0, 5).map(t => JSON.stringify(t.id ?? null)).join(', ')
+    );
+  }
+  if (problems.length) {
+    throw new Error('Export consistency check FAILED — refusing to ship dist/:\n  - ' + problems.join('\n  - '));
+  }
+  console.log(`✅ Consistency check passed (${tasks.length} tasks, ids and titles all present)`);
+}
+
+// A committed, deployed-verbatim dist/ must be a pure function of THIS tree. `check_active_branches`
+// makes the CLI also index tasks from other recent git branches, so the same commit exports
+// differently depending on which branches happen to exist locally — and it pulled a task from `main`
+// that this branch doesn't have, including main's still-broken YAML, into the shipped search index.
+// Flip it off for the duration of the export only; the interactive kanban keeps the cross-branch
+// view the setting exists for.
+const configPath = path.join(process.cwd(), 'backlog', 'config.yml');
+
+async function withDeterministicConfig(fn) {
+  let original = null;
+  try {
+    original = await fs.readFile(configPath, 'utf8');
+  } catch {
+    return fn();                       // no config file — nothing to neutralize
+  }
+  const patched = original.replace(/^check_active_branches:[ \t]*true[ \t]*$/m,
+                                   'check_active_branches: false');
+  const changed = patched !== original;
+  if (changed) {
+    await fs.writeFile(configPath, patched);
+    console.log('Temporarily set check_active_branches=false so the export reflects only this tree');
+  }
+  try {
+    return await fn();
+  } finally {
+    // Always restore, including on failure — leaving the repo's config edited would be a silent
+    // side effect of a build, and would show up as an unexplained diff in the next commit.
+    if (changed) {
+      await fs.writeFile(configPath, original);
+      console.log('Restored backlog/config.yml');
+    }
+  }
+}
+
 async function exportStaticBacklog() {
+  await assertPortFree(PORT);
+
   console.log('Starting local backlog server for export...');
   const server = spawn('npx', ['backlog', 'browser', '--no-open', '-p', PORT.toString()], {
     stdio: 'ignore'
   });
+  // Surface spawn/exit failures instead of sleeping through them and scraping nothing (or worse,
+  // scraping whatever else answers). A server that exits before we finish is always a hard error.
+  let serverExited = null;
+  server.on('error', err => { serverExited = `failed to spawn: ${err.message}`; });
+  server.on('exit', (code, signal) => {
+    if (signal !== 'SIGTERM') serverExited = `exited early (code=${code} signal=${signal})`;
+  });
 
   // Give it a few seconds to start
   await new Promise(r => setTimeout(r, 4000));
+  if (serverExited) throw new Error(`Local backlog server ${serverExited}`);
 
   try {
     await fs.rm(distDir, { recursive: true, force: true });
@@ -555,11 +662,29 @@ async function exportStaticBacklog() {
       console.warn('Warning: could not generate progress-chart.html:', err.message);
     }
 
+    await assertExportConsistent();
+
     console.log('✨ Static export complete! Saved to dist/');
     console.log('🚀 You can preview it locally by running: npx serve dist');
   } finally {
     console.log('Shutting down local server...');
+    // `server` is the `npx` wrapper, not the backlog process it execs. Signalling only the wrapper
+    // leaves the real server listening — which is how a build from 2026-07-07 was still holding
+    // port 8422 a month later and silently answering later exports with its stale cached index.
+    // Kill the wrapper, then make sure the port is actually free and escalate if it isn't.
     server.kill('SIGINT');
+    await new Promise(r => setTimeout(r, 800));
+    try {
+      const { execSync } = await import('node:child_process');
+      const held = execSync(`lsof -t -nP -iTCP:${PORT} -sTCP:LISTEN || true`, { encoding: 'utf8' })
+        .split('\n').map(s => s.trim()).filter(Boolean);
+      for (const pid of held) {
+        process.kill(Number(pid), 'SIGTERM');
+        console.log(`Reaped leftover server on port ${PORT} (pid ${pid})`);
+      }
+    } catch (err) {
+      console.warn(`Warning: could not verify port ${PORT} was released:`, err.message);
+    }
   }
 }
 
@@ -712,4 +837,9 @@ window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>d
 </html>`;
 }
 
-exportStaticBacklog().catch(console.error);
+// Exit non-zero on failure — `pnpm run build` must not report success when the export threw
+// (the consistency check is worthless if a failing build still looks green).
+withDeterministicConfig(exportStaticBacklog).catch(err => {
+  console.error(err);
+  process.exitCode = 1;
+});

@@ -16,7 +16,7 @@ Brood 是 Mycelium Protocol 的**生态调度者**，不是普通 repo。在 `~/
 │  ────────────       让普通人享受数字基础设施带来的福祉       │
 ├─────────────────────────────────────────────────────────────┤
 │  基础设施层 / Infra  AAstar    = Web3 账户/支付/Gas 抽象      │
-│  ────────────       AuraAI    = AI agent/skill/通信层        │
+│  ────────────       iDoris.ai    = AI agent/skill/通信层        │
 ├─────────────────────────────────────────────────────────────┤
 │  协议/网络层         MushroomDAO = 治理、协议、社区/城市 OS    │
 │  Protocol & Network  Park / Spores / OpenPNTs / PGL          │
@@ -132,7 +132,7 @@ The injected fetch interceptor in `index.html` automatically appends `.json` to 
 - 任务需要在 `references:` frontmatter 中包含 `github.com` URL
 - **本地目录约定**（固定映射，所有生态仓库必须按此存放）：
   - `~/Dev/aastar/` → `AAStarCommunity` 旗下所有仓库
-  - `~/Dev/auraai/` → `AuraAIHQ` 旗下所有仓库
+  - `~/Dev/auraai/` → `iDoris-ai` 旗下所有仓库
   - `~/Dev/mycelium/` → `MushroomDAO` 旗下所有仓库
   - `~/Dev/tmp/` → 不属于三大 org 的临时 clone
 - Phase 0 扫描三大目录，自动发现新 clone 的仓库并更新 `docs/ECOSYSTEM_MAP.md`，同时为匹配的 backlog 任务补全 `references:` 字段
@@ -175,7 +175,7 @@ BroodBrain 本身是 Mycelium Protocol 的神经系统。本仓库存放三层�
 
 **L1 组织层** (`orgs/`):
 - `orgs/aastar/PROFILE.md` + `INTERFACES.md` — AAstar 组织名片和接口规范
-- `orgs/auraai/PROFILE.md` + `INTERFACES.md` — AuraAI 组织名片和接口规范
+- `orgs/auraai/PROFILE.md` + `INTERFACES.md` — iDoris.ai 组织名片和接口规范
 - `orgs/mycelium/PROFILE.md` + `INTERFACES.md` — MushroomDAO 组织名片和接口规范
 - `orgs/template/PROFILE.md` — 新组织加入模板
 
@@ -190,7 +190,7 @@ BroodBrain 本身是 Mycelium Protocol 的神经系统。本仓库存放三层�
 | 本地目录 | GitHub 组织 |
 |:---|:---|
 | `~/Dev/aastar/` | `AAStarCommunity` |
-| `~/Dev/auraai/` | `AuraAIHQ` |
+| `~/Dev/auraai/` | `iDoris-ai` |
 | `~/Dev/mycelium/` | `MushroomDAO` |
 | `~/Dev/tmp/` | 临时 clone（非三大 org） |
 
