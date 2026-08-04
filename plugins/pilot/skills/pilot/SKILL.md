@@ -1,7 +1,7 @@
 ---
 name: pilot
 version: 1.1.0
-description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=无人值守交付循环（连续迭代:挑 READY task→开发→自测→对抗 review→PR→评审→合并，一个接一个直到全部交付），起跑前强制检查规划文档齐全并默认设 /goal 停止闸。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
+description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由后台 daemon 评审要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
 
@@ -12,7 +12,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, Sc
 ```
 pilot status   # 汇报进展 + 安全清理已合并分支/worktree（默认 dry-run）
 pilot plan     # Milestone(M1) → Feature(F1.1) → Task(T1.1.1) 三级规划
-pilot run      # 无人值守交付循环:一直干到交付(文档门禁 + 默认设 /goal)
+pilot run      # 交出一条填好的 /goal 交付契约,然后照它一路做到交付(起跑前文档门禁)
 pilot resume   # run 的别名:优先处理待办 PR,再挑新 task
 pilot doctor   # 检查本仓库是否具备自动运行条件
 ```
@@ -25,7 +25,7 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 |:---|:---|:---|
 | `status`（默认） | `phases/status.md` | 无子命令时默认走 status |
 | `plan` | `phases/plan.md` | |
-| `run` / `resume` | `phases/run.md` | **无人值守交付循环**:跑到交付为止,不是一轮就停 |
+| `run` / `resume` | `phases/run.md` | **发 `/goal` 契约 + 无人值守交付循环**:跑到交付为止,不是一轮就停 |
 | `doctor` | 见下方 §doctor | 轻量自检，不改动仓库 |
 | `review-status` | 见下方 §review-status | 汇报 PR-Daemon 评审进度（只读，任意仓库可调）|
 
