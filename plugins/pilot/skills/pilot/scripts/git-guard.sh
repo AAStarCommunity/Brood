@@ -118,6 +118,37 @@ case "$sub" in
     is_protected "$dst" && die "refusing to push to protected branch '$dst' (from '$branch') — open a PR from a feature branch"
     exec git push -u -- "$remote" "$branch"
     ;;
+  pr-create)
+    # Opening a PR is the moment work becomes someone else's problem, so it is the right place to
+    # require that the repo's own checks actually ran on THIS commit. `preflight.sh` writes a stamp
+    # bound to the HEAD sha; no stamp, or a stamp for different code, means the checks were never
+    # run against what is about to be published — refuse rather than let CI (or a human reviewer)
+    # discover it 20 minutes later. Every review round burned in this repo started exactly here.
+    here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [ "${PILOT_SKIP_PREFLIGHT:-0}" = "1" ]; then
+      # Deliberate, visible escape hatch. It prints to stderr and names itself so an override can
+      # never be silent — an override nobody can see is indistinguishable from a missing check.
+      echo "git-guard: WARNING — PILOT_SKIP_PREFLIGHT=1, opening PR without verified checks" >&2
+    else
+      if ! bash "$here/preflight.sh" check >/dev/null 2>&1; then
+        # `|| true` matters: under `set -e -o pipefail` this pipeline inherits preflight's non-zero
+        # status and would abort the script HERE — refusing correctly, but without ever printing the
+        # `die` message that says what to run. The refusal is useless if it doesn't say how to fix it.
+        bash "$here/preflight.sh" check 2>&1 | sed 's/^/  /' >&2 || true
+        die "refusing to open a PR: this commit's checks have not passed.
+  Run:  bash $here/preflight.sh run
+  Then re-run this command. (Override for a genuine emergency: PILOT_SKIP_PREFLIGHT=1)"
+      fi
+      # Surface the mechanically-derived grade so the required self-review depth is not a matter of
+      # the author's own opinion. A/B demand three adversarial rounds before this PR is opened.
+      grade="$(sed -n 's/^grade=//p' "$(git rev-parse --git-dir)/pilot-preflight" 2>/dev/null)"
+      case "$grade" in
+        A|B) echo "git-guard: grade $grade — reference/pre-pr-review.md requires 3 adversarial rounds before this PR." >&2 ;;
+        C|D) echo "git-guard: grade $grade" >&2 ;;
+      esac
+    fi
+    exec gh pr create "$@"
+    ;;
   merge-pr)
     n="${1:-}"; [ $# -gt 0 ] && shift
     integration=""
