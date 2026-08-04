@@ -8,8 +8,10 @@
     {
       "name": "pilot",
       "source": "./plugins/pilot",
-      "description": "仓库级开发操作系统:status→plan→run 单轮/通宵开发循环;git-guard 危险动作防护(best-effort) + safe-cleanup 已合并分支清理 + 外部 PR 评审 daemon 集成(每日刷新 Top-N 活跃仓库扫描清单)。",
-      "author": { "name": "AAStarCommunity" }
+      "description": "仓库级开发操作系统:status 盘点+安全清理 → plan 三级规划 → run 无人值守交付循环(跑到交付为止,起跑前强制文档齐全门禁 + 默认设 /goal 停止闸);git-guard 危险动作防护(best-effort) + safe-cleanup 已合并分支清理 + 外部 PR 评审 daemon 集成(每日刷新 Top-N 活跃仓库扫描清单)。",
+      "author": {
+        "name": "AAStarCommunity"
+      }
     }
   ]
 }

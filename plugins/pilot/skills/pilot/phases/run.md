@@ -1,12 +1,62 @@
-# Phase: run — 单轮开发循环（可被 /loop 反复调用）
+# Phase: run — 无人值守交付循环（跑到交付为止，不是跑一轮就停）
 
-**一次调用 = 推进「一个」东西一步。** 设计成可被 `/loop 10m pilot run` 反复调用，跑通宵。
-每一轮先处理待办 PR（回执优先），再考虑开新 task。绝不并行动多个 task。
+**一次调用 = 一直干到交付**。不是「推进一步就收工」——`run` 会**连续迭代**：处理回执 → 开下一个
+task → 等评审 → 合并 → 再挑下一个，**直到 §3 的交付条件全部满足**，或撞上必须由人拍板的
+`BLOCKED`。绝不并行动多个 task（一次一个 task，但一个接一个不停）。
 
-前置：`docs/agent/{roadmap,tasks,progress}.md` 已存在（否则先 `pilot plan`）。
+## 步骤 0：起跑前的两道闸（顺序不可颠倒，都不可跳过）
+
+### 0a. 文档齐全门禁（**FAIL-CLOSED，不齐不许跑**）
+无人值守意味着**半夜没人回答「你这里什么意思」**——规划层的每一个空档，都会变成模型独自替你
+拍板的猜测。所以先跑确定性检查，不靠眼力判断：
+
+```bash
+bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
+```
+
+- `rc=0` → 七件套齐全且**已填写**（脚本会识别「还是原样模板」——占位符没填等于没答，比没有更危险），继续 0b。
+- **`rc≠0` 一律停下**（`1`=有缺口，`2`=用法/参数错，例如 `PILOT_DOC_MIN_BYTES` 不是正整数）。把脚本输出原样报给用户；`rc=1` 时建议 `pilot plan` 补齐。**不要把非零当成「大概能跑」**。
+  **不许带着缺口开跑**，也不许自己动手把文档编出来替用户拍板（违反 SKILL.md 硬约束 7）。
+- 用户明确说「有人盯着、先跑起来」→ 才可降级 `--minimal`（只要 roadmap+tasks+progress），
+  并在汇报里写明**这是降级运行、缺哪几份文档**。降级是用户的决定，不是你的。
+- **`PILOT_DOC_MIN_BYTES`（一份文档要有多少实质内容才算填过，默认 120 字节 ≈ 40 汉字）**：
+  这是唯一能从环境里削弱门禁的旋钮，**别自己设**。脚本拒绝 `0` 和非整数值（那等于关掉门禁而非调参），
+  且每次都会在 `PILOT_DOCS:` 行回显生效值 —— 汇报时把那行原样带上，让用户看得见门槛是多少。
+
+### 0b. 交出 `/goal` 交付契约（**这就是 `run` 的主产出**）
+
+**`run` 是发模板的，不是自己闷头开干的。** 无人值守的动力来自 Claude Code 内置的 `/goal`
+（`Set a goal Claude checks before stopping`）——它在**会话层**拦住「活没干完就收工」，是本 skill
+拿不到的那层强制力（skill 只有 §3 的自我纪律，模型自己可以忘；`/goal` 由 harness 在每次想停下来
+时检查，忘不掉）。所以 `run` 这一步的**交付物就是一条填好的 `/goal` 命令**。
+
+做法：
+
+1. **Read `<skill>/templates/goal.md`**（和本文件其它路径一样带 `<skill>/` 前缀——写成相对路径会按 CWD 解析而读不到，届时只能凭记忆编契约，正是这个模板要防的事）,取「标准版」整段。
+2. 把 `<M1/全部>`、`<集成分支>` 换成本仓库真实值（从 `.pilot.yml` 和 `roadmap.md` 取）。
+   用户已经给了具体目标（「把 M1 做完」）→ 用用户的话当首句，后面四段 `【】` **照抄不动**。
+3. **把整条命令放在回复最显眼处，请用户直接执行**，并说明「执行后我就按这个契约一路做到交付」。
+
+那五个 `【】` 段不是口号，是操作契约，各锁一个失效模式：怎么用 `docs/agent/` 的规划、怎么验证才
+算做完、PR 由后台 daemon 评审要怎么等、等待期间继续干什么、什么时候才允许停。**少写哪段就会
+退化成哪种毛病**（见 `goal.md` 末尾对照表）。
+
+> **为什么是「交给用户执行」而不是「我自己调用」**：斜杠命令由 harness 派发；本 skill 的
+> `allowed-tools` 未包含任何斜杠命令派发工具，因此调不了（不同环境的工具集可能不同，但本 skill
+> 的授权范围是确定的）。这不是绕不过的缺陷——`/goal` 本来就该由用户来定「什么
+> 算交付完成」，pilot 的职责是把那段难写的契约**写好递到手上**，用户看一眼就知道自己授权了什么。
+>
+> **用户没执行 `/goal` 怎么办**：照样按 §3 一路干到交付，**绝不因为没设 goal 就退回「一轮就停」**。
+> 设了 = 双层保险（harness 闸 + skill 纪律），没设 = 单层，但目标不变。
+
+## 前置配置
 读 `.pilot.yml` 取 `base_branch`、`integration_branch`、`remote`；**若无 `.pilot.yml` 但有旧的 `.repo-pilot.yml`，读旧文件并警告迁移**（见 SKILL.md「迁移兜底」——静默忽略会用错集成分支）。
 
-## 每一轮的决策顺序（从上到下，命中即执行，然后结束本轮）
+## 主循环：每一迭代的决策顺序（从上到下，命中即执行，**做完回到本表顶端再来一遍**）
+
+> **不要执行完一条就收工。** 每条动作末尾的「→ 回到顶端」是字面意思：立刻重新走一遍
+> §1→§2→§2.5→§3，直到 §3 的交付条件满足。唯一允许停下的地方是 §3 和「必须由人拍板的
+> BLOCKED」。等评审也不算停——按 §PR 监控节奏等，等到回执继续干。
 
 ### 0. 安全前置
 - `git status` 看当前分支与改动。若在主干（main/master）且有未提交改动 → 停下报告，不自动处理。
@@ -26,15 +76,15 @@
   （git-guard 会先校验 PR base == `integration_branch`，base 是主干或其它分支会被拒绝；**不加 `--delete-branch`**——远程分支删除统一交给 §合并后的 safe-cleanup，受 `allow_remote_cleanup` 与 dirty-worktree 检查约束）。
   合并后：把对应 Task 在 `tasks.md` 标 `DONE`、更新 `progress.md`，运行
   `bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--protect "<protect_patterns>"] [--remote-name <remote>] --apply`
-  清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**本轮结束。**
+  清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**做完回到主循环顶端,继续下一项。**
 - **`decision=CHANGES_REQUESTED`** → 读全部 review 意见（`gh pr view <n> --comments`），**先做中立 triage（见 `reference/review-triage.md`）**：装上本仓库业务上下文（CLAUDE.md / docs/agent / 领域文档），把每条意见分成 A 该修 / B 不重要 / C 缺业务上下文判错了 / D 过激 nitpick。评审 daemon 是独立进程、没有业务背景,你有——**既不盲改也不盲拒**。
   - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh push <remote> <branch>`（新 commit 触发 daemon 再评审）。
   - **B（真问题但不阻塞）/ 非 trivial 的 D 里决定要做的** → **记进跟进账本,绝不丢**：
     `bash <skill>/scripts/followups.sh add --docs-dir <docs_dir> --class B --source "PR#<n>" --desc "<要做什么>"`。
     **不在本 PR 里做**——留到主线全清后批量合成一个 cleanup PR（见 §2.5）。
   - **C / 不做的 D** → **不改**，`gh pr comment <n>` 回一条讲清业务理由（让 daemon 下一轮和人类都看到）。
-  - 把 Task 标 `CHANGES_REQUESTED→IN_PROGRESS`，更新 progress.md。**把 followups.md 一起 `git-guard.sh add` 进本次 commit**（账本随分支合并落库,不留在工作区）。**本轮结束。**
-- **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add --docs-dir <docs_dir>` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**本轮结束。**
+  - 把 Task 标 `CHANGES_REQUESTED→IN_PROGRESS`，更新 progress.md。**把 followups.md 一起 `git-guard.sh add` 进本次 commit**（账本随分支合并落库,不留在工作区）。**做完回到主循环顶端,继续下一项。**
+- **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add --docs-dir <docs_dir>` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**做完回到主循环顶端,继续下一项。**
 - **`decision=PENDING`**（还没被 review）→ 说明还没轮到或 daemon 没在跑。**先确保 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（没在跑就拉起，在跑就 no-op），然后按 §PR 监控节奏等 5–10 分钟再看回执。不要在 PENDING 的 PR 上瞎改。
 
 > review 由**外部 pr-daemon** 做（见 `reference/pr-review-loop.md`），本 skill 不自评自审 PR 的最终裁决。我只负责：开好 PR、按回执修、approve 后合并。
@@ -49,7 +99,7 @@
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
 7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
 8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`（body 写清 task、验收命令、自测结果）。**绝不 `--admin` 直合，绝不推主干。**
-9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**开完 PR 立刻确保评审 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（否则没人 review，PR 会一直挂着）。**本轮结束**，进入 §PR 监控节奏等回执。
+9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**开完 PR 立刻确保评审 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（否则没人 review，PR 会一直挂着）。**回到主循环顶端继续**，进入 §PR 监控节奏等回执。
 
 ### 2.5 无 READY task 了 → 批量清跟进账本（主线做完才做，绝不提前）
 **只有当 §2 没有可开工的主线 READY task**（都 DONE 或在 PR_OPEN/BLOCKED）时，才处理跟进账本：
@@ -62,8 +112,24 @@
    - **判断力**：某条其实是真 feature/bug 规模的 → 不塞进批量,**提升为 tasks.md 里的正常 READY task**,走单独流程。批量只装小/相关的。
 3. 账本里还有 OPEN 项没清完 → 下一轮继续；**清空前不进 §3**。
 
-### 3. 无 READY task、无待办 PR、且跟进账本已清空 → 停止条件
-先确认 `followups.sh count-open --docs-dir <docs_dir>` 为 0（否则回 §2.5,**不许在有 OPEN 跟进项时宣布停止**）。都满足才报告「本轮无可推进项」。若由 /loop 驱动：说明所有 task 已 DONE 或在 PR_OPEN/BLOCKED、跟进账本已清空，建议停止 loop 或等待 review。不要制造无意义的空 commit。
+### 3. 交付条件（**唯一允许收工的地方**）
+只有下面**全部**为真才算交付完成，才可以停：
+
+1. `tasks.md` 里没有 `READY` task（全部 `DONE`，或卡在需人拍板的 `BLOCKED`）；
+2. 没有还没拿到裁决/还没合并的 open PR（`pr-monitor.sh` 查确认）；
+3. `bash <skill>/scripts/followups.sh count-open --docs-dir <docs_dir>` **为 0**
+   （**不许在有 OPEN 跟进项时宣布交付** —— 有就回 §2.5 清完再来）。
+
+**任一条不满足 → 回主循环顶端继续干，不许收工。** 尤其注意这几种「假完成」：
+- 「PR 开了在等 review」→ **不是完成**，按 §PR 监控节奏等回执，拿到就继续。
+- 「就剩几个小 followup」→ **不是完成**，§2.5 批量清掉。
+- 「这一轮没什么可做的」→ 先按上面三条逐条查证，别凭感觉宣布。
+
+**只有 `BLOCKED` 可以提前中断**：确实需要用户拍板产品方向/验收/架构时，把 task 标 `BLOCKED`、在
+`progress.md` 写清待决问题，**先把不受它影响的 task 全做完**，最后才带着问题清单停下来问。
+
+交付时的汇报：做完了哪些 task、合并了哪些 PR、清了哪些 followup、还剩什么 BLOCKED 待你拍板。
+不要制造无意义的空 commit。
 
 ## PR 监控节奏（提交 PR 后怎么等回执）
 
