@@ -21,11 +21,34 @@ set -uo pipefail
 
 docs_dir="docs/agent"
 mode="strict"
-# ~120 bytes ≈ 40 Chinese chars ≈ two real sentences. A pristine template scores ~0 here
-# (every line still carries a slot), so template-detection works at any threshold; this
-# number only sets "how much substance counts as filled in". Kept modest because progress.md
-# is legitimately terse — too high a bar would block a run over a doc that IS answered.
+# ~120 bytes ≈ 40 Chinese chars ≈ two real sentences.
+#
+# Measured scores of the SHIPPED pristine templates (scaffolding text that carries no `<...>`
+# slot still counts): research=42 acceptance=73 architecture=0 spec=26 roadmap=0 tasks=99
+# progress=32. So 120 currently blocks all seven — but the margin on tasks.md is only 21 bytes.
+# Raise this floor, don't lower it, and re-measure if the templates gain prose.
+#
+# Kept modest because progress.md is legitimately terse — too high a bar would block a run over
+# a doc that IS answered.
 MIN_BYTES="${PILOT_DOC_MIN_BYTES:-120}"
+
+# Validate the knob BEFORE any comparison uses it. `[ x -lt abc ]` is a runtime ERROR, not a
+# false comparison; under `set -uo pipefail` (no -e) an error inside an `elif` condition merely
+# makes that branch false, so every doc would fall through to the `else` and be counted OK —
+# the gate would report "ready" on seven blank templates. A gate that fails OPEN is worse than
+# no gate, because it reports safety it did not verify. Verified: PILOT_DOC_MIN_BYTES=abc (or
+# a typo like "120B") previously yielded ok=7/7 + exit 0 on a directory of untouched templates.
+case "$MIN_BYTES" in
+  ''|*[!0-9]*)
+    echo "ERROR: PILOT_DOC_MIN_BYTES must be a non-negative integer, got: '$MIN_BYTES'" >&2
+    exit 2 ;;
+esac
+# 0 would pass any file that merely exists — that is disabling the gate, not tuning it. If you
+# genuinely want no gate, don't run this script; don't silently neuter it via an env var.
+if [ "$MIN_BYTES" -eq 0 ]; then
+  echo "ERROR: PILOT_DOC_MIN_BYTES=0 disables the gate (any existing file would pass). Refusing." >&2
+  exit 2
+fi
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -64,7 +87,14 @@ for d in $DOCS; do
   f="$docs_dir/$d.md"
   if [ ! -f "$f" ]; then
     missing="$missing $d"
-  elif [ "$(real_content_bytes "$f")" -lt "$MIN_BYTES" ]; then
+    continue
+  fi
+  bytes="$(real_content_bytes "$f")"
+  # Treat an unreadable measurement as EMPTY, never as OK. Same reasoning as the MIN_BYTES
+  # validation above: if the count is not a plain integer the comparison would error, the
+  # branch would read false, and the doc would be silently counted as filled in.
+  case "$bytes" in ''|*[!0-9]*) empty="$empty $d"; continue ;; esac
+  if [ "$bytes" -lt "$MIN_BYTES" ]; then
     empty="$empty $d"
   else
     ok=$((ok + 1))
@@ -72,7 +102,10 @@ for d in $DOCS; do
 done
 
 total=$(echo $DOCS | wc -w | tr -d ' ')
-echo "PILOT_DOCS: mode=$mode dir=$docs_dir ok=$ok/$total"
+# Echo the effective threshold on EVERY outcome, including success. PILOT_DOC_MIN_BYTES can
+# weaken the gate from outside the repo; if the passing line never showed it, a loosened gate
+# would leave no trace in the run's report.
+echo "PILOT_DOCS: mode=$mode dir=$docs_dir min_bytes=$MIN_BYTES ok=$ok/$total"
 
 if [ -z "$missing" ] && [ -z "$empty" ]; then
   echo "PILOT_DOCS: ready — planning layer complete, safe to run unattended."
