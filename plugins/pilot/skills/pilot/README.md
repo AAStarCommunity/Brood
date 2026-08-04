@@ -13,7 +13,7 @@ pilot doctor   # 自检：是否具备自动运行条件
 把「有经验程序员的默认」固化成流程，且**危险动作确定性可控**：
 
 - **安全清理**：只删「已合并进集成分支 + 干净」的分支/worktree；只 `git branch -d`（永不 `-D`）；默认 dry-run，`--apply` 才动手；护住主干/集成/当前/protected/脏 worktree。逻辑全在 `scripts/safe-cleanup.sh`，不靠模型临场判断。
-- **PR 纪律**：绝不 `git add -A`；绝不直推/直合主干；一个 task = 一个分支 = 一个 worktree = 一个 PR；PR 前必自测 + 对抗式 review。
+- **PR 纪律**：绝不 `git add -A`；绝不直推/直合主干；一个 task = 一个分支 = 一个 worktree = 一个 PR；PR 前必自测 + **按风险分级自审**(A 高危/B 复杂 → Codex 对抗 3 轮;C → 1 轮;D 纯文档 → Sonnet 1 轮),PR body 带 `<!-- pilot:self-review -->` 标签。
 - **外部 review 回路（已生产验证）**：pilot 不自评 PR——开好 PR 后调 `scripts/ensure-pr-daemon.sh`（**幂等**：在跑 no-op、没跑才拉起，从任意仓库触发都只有一个实例）启动 PR-Daemon。daemon 按风险分流：琐碎（docs/依赖）走 DeepSeek 2 轮、涉代码/安全走**真 Opus R2/R4 + Codex R3** 的 4 轮 PK；draft 与 `[WIP]`/`PAUSED` 自动跳过；`head` 去重不重评。本仓库只收回执 + approve 后合并（见 `reference/pr-review-loop.md`）。
 - **可被 /loop 驱动跑通宵**：`pilot run` 是单轮迭代，`/loop 10m pilot run` 即可持续推进 READY tasks。
 
@@ -23,7 +23,7 @@ pilot doctor   # 自检：是否具备自动运行条件
 |:--|:--|:--|
 | `status`（默认） | 汇报进展 + 安全清理已合并分支/worktree | 只 `-d` 删「已合并+干净」；默认 dry-run，`--apply` 才动手；护主干/集成/protected/脏 worktree |
 | `plan` | 建 M→F→T 三级规划 + 补齐 `docs/agent` 文档 | 缺 `.pilot.yml`/文档会代生成 |
-| `run` / `resume` | 单轮循环：挑 READY task → 开发 → 自测 → 对抗 review → PR → 合并 preview | 一 task 一分支一 PR；不 `add -A`；不直推主干；PR 前必自审 |
+| `run` / `resume` | **无人值守交付循环**:挑 READY task → 开发 → 自测 → 分级自审 → PR → 评审 → 合并,一个接一个直到交付 | 一 task 一分支一 PR;不 `add -A`;不直推主干;**PR 前按风险分级自审并贴标签** |
 | `doctor` | 只读自检：能否无人值守 | 不改仓库，只报「就绪/待补」 |
 
 危险动作全走脚本层硬拦截（`git-guard.sh` 拒 `add -A`/直推主干/合错 base；`safe-cleanup.sh` 只删已合并+干净），不靠模型临场判断。

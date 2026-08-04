@@ -95,10 +95,23 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 2. **建分支 + worktree**：`git worktree add ../<repo>-<taskid> -b <type>/<taskid>-<slug> <integration_branch>`（一个 task 一个 worktree，隔离并行）。简单仓库可只建分支不建 worktree。
 3. **实现**：对照 `architecture.md`/`spec.md` 写代码，范围严格限制在该 task 的「开发范围」，不顺手做别的。
 4. **自测**：先针对性测试，再 lint → typecheck → build → 集成测试。有失败就修到全绿。
-5. **对抗式 review**（PR 前必做，见 `reference/pr-quality.md`）：换新上下文/子 agent 或 Codex（`/codex:rescue`），以「找 race/安全/错误处理/边界/生产失败」的挑剔视角审这段 diff。有阻塞问题 → 修 → 重新自测 → 再挑战，直到无阻塞。
+5. **提 PR 前的强制自审（按风险分级，见 `<skill>/reference/pre-pr-review.md`）**：先跑那份文档
+   §0 的命令给本次改动**定级**，再按级别执行——
+   - **A 高危**（钱/资产、安全、删数据、改强制层本身）或 **B 复杂**（净变更 >100 行、跨 ≥3 模块、
+     并发/重试/状态机）→ **Codex 对抗挑战 ≥3 轮，每轮换一个视角**（正确性 / 生产环境怎么坏 /
+     A档问安全与资金·B档问跨层一致性）。每轮的问题当真:能复现就修、修完重跑自测再进下一轮。
+   - **C 常规**（有代码但非 A/B）→ Codex 挑战 1 轮。
+   - **D 纯文档**（只有 `.md`/注释/文案，`.yml`/`.json`/`.sh` 改动**不算**）→ Sonnet 自审 1 轮。
+   **归档存疑时往高处归**；A 档判据优先于行数（3 行的密钥改动仍是 A）。
+   **A/B 档必须跑满 3 轮**，即使第 1 轮说没问题——那通常意味着提问角度不对，换视角再来。
+   **第 3 轮仍有阻塞问题 → 不许提 PR**，修完从第 1 轮重来。
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
 7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
-8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`（body 写清 task、验收命令、自测结果）。**绝不 `--admin` 直合，绝不推主干。**
+8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`。
+   **body 开头必须带 `<!-- pilot:self-review -->` 自审标签**（格式见 `reference/pre-pr-review.md`
+   末尾）：写明**自审等级 + 判据 + 每轮发现与处置 + 自测结果**。没有这个标签的 PR 视为没做第 5 步;
+   **谎报等级比不写更糟**——评审者据此决定投入多少精力。body 其余部分写清 task、验收命令、自测结果。
+   **绝不 `--admin` 直合，绝不推主干。**
 9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**开完 PR 立刻确保评审 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（否则没人 review，PR 会一直挂着）。**回到主循环顶端继续**，进入 §PR 监控节奏等回执。
 
 ### 2.5 无 READY task 了 → 批量清跟进账本（主线做完才做，绝不提前）

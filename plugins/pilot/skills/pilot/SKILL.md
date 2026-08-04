@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.1.0
+version: 1.2.0
 description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由后台 daemon 评审要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
@@ -45,11 +45,11 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。
 3. **一个 task = 一个分支 = 一个（可选）worktree = 一个 PR**。不在一个分支里顺手做别的 task。
 4. **删除分支只用 `git branch -d`，永不 `-D`**；删除只针对「已合并 + 干净」的分支/worktree；一切经 `scripts/safe-cleanup.sh`，默认 dry-run。
-5. **PR 之前必须自审 + 对抗 review**（见 `reference/pr-quality.md`）。没过 review 的代码不进 PR，没 approve 的 PR 不合并。
+5. **PR 之前必须按风险分级自审**（见 `reference/pre-pr-review.md`；质量标准见 `reference/pr-quality.md`）。先定级再自审:**A 高危**(钱/资产、安全、删数据、改强制层本身)与 **B 复杂**(净变更>100行、跨≥3模块、并发/重试/状态机)→ **Codex 对抗挑战 ≥3 轮,每轮换视角**;**C 常规** → Codex 1 轮;**D 纯文档**(只有 .md/注释/文案) → Sonnet 1 轮。PR body 必须带 `<!-- pilot:self-review -->` 标签写明等级与每轮处置。没过自审的代码不进 PR,没 approve 的 PR 不合并。
 6. **状态即文档**。每推进一步都更新 `docs/agent/tasks.md` 与 `docs/agent/progress.md`；宁可慢，不可让文档与仓库真实状态脱节。
 7. **无人值守时不猜产品决策**。遇到影响产品方向/验收/架构的未知，把相关 task 标 `BLOCKED` 并记录待决问题，继续做不受影响的 task；绝不擅自替用户拍板。
 
-> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`**。子命令会在需要时指引你读它们。
+> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`;**提 PR 前按风险分级自审(A/B 档 Codex 对抗 3 轮、D 档 Sonnet 1 轮 + 自审标签)见 `reference/pre-pr-review.md`**。子命令会在需要时指引你读它们。
 
 ## 配置：`.pilot.yml`
 
