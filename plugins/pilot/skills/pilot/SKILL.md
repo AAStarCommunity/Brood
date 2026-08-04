@@ -84,7 +84,7 @@ pr_daemon_root: ~/Dev/tools/PR-Daemon  # 外部 PR 评审 daemon 根目录（也
 4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
 5. `gh auth status` 是否可用（PR 流程需要）。
 5b. **git hook 是否真的在生效**（别假设 commit 有保护）：`bash <skill>/scripts/check-hooks.sh`。常见坑：`core.hooksPath` 指到**另一个 clone** 的 hooks 目录 → pre-commit 密钥扫描根本没跑,commit 裸奔却无人察觉。报 `BYPASSED` 就红着提示,并说明「**不要自动切回 `.githooks`**——扫描器有历史误报会让每次 commit 卡死,得先给已知误报加 baseline/allowlist 降噪,再手动开钩子」。只报告,不擅自 rewire。
-6. **PR 评审 daemon 是否在线**：`bash <skill>/scripts/ensure-pr-daemon.sh check`。`not running` 就提示——本仓库的 PR 提了也没人 review,需要拉起（`status` 阶段会自动拉起）。根目录默认 `~/Dev/tools/PR-Daemon`，可用 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` 覆盖。
+6. **PR 评审 daemon 是否在线**：`bash <skill>/scripts/ensure-pr-daemon.sh check`。**区分两种失败**:`not found`(rc=2)= 本机没装 pr-daemon(**它不随 pilot 安装**,见 `reference/pr-review-loop.md` 的安装与降级说明);`not running`(rc=3)= 装了没跑,`status` 阶段会自动拉起。两者都意味着「现在提 PR 没人 review」,但前者要装、后者只需拉起。根目录默认 `~/Dev/tools/PR-Daemon`，可用 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` 覆盖。
 7. 汇报一张「就绪 / 待补」清单，不擅自修改。
 
 ## review-status（内联，只读，任意仓库可调）

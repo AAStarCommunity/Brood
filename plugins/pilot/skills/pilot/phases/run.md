@@ -140,6 +140,11 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 开完一个 PR 之后的等待与升级流程：
 
 1. **立刻确保 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`。没在跑就拉起,在跑就 no-op。
+   **先分清两种失败,补救完全不同**（见 `reference/pr-review-loop.md`）：
+   - **`rc=2` / `not found`** = 本机**根本没装** pr-daemon（它不随 pilot 安装）。重试多少次都没用。
+     → 告诉用户「本机无评审 daemon,此 PR 需人工 review」,给出安装命令,**然后回主循环做下一个 task,
+     不要进入等回执的循环空转**。
+   - **`rc=3` / `not running`** = 装了但没起来 → `ensure` 拉起即可,继续正常等回执。
    ——不需要跨对话唤醒魔法,daemon 就是个后台进程,拉起来它自己会评审三大组织下所有配置仓库的 open PR。
 2. **盯回执——分清"评审者"和"监控者"两个角色**：评审由 daemon 做（step 1 已拉起）；**"我的 PR 拿到裁决没"由本 skill 自己盯**，脚本是 `pr-monitor.sh`（读 `reviewDecision`，只查一次，不驱动自己）。真正的监控 = 有东西按节奏反复调它、状态变了再唤醒你行动。按场景选驱动方式：
 
