@@ -65,6 +65,55 @@ async function computeMilestoneProgress() {
   return result;
 }
 
+// Strip machine-specific data out of the CLI's API payloads before they are written to dist/.
+//
+// The backlog.md REST API returns absolute filesystem paths (`filePath`, `projectPath`,
+// `rootConfigPath` — e.g. "/Users/jason/Dev/Brood/backlog/tasks/…") and mtime-derived
+// `lastModified` stamps. Two separate problems, one root cause:
+//
+//   1. dist/ is committed and diffed against a fresh build to prove it is reproducible. Those
+//      fields can never match across machines — a CI runner checks out at /home/runner/work/… —
+//      so 49/49 tasks differ and the guard is red on every PR forever. A permanently-red guard
+//      gets bypassed, which is worse than having no guard.
+//   2. dist/ is uploaded verbatim to a public site, so those paths publish the maintainer's home
+//      directory layout to anyone who fetches /api/status.json.
+//
+// Fixing this by excluding more files from the diff is NOT acceptable: all four contaminated files
+// are the ones that carry the actual content, so excluding them would leave the guard watching
+// only index.html and hashed assets — green while shipping exactly the stale data it exists to
+// catch. Sanitize at the source instead: paths become repo-relative, mtimes are dropped.
+const REPO_ROOT = process.cwd();
+
+function sanitizeApiPayload(text) {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return text;                       // not JSON (or already a string blob) — leave untouched
+  }
+
+  const walk = (node) => {
+    if (Array.isArray(node)) return node.map(walk);
+    if (!node || typeof node !== 'object') return node;
+    const out = {};
+    for (const [key, value] of Object.entries(node)) {
+      // Drop mtime-derived stamps outright: they change on every checkout and carry no meaning
+      // for a static export (git already records when content changed).
+      if (key === 'lastModified') continue;
+      if (typeof value === 'string' && (key === 'filePath' || key === 'projectPath' || key === 'rootConfigPath')) {
+        out[key] = value.startsWith(REPO_ROOT)
+          ? (value.slice(REPO_ROOT.length).replace(/^\/+/, '') || '.')
+          : value;
+        continue;
+      }
+      out[key] = walk(value);
+    }
+    return out;
+  };
+
+  return JSON.stringify(walk(data));
+}
+
 async function fetchFromLocal(endpoint, retries = 5) {
   let lastStatus = 0;
   for (let i = 0; i < retries; i++) {
@@ -453,7 +502,7 @@ async function exportStaticBacklog() {
         const data = await fetchFromLocal('/api/' + ep);
         const targetPath = path.join(apiDir, ep + '.json');
         await fs.mkdir(path.dirname(targetPath), { recursive: true });
-        await fs.writeFile(targetPath, data);
+        await fs.writeFile(targetPath, sanitizeApiPayload(data));
       } catch (err) {
         console.warn('Warning: could not fetch /api/' + ep);
       }
