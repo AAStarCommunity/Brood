@@ -581,8 +581,14 @@ async function exportStaticBacklog() {
             definitionOfDoneItems: [],
             description: description,
             priority: get('priority') || 'medium',
-            filePath: path.join(completedDir, file),
-            lastModified: new Date().toISOString(),
+            // Repo-relative, and NO wall-clock stamp. This record is written straight to
+            // dist/api/tasks.json below, bypassing the per-endpoint sanitizer — so it has to be
+            // clean at construction. An absolute path here republishes the maintainer's home
+            // directory (the leak this file already fixes on the other write path), and
+            // `new Date()` makes two builds seconds apart differ, which breaks the
+            // dist-reproducible guard outright. Dormant today only because backlog/completed/ is
+            // empty; the first completed task would bring both bugs back at once.
+            filePath: path.join('backlog', 'completed', file),
             source: 'local'
           };
 
@@ -593,7 +599,39 @@ async function exportStaticBacklog() {
           }
         }
 
-        await fs.writeFile(tasksJsonPath, JSON.stringify(tasksData));
+        // Sanitize here too. The fields above are already clean, but this is the second write path
+        // into dist/api/ and the first one's sanitizer does not cover it — a future edit that adds
+        // another machine-specific field would silently republish it. Route every dist/api write
+        // through the same filter so "is this payload clean?" has one answer, not two.
+        await fs.writeFile(tasksJsonPath, sanitizeApiPayload(JSON.stringify(tasksData)));
+
+        // Mirror the merged tasks into search.json. The CLI never saw backlog/completed/, so
+        // without this a completed task exists in tasks.json but is unfindable in the site's
+        // search — and the consistency assertion (rightly) fails because the two files disagree.
+        // Fixing the count by loosening the assertion would have kept the real defect: the task
+        // would still be missing from search. Keep the wrapper shape {type,score,task} the CLI uses.
+        try {
+          const searchPath = path.join(apiDir, 'search.json');
+          const searchRaw = JSON.parse(await fs.readFile(searchPath, 'utf8'));
+          if (Array.isArray(searchRaw)) {
+            const known = new Set(
+              searchRaw.filter(e => e && e.type === 'task' && e.task).map(e => e.task.id)
+            );
+            let added = 0;
+            for (const t of tasksData) {
+              if (t.source === 'local' && !known.has(t.id)) {
+                searchRaw.push({ type: 'task', score: null, task: t });
+                added += 1;
+              }
+            }
+            if (added > 0) {
+              await fs.writeFile(searchPath, sanitizeApiPayload(JSON.stringify(searchRaw)));
+              console.log(`  + Mirrored ${added} completed task(s) into search.json`);
+            }
+          }
+        } catch (err) {
+          console.warn('Warning: could not mirror completed tasks into search.json:', err.message);
+        }
       }
     } catch (err) {
       console.warn('Warning: could not merge completed tasks:', err.message);
