@@ -101,12 +101,12 @@
 
 ## iDoris.ai — AI 基础设施
 
-> **命名说明**：2026-07 组织完成改名——显示名 **iDoris.ai**，GitHub org slug 由 `AuraAIHQ` 改为 **`iDoris-ai`**（github.com/iDoris-ai），15 个子仓库 git remote 已全部更新。**本地目录仍为 `~/Dev/auraai/`**（物理目录名未改，约定映射到 iDoris-ai org）。仓库 `iDoris-ai/AuraAI` 保留原仓库名。
+> **命名说明**：2026-07 组织完成改名——显示名 **iDoris.ai**，GitHub org slug 由 `AuraAIHQ` 改为 **`iDoris-ai`**（github.com/iDoris-ai），子仓库 git remote 已全部更新。**本地目录仍为 `~/Dev/auraai/`**（物理目录名未改，约定映射到 iDoris-ai org）。仓库 `iDoris-ai/AuraAI` 保留原仓库名。
 
 **GitHub Org**: https://github.com/iDoris-ai
 **本地路径**: `~/Dev/auraai/`（映射 org iDoris-ai）
 
-### 全部仓库（12 个）
+### 主要仓库
 
 | 仓库 | 本地路径 | 最近提交 | 性质 |
 |-----|---------|---------|------|
