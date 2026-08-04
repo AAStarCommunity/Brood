@@ -19,7 +19,8 @@
    bash <skill>/scripts/ensure-pr-daemon.sh ensure
    ```
    （`ensure` = 未运行时拉起、已运行则幂等 no-op；根目录取 `.pilot.yml` 的 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` / 默认 `~/Dev/tools/PR-Daemon`）。把结果（已在线 / 已拉起 / 拉起失败）一行带进第 5 步汇报。**这一步落实 SKILL.md doctor 第 6 步「status 阶段会自动拉起」的承诺，不可省。**
-   - 顺带：`ensure` 会做一次**每日幂等**的「扫描清单刷新」（daemon 只审「最近 push 的 Top-N 仓库 + 手动 pin」）。任意仓库当天第一次 `pilot status` 会刷新这份**全局共享**清单并按日期记账，其余调用皆 no-op；GitHub 每天只命中一次。有界 best-effort，失败/超时保留现有清单，绝不阻塞。**doctor 只读，不触发此刷新。**
+   - 顺带：`ensure` 会做一次**每日幂等**的「扫描清单刷新」（daemon 只审「**主干最后提交**最近的 Top-N 仓库 + 手动 pin」）。任意仓库当天第一次 `pilot status` 会刷新这份**全局共享**清单并按日期记账，其余调用皆 no-op；GitHub 每天只命中一次。有界 best-effort，失败/超时保留现有清单，绝不阻塞。**doctor 只读，不触发此刷新。**
+   - 排序指标是**默认分支的最后提交时间**，不是 `repo.pushedAt`——后者会被任何 ref 的推送刷新（dependabot/renovate 推 PR 分支），让主干静默一个月的仓库照样显得活跃、把真正在开发的挤出 Top-N。要让某个仓库无视活跃度恒被扫描：`bash <pr_daemon_root>/scripts/refresh-scan-focus.sh add <owner/repo>`。
 
 5. **汇报**（三段式，简明）：
    - **当前进展**：正在开发的 Feature/Task（来自 progress.md）；当前分支 + 是否有未提交改动。
