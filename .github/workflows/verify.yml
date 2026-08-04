@@ -58,7 +58,12 @@ jobs:
         # is installed globally — on a clean runner `npx backlog` fetches the wrong package from the
         # registry, its `--no-open` flag errors, spawn's stdio:'ignore' swallows it, and every fetch
         # then fails. Install the real package locally so the bin on PATH can only be that one.
-        run: npm install --no-save backlog.md@1.49.3
+        run: |
+          # Install exactly what package.json pins — do NOT hardcode a version here. The CLI version
+          # determines dist/'s content-hashed asset names and payload shape, so CI and local must run
+          # the same one or "is dist/ reproducible?" is unanswerable. (A hardcoded 1.49.3 against a
+          # local 1.45.0 made this job red with a 3700-line phantom diff.)
+          npm install --no-save "backlog.md@$(node -p "require('./package.json').devDependencies['backlog.md']")"
       - name: Rebuild dist/ and diff against what is committed
         run: |
           set -euo pipefail

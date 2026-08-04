@@ -6,4 +6,37 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      backlog.md:
+        specifier: 1.45.0
+        version: 1.45.0
+
+packages:
+
+  backlog.md-darwin-arm64@1.45.0:
+    resolution: {integrity: sha512-WR8mJwqQ+MdoRNl1nhtecCU/FWgP6AXHXv4ZR2q9iZerg07+R3cBKDpekEzX1d4ZeG1EH2s8d4359CQRYbgEmA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  backlog.md-darwin-x64@1.45.0:
+    resolution: {integrity: sha512-m4ansOcHKe15yGW4Toe/dy/DChgrnCipYc0FHWAmH/0sFPOgi8dHxuksGeWdvBX5gfKDBLB8B89IpP1FMTkFIA==}
+    cpu: [x64]
+    os: [darwin]
+
+  backlog.md@1.45.0:
+    resolution: {integrity: sha512-ig7GFLjufbkJKfZfSF8YPU91vdXXiKQ7gsU6YFaByf+JsKMRv97YQF3XSOWM21gSWQRMFjLGN4z1VbUKfhXJfg==}
+    hasBin: true
+
+snapshots:
+
+  backlog.md-darwin-arm64@1.45.0:
+    optional: true
+
+  backlog.md-darwin-x64@1.45.0:
+    optional: true
+
+  backlog.md@1.45.0:
+    optionalDependencies:
+      backlog.md-darwin-arm64: 1.45.0
+      backlog.md-darwin-x64: 1.45.0

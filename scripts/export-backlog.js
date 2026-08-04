@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import http from 'node:http';
@@ -239,7 +240,22 @@ async function exportStaticBacklog() {
   await assertPortFree(PORT);
 
   console.log('Starting local backlog server for export...');
-  const server = spawn('npx', ['backlog', 'browser', '--no-open', '-p', PORT.toString()], {
+  // Use the version pinned in package.json, never whatever `npx` resolves. Two failures came from
+  // not doing this: (a) the bare name `backlog` on the registry is an UNRELATED package, so on a
+  // machine without a global install npx fetches the wrong tool; (b) even with the right tool, the
+  // CLI version decides the content-hashed asset names and payload shape — a local 1.45.0 and a CI
+  // 1.49.3 produce different dist/ from identical sources, so "is dist/ reproducible?" can never be
+  // answered. Pinning is what makes that question meaningful at all.
+  const localBin = path.join(process.cwd(), 'node_modules', '.bin', 'backlog');
+  const backlogBin = fsSync.existsSync(localBin) ? localBin : 'npx';
+  const backlogArgs = backlogBin === 'npx'
+    ? ['--no-install', 'backlog', 'browser', '--no-open', '-p', PORT.toString()]
+    : ['browser', '--no-open', '-p', PORT.toString()];
+  if (backlogBin === 'npx') {
+    console.warn('WARNING: node_modules/.bin/backlog not found — run `pnpm install` so the pinned ' +
+                 'backlog.md version is used. dist/ built without it may not be reproducible.');
+  }
+  const server = spawn(backlogBin, backlogArgs, {
     stdio: 'ignore'
   });
   // Surface spawn/exit failures instead of sleeping through them and scraping nothing (or worse,
