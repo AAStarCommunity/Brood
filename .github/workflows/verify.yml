@@ -51,15 +51,33 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install the pinned backlog CLI
+        # `npx backlog` must NOT be used: the bare name `backlog` is an unrelated package
+        # ("Orchestrator for AI coding agents"); the CLI this repo exports with is `backlog.md`,
+        # whose bin happens to also be named `backlog`. That works locally only because backlog.md
+        # is installed globally — on a clean runner `npx backlog` fetches the wrong package from the
+        # registry, its `--no-open` flag errors, spawn's stdio:'ignore' swallows it, and every fetch
+        # then fails. Install the real package locally so the bin on PATH can only be that one.
+        run: npm install --no-save backlog.md@1.49.3
       - name: Rebuild dist/ and diff against what is committed
         run: |
           set -euo pipefail
+          export PATH="$PWD/node_modules/.bin:$PATH"   # the pinned bin wins over any registry lookup
           npm run build
-          # The export writes a build timestamp into version.json on every run; that field alone
-          # would make the diff fail forever, so it is the one documented exclusion.
+
+          # `git diff` compares TRACKED files only, so a file the build CREATES is untracked and
+          # completely invisible to it — the guard would pass while shipping a dangling reference.
+          # That is not hypothetical: this very PR added a doc-8 entry to docs.json/search.json
+          # without committing dist/api/docs/doc-8.json, and the original `git diff --quiet` check
+          # reported clean. `-AN` (intent-to-add) registers new paths so the diff can see them.
+          git add -AN -- dist/
+
+          # version.json holds the backlog.md CLI version ({"version":"1.45.0"}) — NOT a timestamp.
+          # It is excluded because a CLI upgrade would otherwise fail every PR until someone
+          # rebuilt; treat a change here as "the pinned CLI moved", which the pin above controls.
           if ! git diff --quiet -- dist/ ':(exclude)dist/api/version.json'; then
             echo "::error::dist/ is stale — run 'pnpm run build' and commit the result."
-            echo "Files that differ from a fresh build:"
+            echo "Files that differ from a fresh build (new files included):"
             git diff --stat -- dist/ ':(exclude)dist/api/version.json'
             echo "--- diff (first 200 lines) ---"
             git diff -- dist/ ':(exclude)dist/api/version.json' | head -200
