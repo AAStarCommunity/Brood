@@ -2,6 +2,8 @@
 
 有经验的程序员的底线。任何阶段、任何模式都遵守。
 
+> **谁强制这些规则**：真正不可绕过的保证是 ① GitHub 分支保护 + ② 待建的 PreToolUse hook（TASK-40）。`git-guard.sh`/`safe-cleanup.sh` 是**便利包装 + 纵深防御一层**（best-effort，覆盖常见危险形状，不承诺 bash 层对抗式滴水不漏）。危险动作优先走它们，但别把它们当唯一防线。
+
 ## 提交
 - **绝不 `git add -A` / `git add .` / `git add -u`**。只 `git add <显式路径>`。
   - 为什么：`-A` 会把未确认是否该跟踪的文件一起提交——`.env`、密钥、token、构建产物、临时文件、别人的改动。这是日常最危险的动作，一次误提交密钥可能不可逆。
@@ -19,7 +21,7 @@
 - **删本地分支只用 `git branch -d`，永不 `-D`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
 - 只删「已合并进集成分支 + 干净」的分支/worktree。
 - 一切经 `scripts/safe-cleanup.sh`，默认 dry-run，`--apply` 才执行。**不要在对话里手工逐个删**，避免漏判保护分支。
-- 删远程分支（`--remote`）需 `.repo-pilot.yml` 里 `allow_remote_cleanup: true` + 用户明确同意；无人值守默认不删远程。
+- 删远程分支（`--remote`）需 `.pilot.yml` 里 `allow_remote_cleanup: true` + 用户明确同意；无人值守默认不删远程。
 - 永不碰：当前分支、集成分支、主干、protected 前缀（release/hotfix…）、脏 worktree 及其远程分支。
 
 ## 危险操作一律先确认

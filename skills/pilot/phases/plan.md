@@ -39,5 +39,5 @@
 ## D. 收尾
 
 - 汇报生成/更新了哪些文档、当前有几个 `READY` 的 Task。
-- 让用户过目 roadmap 与 READY tasks，确认后即可 `repo-pilot run`（或 `/loop 10m repo-pilot run` 跑通宵）。
+- 让用户过目 roadmap 与 READY tasks，确认后即可 `pilot run`（或 `/loop 10m pilot run` 跑通宵）。
 - **不要在 plan 阶段提交任何代码或开 PR**；plan 只产出规划文档。文档要提交时，走 `git add <显式路径>` + 分支 + PR，绝不直推主干。
