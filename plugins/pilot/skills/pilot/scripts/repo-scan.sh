@@ -38,8 +38,12 @@ if [ -z "$integration" ]; then
 fi
 [ -z "$integration" ] && integration="$current_branch"
 
-# Dirty working tree.
-dirty_count="$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+# Dirty working tree. dirty = tracked changes only (staged + unstaged), so it is
+# DISJOINT from untracked below — otherwise a lone new file shows as dirty=1 +
+# untracked=1 and reads like two separate problems. Untracked is reported on its
+# own line so callers can judge "working tree has uncommitted *tracked* edits"
+# (the signal run/ cares about) without the untracked superset inflating it.
+dirty_count="$(git status --porcelain --untracked-files=no 2>/dev/null | wc -l | tr -d ' ')"
 untracked_count="$(git ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')"
 
 # Branch counts.

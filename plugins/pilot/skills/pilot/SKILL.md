@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.0.0
+version: 1.0.1
 description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=单轮开发循环（挑 READY task→开发→自测→对抗 review→PR→合并 preview），可被 /loop 反复调用跑通宵。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
