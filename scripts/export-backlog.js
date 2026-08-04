@@ -206,11 +206,15 @@ async function exportStaticBacklog() {
   if (serverExited) throw new Error(`Local backlog server ${serverExited}`);
 
   try {
-    await fs.rm(distDir, { recursive: true, force: true });
-    await fs.mkdir(apiDir, { recursive: true });
-
+    // Prove the server actually answers BEFORE destroying the existing dist/. Wiping first means a
+    // failed run leaves an empty dist/ — and since dist/ is committed and deployed verbatim, anyone
+    // who then commits "what the build produced" wipes the live site. Fetching index.html first
+    // costs one request and converts that outage into a plain error with dist/ untouched.
     console.log('Fetching index.html...');
     const indexBuffer = await fetchFromLocal('/');
+
+    await fs.rm(distDir, { recursive: true, force: true });
+    await fs.mkdir(apiDir, { recursive: true });
     let indexHtml = indexBuffer.toString('utf-8');
 
     // Parse static assets loaded in index.html (CSS, JS, icons)
