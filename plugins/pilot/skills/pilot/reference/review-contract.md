@@ -22,9 +22,18 @@ pilot **不裁决自己的 PR**。它依赖一个**外部评审服务**,并且�
 用 `scripts/pr-monitor.sh`(读 `reviewDecision`,查一次就返回,不自我驱动)。按场景选驱动方式:
 
 - **刚开完 PR、想立刻盯到回执** → 用 **Monitor 工具**轮询
-  `bash <skill>/scripts/pr-monitor.sh --pr <n>`,**3–5 分钟一次**,
-  直到 `reviewDecision` 不再是 `PENDING` 才唤醒。最省:只在状态真变了才起一整轮,
-  且与开 PR 的是同一个上下文。
+  `bash <skill>/scripts/pr-monitor.sh --pr <n>`,**3–5 分钟一次**。
+  **必须同时设一个 30 分钟的硬上限**(`timeout_ms` 或循环计数),满足任一条件即唤醒:
+  - `reviewDecision` 变成 `APPROVED` 或 `CHANGES_REQUESTED` → 按裁决行动;
+  - **到 30 分钟仍是 `PENDING`** → 走下面的「超时了怎么办」。
+
+  **不设上限会让 agent 永久睡死**:契约承诺的是「有服务时约 20 分钟」,但服务不存在或
+  没覆盖本仓库时,`PENDING` 会永远是 `PENDING`,没有任何东西来叫醒你。
+  上限不是可选优化,是防止无限等待的唯一机制。
+
+  > `pr-monitor.sh` 把 `REVIEW_REQUIRED` 和空值**都归一化成 `PENDING`** ——
+  > 它们含义相同(还没有裁决),不归一化会让「不是 PENDING 就唤醒」在没有裁决时误触发,
+  > 醒来却找不到对应分支。**只有 `APPROVED` / `CHANGES_REQUESTED` 才算裁决。**
 - **通宵推多个 task** → `/loop 10m pilot run`,每轮 `run` 开头自动扫所有 open PR 的回执并行动。
 - 想比固定间隔更聪明 → `ScheduleWakeup` 自排下次唤醒。
 
@@ -52,7 +61,8 @@ pilot **不裁决自己的 PR**。它依赖一个**外部评审服务**,并且�
 
 ## 超时了怎么办
 
-超过约定时间(比如 30 分钟)仍是 `PENDING`,说明外部评审服务这会儿没在服务本仓库。这**不是**
+超过约定时间(**30 分钟**)仍是 `PENDING`,说明外部评审服务这会儿没在服务本仓库。
+(PR 已开多久由 `pr-monitor.sh` 的 `age_min` 字段直接给出,不用另外查。)这**不是**
 pilot 能修的,也不要反复重试或猜测原因。做法:
 
 1. **如实告诉用户**:「PR #N 已开 X 分钟仍无评审,外部评审服务可能未覆盖本仓库或未运行」,

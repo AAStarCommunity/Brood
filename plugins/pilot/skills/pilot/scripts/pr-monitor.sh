@@ -24,12 +24,15 @@ fi
 pr=""
 [ "${1:-}" = "--pr" ] && pr="${2:-}"
 
-fields="number,title,headRefName,reviewDecision,mergeable,isDraft,url,statusCheckRollup"
+# createdAt is needed by the stale-PR path: the docs tell the agent to report "PR #N has been
+# open X minutes", and it cannot know X unless we return it here.
+fields="number,title,headRefName,reviewDecision,mergeable,isDraft,url,statusCheckRollup,createdAt"
 
 if [ -n "$pr" ]; then
   gh pr view "$pr" --json "$fields" --jq '
     "PR #\(.number) [\(.headRefName)] \(.title)\n" +
-    "  reviewDecision=\(.reviewDecision // "PENDING")  mergeable=\(.mergeable)  draft=\(.isDraft)\n" +
+    "  reviewDecision=\(if (.reviewDecision // "") | . == "" or . == "REVIEW_REQUIRED" then "PENDING" else .reviewDecision end)"
+  + "  age_min=\(((now - (.createdAt|fromdateiso8601))/60)|floor)  mergeable=\(.mergeable)  draft=\(.isDraft)\n" +
     "  checks=\([.statusCheckRollup[]? | .conclusion // .state] | join(",") | if . == "" then "none" else . end)\n" +
     "  \(.url)"'
   exit 0
@@ -42,5 +45,6 @@ if [ "$count" = "0" ]; then
   exit 0
 fi
 gh pr list --author "@me" --state open --json "$fields" --jq '.[] |
-  "PR #\(.number) [\(.headRefName)]  decision=\(.reviewDecision // "PENDING")  draft=\(.isDraft)\n" +
+  "PR #\(.number) [\(.headRefName)]  decision=\(if (.reviewDecision // "") | . == "" or . == "REVIEW_REQUIRED" then "PENDING" else .reviewDecision end)"
+  + "  age_min=\(((now - (.createdAt|fromdateiso8601))/60)|floor)  draft=\(.isDraft)\n" +
   "  checks=\([.statusCheckRollup[]? | .conclusion // .state] | join(",") | if . == "" then "none" else . end)  \(.url)"'

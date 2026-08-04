@@ -1,7 +1,7 @@
 ---
 name: pilot
 version: 1.1.0
-description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由后台 daemon 评审要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
+description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由外部评审服务裁决要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
 
@@ -14,7 +14,7 @@ pilot status   # 汇报进展 + 安全清理已合并分支/worktree（默认 dr
 pilot plan     # Milestone(M1) → Feature(F1.1) → Task(T1.1.1) 三级规划
 pilot run      # 交出一条填好的 /goal 交付契约,然后照它一路做到交付(起跑前文档门禁)
 pilot resume   # run 的别名:优先处理待办 PR,再挑新 task
-pilot doctor   # 检查本仓库是否具备自动运行条件
+pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**不含**外部评审服务
 ```
 
 ## 分派（第一步永远先做这件事）
@@ -65,11 +65,11 @@ docs_dir: docs/agent         # 规划/运行态文档目录
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。
 
-**迁移兜底（重要）**：本 skill 曾用 `.repo-pilot.yml`。读配置时：**先读 `.pilot.yml`；若不存在但 `.repo-pilot.yml` 存在，则读旧文件并明确警告用户「`.repo-pilot.yml` 已弃用，请 `git mv .repo-pilot.yml .pilot.yml`」**。绝不静默忽略旧文件——某些仓库的 `.repo-pilot.yml` 里 `integration_branch` 是真实的（如 `master`），静默忽略会让 `run` 用错集成分支、甚至无人值守时把 daemon 的 APPROVE 直合进主干。**若两个文件同时存在且 `integration_branch` 不一致，视为危险，停下让用户先合并/删除旧文件（见 doctor 第 2b 步）。**
+**迁移兜底（重要）**：本 skill 曾用 `.repo-pilot.yml`。读配置时：**先读 `.pilot.yml`；若不存在但 `.repo-pilot.yml` 存在，则读旧文件并明确警告用户「`.repo-pilot.yml` 已弃用，请 `git mv .repo-pilot.yml .pilot.yml`」**。绝不静默忽略旧文件——某些仓库的 `.repo-pilot.yml` 里 `integration_branch` 是真实的（如 `master`），静默忽略会让 `run` 用错集成分支、甚至无人值守时把 外部评审的 APPROVE 直合进主干。**若两个文件同时存在且 `integration_branch` 不一致，视为危险，停下让用户先合并/删除旧文件（见 doctor 第 2b 步）。**
 
 ## doctor（内联，不改仓库）
 
-轻量自检，只读并汇报，供用户判断能否开启无人值守：
+轻量自检，只读并汇报。**只覆盖本地可验证的条件**——外部评审服务是否真的会来评审,doctor 无从探测(那正是解耦的代价与目的),所以它的结论只能是「本地就绪」,**不等于「PR 一定会被自动评审」**。汇报时必须把这条界限说清楚,不要让用户以为万事俱备:
 
 1. `git rev-parse --is-inside-work-tree` — 是否 git 仓库。
 2. `.pilot.yml` 是否存在；不存在则**询问用户**是否用默认值创建（复制 `templates/pilot.example.yml`，把 `base_branch`/`integration_branch` 填真实值）。
@@ -86,7 +86,7 @@ docs_dir: docs/agent         # 规划/运行态文档目录
    契约见 `reference/review-contract.md`——开 PR 后约 20 分钟内出裁决。pilot 只负责盯自己 PR 的状态。
    汇报时提示一句：若开 PR 后长时间没有裁决，说明该服务这会儿没覆盖本仓库，需要人工 review，
    **这不是 pilot 能修的，也不要自己给自己 approve**。
-7. 汇报一张「就绪 / 待补」清单，不擅自修改。
+7. 汇报一张「就绪 / 待补」清单，不擅自修改。**措辞要诚实**:说「本地就绪」,不要说「可以无人值守跑到底」——外部评审是否会来,doctor 查不到;PR 长时间无裁决时按 `reference/review-contract.md` 的超时路径处理。
 
 ## 阶段间关系
 

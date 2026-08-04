@@ -38,7 +38,7 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 3. **把整条命令放在回复最显眼处，请用户直接执行**，并说明「执行后我就按这个契约一路做到交付」。
 
 那五个 `【】` 段不是口号，是操作契约，各锁一个失效模式：怎么用 `docs/agent/` 的规划、怎么验证才
-算做完、PR 由后台 daemon 评审要怎么等、等待期间继续干什么、什么时候才允许停。**少写哪段就会
+算做完、PR 由外部评审服务裁决要怎么等、等待期间继续干什么、什么时候才允许停。**少写哪段就会
 退化成哪种毛病**（见 `goal.md` 末尾对照表）。
 
 > **为什么是「交给用户执行」而不是「我自己调用」**：斜杠命令由 harness 派发；本 skill 的
@@ -77,12 +77,12 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
   合并后：把对应 Task 在 `tasks.md` 标 `DONE`、更新 `progress.md`，运行
   `bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--protect "<protect_patterns>"] [--remote-name <remote>] --apply`
   清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**做完回到主循环顶端,继续下一项。**
-- **`decision=CHANGES_REQUESTED`** → 读全部 review 意见（`gh pr view <n> --comments`），**先做中立 triage（见 `reference/review-triage.md`）**：装上本仓库业务上下文（CLAUDE.md / docs/agent / 领域文档），把每条意见分成 A 该修 / B 不重要 / C 缺业务上下文判错了 / D 过激 nitpick。评审 daemon 是独立进程、没有业务背景,你有——**既不盲改也不盲拒**。
-  - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh push <remote> <branch>`（新 commit 触发 daemon 再评审）。
+- **`decision=CHANGES_REQUESTED`** → 读全部 review 意见（`gh pr view <n> --comments`），**先做中立 triage（见 `reference/review-triage.md`）**：装上本仓库业务上下文（CLAUDE.md / docs/agent / 领域文档），把每条意见分成 A 该修 / B 不重要 / C 缺业务上下文判错了 / D 过激 nitpick。外部评审是独立的、没有业务背景,你有——**既不盲改也不盲拒**。
+  - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh push <remote> <branch>`（推新 commit 自动触发再评审）。
   - **B（真问题但不阻塞）/ 非 trivial 的 D 里决定要做的** → **记进跟进账本,绝不丢**：
     `bash <skill>/scripts/followups.sh add --docs-dir <docs_dir> --class B --source "PR#<n>" --desc "<要做什么>"`。
     **不在本 PR 里做**——留到主线全清后批量合成一个 cleanup PR（见 §2.5）。
-  - **C / 不做的 D** → **不改**，`gh pr comment <n>` 回一条讲清业务理由（让 daemon 下一轮和人类都看到）。
+  - **C / 不做的 D** → **不改**，`gh pr comment <n>` 回一条讲清业务理由（让下一轮评审和人类都看到）。
   - 把 Task 标 `CHANGES_REQUESTED→IN_PROGRESS`，更新 progress.md。**把 followups.md 一起 `git-guard.sh add` 进本次 commit**（账本随分支合并落库,不留在工作区）。**做完回到主循环顶端,继续下一项。**
 - **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add --docs-dir <docs_dir>` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**做完回到主循环顶端,继续下一项。**
 - **`decision=PENDING`**（还没拿到裁决）→ 正常,按契约还在 20 分钟窗口内。按 §PR 监控节奏继续等,**不要在 PENDING 的 PR 上瞎改**,也不要因此停下——回主循环做下一个 task。
@@ -145,8 +145,10 @@ pilot 这一侧只有一件事:**轮询自己 PR 的状态**。
    真正的监控 = 有东西按节奏反复调它、状态变了再唤醒你行动。按场景选驱动方式:
    - **默认(刚开完 PR、想立刻盯到回执)→ 用 Monitor 工具**:轮询
      `bash <skill>/scripts/pr-monitor.sh --pr <n>`,**3–5 分钟一次**,
-     **直到 `reviewDecision` 不再是 `PENDING` 才唤醒**,然后回 §1 按结果行动。
-     最省:只在状态真变了才起一整轮,且和开 PR 的是同一个上下文。
+     **并设 30 分钟硬上限**:拿到 `APPROVED`/`CHANGES_REQUESTED` 就唤醒回 §1 行动;
+     **到点仍是 `PENDING` 也要唤醒**,走第 3 步的超时处理。
+     没有上限,服务不存在时 `PENDING` 永远不变,agent 会无限期睡死。
+     (`REVIEW_REQUIRED` 与空值已在脚本里归一化为 `PENDING`——它们都表示「还没有裁决」。)
    - **通宵推多个 task → `/loop 10m pilot run`**:每轮 `run` 开头的 §1 自动扫所有 open PR 的回执并行动。
    - 想比固定间隔更聪明地退避 → `ScheduleWakeup` 自排下次唤醒。
 
@@ -155,7 +157,7 @@ pilot 这一侧只有一件事:**轮询自己 PR 的状态**。
 2. **等待期间继续干活**:等回执**不算停工**。回主循环挑下一个 READY task 开工——
    一个 PR 卡住不该让整条线停摆。
 
-3. **明显超时(比如 30 分钟)仍 `PENDING`**:说明外部评审服务这会儿没在覆盖本仓库。
+3. **到 30 分钟上限仍 `PENDING`**(PR 已开多久看 `pr-monitor.sh` 的 `age_min`):说明外部评审服务这会儿没在覆盖本仓库。
    这**不是 pilot 能修的**,别反复重试、别猜原因、更别自己给自己 approve。
    → **如实告诉用户**「PR #N 已开 X 分钟仍无评审,可能需要人工 review」并给出链接,
    然后**回主循环做下一个 task**,不要空转。

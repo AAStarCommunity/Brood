@@ -6,7 +6,7 @@
 pilot status   # 汇报进展 + 安全清理已合并分支/worktree（默认 dry-run）
 pilot plan     # 建立/汇报 Milestone(M1) → Feature(F1.1) → Task(T1.1.1)
 pilot run      # 单轮开发循环，可被 /loop 反复调用跑通宵
-pilot doctor   # 自检：是否具备自动运行条件
+pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**不含**外部评审服务
 ```
 
 ## 为什么用它
@@ -33,7 +33,7 @@ pilot doctor   # 自检：是否具备自动运行条件
 - **首次接手**：`doctor` → `status` → `plan`，人工过目 roadmap/READY tasks 后再开 `run`。
 - **有人看着推进**：直接 `pilot run` 一轮一轮开，你审每个 PR 的回执。
 - **通宵无人值守**：`/loop 10m pilot run`——每轮先处理待办 PR 回执、再挑新 task；裁决由外部评审服务给出（见 `reference/review-contract.md`）。
-- **review 后端成本**：外部评审服务的算力开销由它自己承担与调优，pilot 不参与也不感知（历史上这里写过具体后端的限流建议，属于实现细节，已移除）。DeepSeek 2 轮几乎零成本。
+- **review 后端成本**：外部评审服务的算力开销由它自己承担与调优，pilot 不参与也不感知（历史上这里写过具体后端的名称与限流建议，属于实现细节，已移除）。
 - **不适合**：一次改多个不相关 task；需人拍板的产品/架构决策（pilot 会把这类 task 标 `BLOCKED`，绝不擅自替你决定）。
 
 ## 安装
