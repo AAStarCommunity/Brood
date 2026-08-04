@@ -1,0 +1,15 @@
+{
+  "name": "brood",
+  "owner": {
+    "name": "AAStarCommunity",
+    "url": "https://github.com/AAStarCommunity"
+  },
+  "plugins": [
+    {
+      "name": "pilot",
+      "source": "./plugins/pilot",
+      "description": "仓库级开发操作系统:status→plan→run 单轮/通宵开发循环;git-guard 危险动作硬拦截 + 外部 PR 评审 daemon 集成 + auto-commit 安全网。",
+      "author": { "name": "AAStarCommunity" }
+    }
+  ]
+}
