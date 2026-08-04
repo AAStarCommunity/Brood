@@ -1,6 +1,6 @@
 {
   "name": "pilot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "仓库级开发操作系统:status→plan→run,git-guard 硬护栏 + PR 评审 daemon 集成 + auto-commit 安全网。",
   "author": { "name": "AAStarCommunity" },
   "homepage": "https://github.com/AAStarCommunity/Brood",
