@@ -92,7 +92,7 @@ pilot/
 ├── phases/{status,plan,run}.md
 ├── scripts/                 # 确定性核心（read-only 扫描 / 安全清理 / PR 监控）
 │   ├── repo-scan.sh  safe-cleanup.sh  pr-monitor.sh
-├── reference/               # git-safety / pr-quality / pr-review-loop / task-schema
+├── reference/               # git-safety / pr-quality / review-contract / task-schema / review-triage / followup-ledger
 ├── templates/               # roadmap/tasks/progress/acceptance/architecture/spec/research + .pilot.yml
 ├── install.sh
 └── README.md
