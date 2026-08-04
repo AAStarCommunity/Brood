@@ -1,6 +1,6 @@
 ---
 id: TASK-40
-title: pilot: PreToolUse hook mechanically blocks git add -A / push-to-main
+title: "pilot: PreToolUse hook mechanically blocks git add -A / push-to-main"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:33'

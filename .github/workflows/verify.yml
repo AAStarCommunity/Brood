@@ -1,0 +1,68 @@
+name: Verify
+
+# Guards for three failure modes that all reached `main` (or nearly did) during PR #22/#34/#35,
+# each one invisible until a human reviewer happened to catch it:
+#
+#   1. dist/ is hand-committed and deployed VERBATIM (deploy.yml uploads it with no build step),
+#      so a content change whose dist/ wasn't regenerated ships a stale site — the fix looks
+#      merged but never reaches users.
+#   2. A task's YAML frontmatter with an unquoted ':' in the title makes the backlog parser emit a
+#      blank record that still carries the raw markdown; that empty record shipped into the public
+#      search index. One careless batch broke 10 files at once.
+#   3. check-docs.sh is the fail-closed gate an unattended `pilot run` relies on. It silently
+#      failed OPEN on a non-integer threshold — a gate that reports safety it never verified.
+#
+# Runs on PRs and pushes to main so a direct push can't bypass it either.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  task-yaml:
+    name: Task frontmatter is valid YAML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      - name: Parse every backlog/tasks/*.md frontmatter
+        run: python3 scripts/ci/check-task-yaml.py
+
+  docs-gate:
+    name: check-docs.sh fails closed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert the gate rejects bad input and blank templates
+        run: bash scripts/ci/check-docs-gate.sh
+
+  dist-reproducible:
+    name: dist/ matches a fresh build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild dist/ and diff against what is committed
+        run: |
+          set -euo pipefail
+          npm run build
+          # The export writes a build timestamp into version.json on every run; that field alone
+          # would make the diff fail forever, so it is the one documented exclusion.
+          if ! git diff --quiet -- dist/ ':(exclude)dist/api/version.json'; then
+            echo "::error::dist/ is stale — run 'pnpm run build' and commit the result."
+            echo "Files that differ from a fresh build:"
+            git diff --stat -- dist/ ':(exclude)dist/api/version.json'
+            echo "--- diff (first 200 lines) ---"
+            git diff -- dist/ ':(exclude)dist/api/version.json' | head -200
+            exit 1
+          fi
+          echo "dist/ is reproducible from the committed sources."

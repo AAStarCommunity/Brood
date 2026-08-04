@@ -1,6 +1,6 @@
 ---
 id: TASK-49
-title: auto-commit safety net: separate hardened PR before merging into pilot
+title: "auto-commit safety net: separate hardened PR before merging into pilot"
 status: To Do
 assignee: []
 created_date: '2026-08-03 17:10'

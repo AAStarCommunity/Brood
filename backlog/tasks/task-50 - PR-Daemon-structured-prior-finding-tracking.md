@@ -1,6 +1,6 @@
 ---
 id: TASK-50
-title: PR-Daemon: structured prior-finding tracking (root-fix 10-round convergence)
+title: "PR-Daemon: structured prior-finding tracking (root-fix 10-round convergence)"
 status: To Do
 assignee: []
 created_date: '2026-08-04 03:26'

@@ -1,6 +1,6 @@
 ---
 id: TASK-46
-title: PR-Daemon: finalize as atomic transaction (root-fix SQLite dup-review)
+title: "PR-Daemon: finalize as atomic transaction (root-fix SQLite dup-review)"
 status: To Do
 assignee: []
 created_date: '2026-08-03 13:47'

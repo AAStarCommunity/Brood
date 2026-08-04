@@ -1,6 +1,6 @@
 ---
 id: TASK-43
-title: Money/gas tasks: machine-verifiable acceptance criteria
+title: "Money/gas tasks: machine-verifiable acceptance criteria"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:33'

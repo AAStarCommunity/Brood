@@ -1,6 +1,6 @@
 ---
 id: TASK-41
-title: PR-Daemon: eliminate scan_error (proxy) + GraphQL retry-backoff
+title: "PR-Daemon: eliminate scan_error (proxy) + GraphQL retry-backoff"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:33'
