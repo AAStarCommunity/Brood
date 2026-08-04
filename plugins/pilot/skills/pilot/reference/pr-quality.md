@@ -1,6 +1,6 @@
 # PR 质量：自测 + 对抗式 review（PR 前必做）
 
-一个 PR 在开出去之前，必须已经过「自己这一关」。目标是让外部 pr-daemon 尽量一次 approve，而不是来回 request-change。
+一个 PR 在开出去之前，必须已经过「自己这一关」。目标是让外部评审尽量一次 approve，而不是来回 request-change。
 
 ## 1. 自测（顺序不能省）
 1. **针对性测试**：先跑与本次改动直接相关的测试。
@@ -33,10 +33,10 @@
 ## 4. 开 PR
 - base = 集成分支（默认 `preview`），不是主干。
 - 标题 conventional；body 写：解决哪个 Task、验收命令 + 自测结果、对抗 review 结论、有无已知遗留。
-- 开完 PR 交给 pr-daemon，按回执行动（见 `pr-review-loop.md`）。**绝不自己直合。**
+- 开完 PR 后盯状态，按裁决行动（见 `review-contract.md`）。**绝不自己直合。**
 
 ## 收到 CHANGES_REQUESTED 之后
 1. 读**全部** review 意见（`gh pr view <n> --comments`），逐条理解，别只挑简单的改。
 2. 修 → 重新自测（第 1 节）→ 自审（第 3 节）。
-3. `git add <显式路径>` + commit + push 新 commit —— pr-daemon 会自动再 review，无需手动请求。
+3. `git add <显式路径>` + commit + push 新 commit —— 推新 commit 会自动触发再评审，无需手动请求。
 4. 更新 tasks.md/progress.md 状态。

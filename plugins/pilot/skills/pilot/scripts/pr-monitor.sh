@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # pr-monitor.sh — report review state of MY open PRs on this repo, compactly.
 #
-# pilot does NOT review its own PRs. An external `pr-daemon` loop (default
-# every 10 min, 5 min when commits are frequent) polls a list of repos and posts
-# APPROVE / REQUEST_CHANGES. This script is the "did my PR get reviewed yet?"
-# monitor — poll it at 5/10/15 min after opening a PR, then act on the verdict.
+# pilot does NOT review its own PRs — an external review service does, under the contract in
+# reference/review-contract.md: a PR is queued within ~5-10 min and a verdict lands within ~5-10
+# more, so ~20 min end to end (large PRs excepted). What that service *is*, where it runs, and
+# which repos it covers are operational details pilot deliberately does not know about.
+#
+# This script is only the "did my PR get a verdict yet?" probe — one query, no loop of its own.
+# Poll it every 3-5 min after opening a PR (via the Monitor tool or /loop), then act on the verdict.
 #
 # reviewDecision values: APPROVED | CHANGES_REQUESTED | REVIEW_REQUIRED | (empty)
 #

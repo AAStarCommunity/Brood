@@ -17,9 +17,9 @@ BACKLOG ──► READY ──► IN_PROGRESS ──► PR_OPEN ──► APPROV
 | `READY` | 依赖满足、验收标准明确，可被 `run` 挑中开工 |
 | `IN_PROGRESS` | 正在某个分支/worktree 上开发 |
 | `BLOCKED` | 卡在产品决策/外部依赖/未澄清问题上；progress.md 记待决问题 |
-| `PR_OPEN` | 已开 PR，等 pr-daemon review |
-| `CHANGES_REQUESTED` | pr-daemon 要求改；读意见后修，回到 IN_PROGRESS |
-| `APPROVED` | pr-daemon 通过，待合并进集成分支 |
+| `PR_OPEN` | 已开 PR，等外部评审裁决 |
+| `CHANGES_REQUESTED` | 评审要求改；读意见后 triage 再修，回到 IN_PROGRESS |
+| `APPROVED` | 评审通过，待合并进集成分支 |
 | `DONE` | 已合并进集成分支，分支/worktree 已清理 |
 
 `run` 每轮：先处理 `CHANGES_REQUESTED` / `APPROVED` 的 PR，再挑一个 `READY` 开工。

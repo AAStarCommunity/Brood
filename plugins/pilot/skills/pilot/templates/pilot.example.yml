@@ -10,4 +10,4 @@ remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true（无人值守默认不删远程）
 docs_dir: docs/agent         # 规划/运行态文档目录
 
-# 本仓库须在 pr-daemon 的轮询列表里，PR 才会被自动 review（见 reference/pr-review-loop.md）
+# PR 的裁决由外部评审服务给出，pilot 只负责盯状态（契约见 reference/review-contract.md）

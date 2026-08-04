@@ -14,7 +14,7 @@ pilot doctor   # 自检：是否具备自动运行条件
 
 - **安全清理**：只删「已合并进集成分支 + 干净」的分支/worktree；只 `git branch -d`（永不 `-D`）；默认 dry-run，`--apply` 才动手；护住主干/集成/当前/protected/脏 worktree。逻辑全在 `scripts/safe-cleanup.sh`，不靠模型临场判断。
 - **PR 纪律**：绝不 `git add -A`；绝不直推/直合主干；一个 task = 一个分支 = 一个 worktree = 一个 PR；PR 前必自测 + 对抗式 review。
-- **外部 review 回路（已生产验证）**：pilot 不自评 PR——开好 PR 后调 `scripts/ensure-pr-daemon.sh`（**幂等**：在跑 no-op、没跑才拉起，从任意仓库触发都只有一个实例）启动 PR-Daemon。daemon 按风险分流：琐碎（docs/依赖）走 DeepSeek 2 轮、涉代码/安全走**真 Opus R2/R4 + Codex R3** 的 4 轮 PK；draft 与 `[WIP]`/`PAUSED` 自动跳过；`head` 去重不重评。本仓库只收回执 + approve 后合并（见 `reference/pr-review-loop.md`）。
+- **外部 review 回路（已生产验证）**：pilot **不自评 PR**——开好 PR 后只盯自己 PR 的状态（`scripts/pr-monitor.sh`，3–5 分钟一次）。裁决由**外部评审服务**给出，契约见 `reference/review-contract.md`：排队 5–10 分钟、评审 5–10 分钟，通常 20 分钟内出 `APPROVED`/`CHANGES_REQUESTED`（超大 PR 例外）。推新 commit 自动触发再评审。**那个服务是什么、装在哪、覆盖哪些仓库，pilot 一概不知也不启动**——只依赖这份契约。
 - **可被 /loop 驱动跑通宵**：`pilot run` 是单轮迭代，`/loop 10m pilot run` 即可持续推进 READY tasks。
 
 ## 能力总览
@@ -32,8 +32,8 @@ pilot doctor   # 自检：是否具备自动运行条件
 
 - **首次接手**：`doctor` → `status` → `plan`，人工过目 roadmap/READY tasks 后再开 `run`。
 - **有人看着推进**：直接 `pilot run` 一轮一轮开，你审每个 PR 的回执。
-- **通宵无人值守**：`/loop 10m pilot run`——每轮先处理待办 PR 回执、再挑新 task；配合 PR-Daemon 后台自动 review。
-- **review 后端成本**：PR-Daemon 跑真 Opus/Codex 会占用你的 Claude 订阅额度、并和交互式使用抢限流。忙时限并发（实测 ~2–3 并发即触发 Max 限流）或设时间窗口；琐碎 PR 走 DeepSeek 2 轮几乎零成本。
+- **通宵无人值守**：`/loop 10m pilot run`——每轮先处理待办 PR 回执、再挑新 task；裁决由外部评审服务给出（见 `reference/review-contract.md`）。
+- **review 后端成本**：外部评审服务的算力开销由它自己承担与调优，pilot 不参与也不感知（历史上这里写过具体后端的限流建议，属于实现细节，已移除）。DeepSeek 2 轮几乎零成本。
 - **不适合**：一次改多个不相关 task；需人拍板的产品/架构决策（pilot 会把这类 task 标 `BLOCKED`，绝不擅自替你决定）。
 
 ## 安装
@@ -67,7 +67,7 @@ bash install.sh --copy         # 复制而非软链，脱离源仓库独立存�
 
 ## 首次接手一个仓库
 ```bash
-pilot doctor     # 看缺什么（.pilot.yml / docs / 集成分支 / gh / pr-daemon 列表）
+pilot doctor     # 看缺什么（.pilot.yml / docs / 集成分支 / gh / hook）
 pilot status     # 盘点 + 清理战场
 pilot plan       # 建立/补齐 M→F→T 规划与文档
 # 人工过目 roadmap 与 READY tasks 后：

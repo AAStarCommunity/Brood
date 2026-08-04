@@ -85,9 +85,9 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
   - **C / 不做的 D** → **不改**，`gh pr comment <n>` 回一条讲清业务理由（让 daemon 下一轮和人类都看到）。
   - 把 Task 标 `CHANGES_REQUESTED→IN_PROGRESS`，更新 progress.md。**把 followups.md 一起 `git-guard.sh add` 进本次 commit**（账本随分支合并落库,不留在工作区）。**做完回到主循环顶端,继续下一项。**
 - **`decision=APPROVED` 但带 review comments** → 先按上面 APPROVED 分支**合并**（comment 不阻塞合并）。合并后对每条 comment 过 triage：A/B 用 `followups.sh add --docs-dir <docs_dir>` 记进账本；C/D 在 PR 上回一句说明即可，不在已合并分支补提。**做完回到主循环顶端,继续下一项。**
-- **`decision=PENDING`**（还没被 review）→ 说明还没轮到或 daemon 没在跑。**先确保 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（没在跑就拉起，在跑就 no-op），然后按 §PR 监控节奏等 5–10 分钟再看回执。不要在 PENDING 的 PR 上瞎改。
+- **`decision=PENDING`**（还没拿到裁决）→ 正常,按契约还在 20 分钟窗口内。按 §PR 监控节奏继续等,**不要在 PENDING 的 PR 上瞎改**,也不要因此停下——回主循环做下一个 task。
 
-> review 由**外部 pr-daemon** 做（见 `reference/pr-review-loop.md`），本 skill 不自评自审 PR 的最终裁决。我只负责：开好 PR、按回执修、approve 后合并。
+> 裁决由**外部评审服务**做（契约见 `reference/review-contract.md`），本 skill 不自评自审 PR 的最终裁决。我只负责：开好 PR、盯住状态、按回执修、approve 后合并。
 
 ### 2. 无待处理回执 → 挑一个新 READY task 开工
 从 `tasks.md` 选**优先级最高、依赖已满足**的 `READY` task（一次只选一个）：
@@ -99,7 +99,7 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
 7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
 8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`（body 写清 task、验收命令、自测结果）。**绝不 `--admin` 直合，绝不推主干。**
-9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**开完 PR 立刻确保评审 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`（否则没人 review，PR 会一直挂着）。**回到主循环顶端继续**，进入 §PR 监控节奏等回执。
+9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**回到主循环顶端继续**——同时按 §PR 监控节奏盯这个 PR 的裁决（外部评审服务会处理它,见 `reference/review-contract.md`;pilot 不启动也不关心那个服务）。
 
 ### 2.5 无 READY task 了 → 批量清跟进账本（主线做完才做，绝不提前）
 **只有当 §2 没有可开工的主线 READY task**（都 DONE 或在 PR_OPEN/BLOCKED）时，才处理跟进账本：
@@ -133,31 +133,37 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 
 ## PR 监控节奏（提交 PR 后怎么等回执）
 
-**核心规则：只要提了 PR，就要监控它自己的状态,直到拿到回执再决定下一步。** pilot 不自评 PR——
-评审由外部 PR-Daemon 后台 loop 做（详见 `reference/pr-review-loop.md`）。它默认 **10 分钟**一轮
-（提交频繁可 5 分钟），是一个脱离终端的 `nohup` 后台进程,独立于任何 Claude 对话存活。
+**核心规则：只要提了 PR，就要盯住它的状态,直到拿到裁决再决定下一步。**
 
-开完一个 PR 之后的等待与升级流程：
+pilot **不裁决自己的 PR**——外部评审服务做这件事,契约见
+[`reference/review-contract.md`](../reference/review-contract.md):
+**开 PR 后 5–10 分钟内排队,再 5–10 分钟出裁决,通常 20 分钟内结束**(超大 PR 例外)。
+那个服务是什么、装在哪、覆盖哪些仓库——**pilot 不知道也不需要知道**,更不去启动它。
+pilot 这一侧只有一件事:**轮询自己 PR 的状态**。
 
-1. **立刻确保 daemon 在线**：`bash <skill>/scripts/ensure-pr-daemon.sh ensure`。没在跑就拉起,在跑就 no-op。
-   **先分清两种失败,补救完全不同**（见 `reference/pr-review-loop.md`）：
-   - **`rc=2` / `not found`** = 本机**根本没装** pr-daemon（它不随 pilot 安装）。重试多少次都没用。
-     → 告诉用户「本机无评审 daemon,此 PR 需人工 review」,给出安装命令,**然后回主循环做下一个 task,
-     不要进入等回执的循环空转**。
-   - **`rc=3` / `not running`** = 装了但没起来 → `ensure` 拉起即可,继续正常等回执。
-   ——不需要跨对话唤醒魔法,daemon 就是个后台进程,拉起来它自己会评审三大组织下所有配置仓库的 open PR。
-2. **盯回执——分清"评审者"和"监控者"两个角色**：评审由 daemon 做（step 1 已拉起）；**"我的 PR 拿到裁决没"由本 skill 自己盯**，脚本是 `pr-monitor.sh`（读 `reviewDecision`，只查一次，不驱动自己）。真正的监控 = 有东西按节奏反复调它、状态变了再唤醒你行动。按场景选驱动方式：
-
-   - **默认（同一会话刚开完一个 PR、想立刻盯到回执）→ 用 Monitor 工具**：轮询 `bash <skill>/scripts/pr-monitor.sh --pr <n>`,退避间隔 5 分钟起,**直到 `reviewDecision` 不再是 `PENDING`（变成 `APPROVED`/`CHANGES_REQUESTED`）才唤醒**,然后回 §1 按结果行动。这是最省的路径——只在状态真的变了才起一整轮,和开 PR 的是同一个上下文。
-   - **通宵推多个 task → `/loop 10m pilot run`**：每 10 分钟重跑一轮,`run` 开头的 §1 自动 `pr-monitor.sh` 扫所有 open PR 的回执并行动。适合"边等这个 PR 边开下一个 task",代价是每轮无论有无变化都起一整个 Claude 轮次。
+1. **盯回执**:脚本是 `pr-monitor.sh`(读 `reviewDecision`,查一次就返回,不自我驱动)。
+   真正的监控 = 有东西按节奏反复调它、状态变了再唤醒你行动。按场景选驱动方式:
+   - **默认(刚开完 PR、想立刻盯到回执)→ 用 Monitor 工具**:轮询
+     `bash <skill>/scripts/pr-monitor.sh --pr <n>`,**3–5 分钟一次**,
+     **直到 `reviewDecision` 不再是 `PENDING` 才唤醒**,然后回 §1 按结果行动。
+     最省:只在状态真变了才起一整轮,且和开 PR 的是同一个上下文。
+   - **通宵推多个 task → `/loop 10m pilot run`**:每轮 `run` 开头的 §1 自动扫所有 open PR 的回执并行动。
    - 想比固定间隔更聪明地退避 → `ScheduleWakeup` 自排下次唤醒。
 
-   > 别用裸 `sleep` 空转终端等回执——那样既占着会话又不省 token。要么 Monitor（条件唤醒）、要么 /loop（定时重跑）。
-3. **等满 5–10 分钟仍 `PENDING`（没被 review）**：极可能是 daemon 挂了或本仓库不在轮询列表。
-   - 先再 `ensure-pr-daemon.sh check`：若 `not running` → `ensure` 重新拉起。
-   - 本仓库**必须在 PR-Daemon 的轮询列表里**回执才会来（`doctor` 会检查）。不在列表 → 提示用户把本仓库加入,否则 PR 永远不会被自动 review。
-   - 拉起后继续下一轮等待,不要在 PENDING 的 PR 上瞎改。
-4. **拿到回执后**回到 §1 按结果行动：APPROVED→合并 / APPROVED+comment→合并+跟进 task / CHANGES_REQUESTED→修改+重推(触发再评审)。
+   > 别用裸 `sleep` 空转终端等回执——既占着会话又不省 token。要么 Monitor(条件唤醒)、要么 /loop(定时重跑)。
+
+2. **等待期间继续干活**:等回执**不算停工**。回主循环挑下一个 READY task 开工——
+   一个 PR 卡住不该让整条线停摆。
+
+3. **明显超时(比如 30 分钟)仍 `PENDING`**:说明外部评审服务这会儿没在覆盖本仓库。
+   这**不是 pilot 能修的**,别反复重试、别猜原因、更别自己给自己 approve。
+   → **如实告诉用户**「PR #N 已开 X 分钟仍无评审,可能需要人工 review」并给出链接,
+   然后**回主循环做下一个 task**,不要空转。
+
+4. **拿到裁决后**回到 §1 按结果行动:
+   `APPROVED`→合并 / `APPROVED`+comment→合并后把 comment 过 triage / `CHANGES_REQUESTED`→triage+修+推。
+   **推新 commit 会自动触发下一轮评审**,回到本节继续等——
+   一个 PR 可能经历多轮「评审→修→再评审」才合并,**每轮都要重新等,别因为等过一次就跳过监控**。
 
 ## 无人值守纪律
 - 遇到影响产品方向/验收/架构的未知 → 把 task 标 `BLOCKED` + 在 progress.md 记待决问题，跳过它做别的，**绝不替用户拍板**。

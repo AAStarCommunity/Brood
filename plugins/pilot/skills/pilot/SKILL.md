@@ -27,7 +27,6 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 | `plan` | `phases/plan.md` | |
 | `run` / `resume` | `phases/run.md` | **发 `/goal` 契约 + 无人值守交付循环**:跑到交付为止,不是一轮就停 |
 | `doctor` | 见下方 §doctor | 轻量自检，不改动仓库 |
-| `review-status` | 见下方 §review-status | 汇报 PR-Daemon 评审进度（只读，任意仓库可调）|
 
 解析后**必须先 Read 对应的 `phases/*.md`**，按其步骤执行；本文件只定义分派与全局硬约束。
 
@@ -62,7 +61,6 @@ protect_patterns: [release, hotfix]   # 额外保护的分支前缀
 remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true
 docs_dir: docs/agent         # 规划/运行态文档目录
-pr_daemon_root: ~/Dev/tools/PR-Daemon  # 外部 PR 评审 daemon 根目录（也可用 $PILOT_PR_DAEMON_ROOT）
 ```
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。
@@ -84,19 +82,11 @@ pr_daemon_root: ~/Dev/tools/PR-Daemon  # 外部 PR 评审 daemon 根目录（也
 4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
 5. `gh auth status` 是否可用（PR 流程需要）。
 5b. **git hook 是否真的在生效**（别假设 commit 有保护）：`bash <skill>/scripts/check-hooks.sh`。常见坑：`core.hooksPath` 指到**另一个 clone** 的 hooks 目录 → pre-commit 密钥扫描根本没跑,commit 裸奔却无人察觉。报 `BYPASSED` 就红着提示,并说明「**不要自动切回 `.githooks`**——扫描器有历史误报会让每次 commit 卡死,得先给已知误报加 baseline/allowlist 降噪,再手动开钩子」。只报告,不擅自 rewire。
-6. **PR 评审 daemon 是否在线**：`bash <skill>/scripts/ensure-pr-daemon.sh check`。**区分两种失败**:`not found`(rc=2)= 本机没装 pr-daemon(**它不随 pilot 安装**,见 `reference/pr-review-loop.md` 的安装与降级说明);`not running`(rc=3)= 装了没跑,`status` 阶段会自动拉起。两者都意味着「现在提 PR 没人 review」,但前者要装、后者只需拉起。根目录默认 `~/Dev/tools/PR-Daemon`，可用 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` 覆盖。
+6. **评审契约提醒**（不探测、不启动任何外部服务）：本仓库的 PR 由**外部评审服务**裁决，
+   契约见 `reference/review-contract.md`——开 PR 后约 20 分钟内出裁决。pilot 只负责盯自己 PR 的状态。
+   汇报时提示一句：若开 PR 后长时间没有裁决，说明该服务这会儿没覆盖本仓库，需要人工 review，
+   **这不是 pilot 能修的，也不要自己给自己 approve**。
 7. 汇报一张「就绪 / 待补」清单，不擅自修改。
-
-## review-status（内联，只读，任意仓库可调）
-
-汇报外部 PR-Daemon 的评审进度，不改任何仓库：
-
-1. 定位 daemon 根目录：`.pilot.yml` 的 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` / 默认 `~/Dev/tools/PR-Daemon`。
-2. 运行 `bash <root>/watch.sh queue`（各状态计数 + 待评队列 + 最近同步时间）。
-3. 若存在 `<root>/reviews/review-eval.tsv`，读其尾部若干行，汇报最近几个 PR 的**耗时 / 后端(2轮deepseek / 4轮real) / rc**。
-4. 三句话内汇报：daemon 在线否、待评队列多少、最近评审节奏。**只读，绝不改仓库。**
-
-> 命令行等价物（无需进 Claude 会话）：shell 别名 `review-status`（= `bash <root>/watch.sh queue`）。
 
 ## 阶段间关系
 
