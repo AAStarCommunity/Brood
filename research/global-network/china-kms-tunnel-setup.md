@@ -1,0 +1,366 @@
+---
+id: doc-8
+title: 🌐 中国社区 KMS 节点隧道部署指南
+status: active
+created_date: "2026-07-07"
+updated_date: "2026-07-07"
+labels:
+  - infrastructure
+  - china
+  - kms
+  - tunnel
+---
+
+# 中国社区 KMS 节点隧道部署指南
+
+> **背景**：AirAccount KMS 默认使用 Cloudflare Tunnel 将 NXP FRDM-IMX93 主板上的 KMS 服务暴露到公网。
+> 但 Cloudflare Tunnel 在中国大陆被 GFW 完全封锁（IP 黑名单 + SNI 检测），中国社区成员无法直接使用。
+> 本指南提供替代方案：通过香港 VPS 中继实现等效的隧道访问。
+>
+> 适用硬件：NXP FRDM-IMX93（家庭部署，无公网 IP，NAT 后面）
+> 更新日期：2026-07-07
+
+---
+
+## 一、为什么 Cloudflare Tunnel 在国内不行
+
+| 问题 | 原因 |
+|------|------|
+| Cloudflare IP 段被封 | `104.16.0.0/12` 等 CF IP 在 GFW 黑名单 |
+| cloudflared SNI 被识别 | SNI 字段含 `cfargotunnel.com`，DPI 直接过滤 |
+| QUIC 端口被封 | 2024-04 GFW 开始精确检测 QUIC SNI |
+| 京东云合作不覆盖 Tunnel | CF × 京东云合作只含 CDN/Workers，不含 Tunnel 产品 |
+
+**GFW 只封锁入站连接，不封锁出站连接。** 解决思路：让 IMX93 主动出站连到香港 VPS，外部请求通过香港 VPS 中转进来。
+
+---
+
+## 二、整体架构
+
+```
+外部调用方（全球任意位置）
+        │
+        ▼
+your-kms.your-domain.com
+（CNAME → relay.aastar.io 或 A → 香港 VPS IP）
+        │
+        ▼
+香港 VPS（frp server，统一中继入口）
+        │
+        │ ← IMX93 主动出站建立的持久隧道
+        │   （出站不受 GFW 限制）
+        ▼
+家里的 NXP FRDM-IMX93
+  └── KMS 服务（:3000）
+      ├── POST /Sign
+      ├── POST /CreateKey
+      └── GET  /health
+```
+
+---
+
+## 三、两种部署模式
+
+### 模式 A：使用 AAstar 提供的共享中继（推荐，适合大多数社区）
+
+AAstar 运营一套共享香港中继基础设施，社区只需：
+1. 在 IMX93 上安装 frp client
+2. 把自己的域名 CNAME 到共享中继
+3. 向 AAstar 申请接入 token
+
+**联系方式**：[Brood Issues](https://github.com/AAStarCommunity/Brood/issues) 申请接入
+
+---
+
+### 模式 B：社区自建香港 VPS 中继（完全独立）
+
+适合有一定技术能力、希望数据主权完全独立的社区。
+
+---
+
+## 四、模式 B 详细部署步骤
+
+### Step 1：购买香港 VPS
+
+| 推荐服务商 | 规格 | 月费 | 备注 |
+|-----------|------|------|------|
+| Vultr（Hong Kong） | 1C/1G/25G | $6 | BGP 优化，三网可用 |
+| DigitalOcean（Singapore） | 1C/1G/25G | $6 | 备选，新加坡延迟略高 |
+| Hetzner（Singapore） | 2C/2G/40G | $5 | 性价比高 |
+
+**要求**：有固定公网 IP，支持开放自定义端口。
+
+---
+
+### Step 2：香港 VPS 安装 frp server
+
+```bash
+# 下载 frp（选择最新版本）
+wget https://github.com/fatedier/frp/releases/download/v0.61.1/frp_0.61.1_linux_amd64.tar.gz
+tar -zxvf frp_0.61.1_linux_amd64.tar.gz
+cd frp_0.61.1_linux_amd64
+
+# 创建配置文件
+cat > frps.toml << 'EOF'
+bindPort = 7000
+vhostHTTPSPort = 443
+auth.token = "your-strong-secret-token"   # 改成自己的密钥
+
+# 日志
+log.to = "/var/log/frps.log"
+log.level = "info"
+EOF
+
+# 把二进制和配置拷到 systemd 单元引用的路径 /opt/frp/
+mkdir -p /opt/frp && cp frps frps.toml /opt/frp/
+
+# 启动（生产环境用 systemd）
+/opt/frp/frps -c /opt/frp/frps.toml
+```
+
+**systemd 服务（开机自启）**：
+
+```ini
+# /etc/systemd/system/frps.service
+[Unit]
+Description=frp server
+After=network.target
+
+[Service]
+ExecStart=/opt/frp/frps -c /opt/frp/frps.toml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl daemon-reload
+systemctl enable frps && systemctl start frps
+```
+
+**开放防火墙端口**：
+```bash
+ufw allow 7000/tcp   # frp 控制端口（内部，可限制 IP）
+ufw allow 443/tcp    # HTTPS 对外
+ufw allow 80/tcp     # HTTP（可选，重定向到 443）
+```
+
+---
+
+### Step 3：IMX93 上安装 frp client
+
+```bash
+# IMX93 是 aarch64，下载对应版本
+wget https://github.com/fatedier/frp/releases/download/v0.61.1/frp_0.61.1_linux_arm64.tar.gz
+tar -zxvf frp_0.61.1_linux_arm64.tar.gz
+cd frp_0.61.1_linux_arm64
+
+# 创建配置文件
+cat > frpc.toml << 'EOF'
+serverAddr = "1.2.3.4"      # 替换为你的香港 VPS IP
+serverPort = 7000
+auth.token = "your-strong-secret-token"   # 与 frps 一致
+
+[[proxies]]
+name = "kms-https"
+type = "https"
+localIP = "127.0.0.1"
+localPort = 3000            # KMS 服务监听端口（明文 HTTP）
+customDomains = ["your-kms.your-domain.com"]   # 你的域名
+# ⚠️ KMS 是明文 HTTP，vhost HTTPS 需在 Step 5 用 https2http 插件终结 TLS
+#    （加插件后用 [proxies.plugin] 的 localAddr 取代上面的 localIP/localPort）
+EOF
+
+# 把二进制和配置拷到 systemd 单元引用的路径 /opt/frp/
+mkdir -p /opt/frp && cp frpc frpc.toml /opt/frp/
+
+# 测试启动
+/opt/frp/frpc -c /opt/frp/frpc.toml
+```
+
+**systemd 服务**（IMX93 上）：
+
+```ini
+# /etc/systemd/system/frpc.service
+[Unit]
+Description=frp client
+After=network.target kms.service
+
+[Service]
+ExecStart=/opt/frp/frpc -c /opt/frp/frpc.toml
+Restart=always
+RestartSec=10
+# frp 断线会自动重连，RestartSec 是本地进程崩溃重启间隔
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl daemon-reload
+systemctl enable frpc && systemctl start frpc
+```
+
+---
+
+### Step 4：DNS 配置
+
+在你的域名服务商处添加：
+
+```
+your-kms.your-domain.com    A    1.2.3.4    TTL 300
+```
+
+**不要开 Cloudflare 橙色云朵（代理）**，直接 A 记录指向香港 VPS。
+
+---
+
+### Step 5：TLS 证书（在 frpc 端 = IMX93 上终结）
+
+KMS 在 IMX93 上只监听明文 HTTP（`:3000`）。frp 的 vhost HTTPS（`type = "https"`）默认是 **SNI 透传**，TLS 在本地服务侧终结——所以证书要用 frpc 端的 **`https2http` 插件**来加载并终结 TLS，再明文转发给 `127.0.0.1:3000`。
+
+> ⚠️ **注意**：frps **不做** vhost HTTPS 的服务端 TLS 终结——`ServerConfig`（`pkg/config/v1/server.go`）只有 `vhostHTTPPort`/`vhostHTTPSPort`/`vhostHTTPTimeout`，**没有** `vhostHTTPSCertFile`/`vhostHTTPSKeyFile` 这类证书字段（截至 frp v0.70.1 仍无；服务端终结 vhost TLS 是官方 issue #3007 尚未实现的 feature request）。`[[httpPlugins]]` 是 frps 的**服务端 manager 插件**（`HTTPPluginOptions{name,addr,path,ops}`，用 HTTP 回调拦截 `Login`/`NewProxy`/`NewUserConn` 等操作），跟 dashboard 和证书都无关。因此 vhost HTTPS 的证书终结走 **frpc 端 `https2http`/`https2https` 插件**（`crtPath`/`keyPath`，见 `pkg/config/v1/proxy_plugin.go`），证书也正好留在 IMX93（NAT 后）。
+
+**申请证书（IMX93 在 NAT 后，用 DNS-01；HTTP-01 standalone 打不进来）**：
+
+```bash
+# 在 IMX93 上（或任一能跑 certbot 的机器签好后 rsync 到 IMX93）
+apt install certbot
+certbot certonly --preferred-challenges dns --manual -d your-kms.your-domain.com
+# 证书路径：
+# /etc/letsencrypt/live/your-kms.your-domain.com/fullchain.pem
+# /etc/letsencrypt/live/your-kms.your-domain.com/privkey.pem
+```
+
+**在 frpc.toml 的 `[[proxies]]` 下改用 `https2http` 插件**（替换 Step 3 里的 `localIP`/`localPort` 直连，二者互斥）：
+
+```toml
+[[proxies]]
+name = "kms-https"
+type = "https"
+customDomains = ["your-kms.your-domain.com"]
+
+# 插件终结 TLS 并把明文转发给本机 KMS
+[proxies.plugin]
+type = "https2http"
+localAddr = "127.0.0.1:3000"
+crtPath = "/etc/letsencrypt/live/your-kms.your-domain.com/fullchain.pem"
+keyPath = "/etc/letsencrypt/live/your-kms.your-domain.com/privkey.pem"
+```
+
+> **简化验证**：调通链路阶段可先不加插件、用 `type = "tcp"` + `remotePort` 裸转发 `:3000`，从 VPS 本机 `curl http://127.0.0.1:<remotePort>/health` 验证通路，再补 TLS 证书。
+
+---
+
+### Step 6：配置 KMS API 鉴权（暴露公网前**必做**）
+
+AirAccount KMS 默认 **fail-closed**：`api_server.rs` 的 `db_api_key_filter` 一旦 `kms.db` 里存在任意 API key，就强制校验每个受保护路由（`/CreateKey`、`/Sign`、`/KeyStatus` 等）的 `x-api-key` 请求头；若一把 key 都没 provision、又没开 open mode，服务启动就会把**所有请求直接 REJECT**（启动日志原文：`No API key provisioned — all requests will be REJECTED until you run \`kms-admin api-key generate\` or set KMS_API_KEY`）。`/health` 是开放路由，不需要 key。
+
+> 🚨 **绝不要**为了"跑通"去设 `KMS_ALLOW_OPEN_MODE=1`。open mode 会**关闭鉴权**（源码注释：DEV/TEST ONLY），把一条公网隧道直接变成**开放签名预言机**——任何人都能调 `/Sign`。生产/社区节点必须用真实 key。
+
+在 IMX93 上生成一把 key（写进 `kms.db`，**只回显一次**，事后无法找回）：
+
+```bash
+# 部署时随二进制一起装到 /usr/local/bin/api-key（见 kms/scripts/deploy.sh）
+api-key generate --label "cn-community-relay"
+# stdout 形如：kms_1a2b3c4d...（kms_ 前缀 + 32 位 hex），妥善保存
+```
+
+然后导出给后续测试与客户端使用（`KMS_API_KEY` 也是 KMS 认可的 env 回退方式）：
+
+```bash
+export KMS_API_KEY=kms_xxxx   # 换成上一步真实回显的 key
+```
+
+> 客户端（DVT 节点 / 外部调用方）每次调受保护路由都要带 `-H "x-api-key: $KMS_API_KEY"`，见下一步验证示例。
+
+---
+
+### Step 7：验证连通性
+
+```bash
+# 在任意外部机器（非中国大陆）测试
+# /health 是开放路由，无需 x-api-key
+curl -X GET https://your-kms.your-domain.com/health
+# 期望返回：{"status":"healthy","service":"kms-api","version":"0.29.0",...}
+
+# 测试建密钥接口（参考 AirAccount kms/test-full-api.sh 的真实请求体）
+# 受保护路由必须带 x-api-key（Step 6 生成的 key）；漏带直接 401
+# PasskeyPublicKey = 04 + 64 字节 hex 的 P-256/secp256k1 公钥
+TEST_PK="04$(openssl rand -hex 64)"
+curl -X POST https://your-kms.your-domain.com/CreateKey \
+  -H "x-api-key: $KMS_API_KEY" \
+  -H "x-amz-target: TrentService.CreateKey" \
+  -H "Content-Type: application/json" \
+  -d "{\"Description\":\"test\",\"KeyUsage\":\"SIGN_VERIFY\",\"KeySpec\":\"ECC_SECG_P256K1\",\"Origin\":\"EXTERNAL\",\"PasskeyPublicKey\":\"$TEST_PK\"}"
+# 提交前用 jq 校验请求体合法：echo '{...}' | jq . 或 python3 -m json.tool
+# 同理，调 /Sign 也要带 -H "x-api-key: $KMS_API_KEY"
+```
+
+---
+
+## 五、与 Cloudflare Tunnel 的对比
+
+| 特性 | Cloudflare Tunnel | 香港 VPS + frp |
+|------|-------------------|---------------|
+| 中国大陆可用 | ❌ 被封 | ✅ 可用 |
+| 配置复杂度 | 低（一条命令） | 中（需要 VPS） |
+| 费用 | 免费 | ~$6/月 |
+| 延迟（国内访问） | N/A（不可用） | +20-50ms |
+| 延迟（海外访问） | 正常 CF 延迟 | 经 HK 略增加 |
+| 稳定性 | CF 基础设施级 | 取决于 VPS 质量 |
+| 维护负担 | 零 | 低（frp 极稳定） |
+
+**建议**：全球其他地区节点继续用 Cloudflare Tunnel，中国大陆节点用本方案，两套并行。
+
+---
+
+## 六、可靠性加固（可选）
+
+### 双中继热备
+
+IMX93 同时连接两个 relay，主 HK 故障时自动切换：
+
+```toml
+# frpc.toml 主备配置（frp v0.51+ 支持多 server）
+serverAddr = "hk-vps.your-domain.com"    # 主
+# 备用：修改 serverAddr 后重启，或用 DNS 故障切换
+```
+
+DNS 层面：主 A 记录 → HK VPS，TTL 设 60 秒，故障时快速切换到新加坡备用 VPS。
+
+### 监控
+
+```bash
+# 简单的健康检查脚本（在 HK VPS 上跑）
+curl -sf https://your-kms.your-domain.com/health || \
+  curl -X POST "https://api.telegram.org/bot<TOKEN>/sendMessage" \
+  -d "chat_id=<CHAT_ID>&text=KMS 节点离线告警"
+```
+
+---
+
+## 七、常见问题
+
+**Q：frp 连接会被 GFW 封锁吗？**  
+A：frp 出站流量（IMX93 → HK VPS:7000）走 TCP，看起来像普通的 TCP 应用流量，被封概率很低。如果被干扰，在 frp 外层套 wstunnel 伪装成 WebSocket over TLS（443端口），几乎不可能被识别。
+
+**Q：家用宽带 IP 变化怎么办？**  
+A：IMX93 的 IP 不需要固定，frp client 是主动出站连接，只要能出网就能维持隧道。域名指向的是香港 VPS 的固定 IP，不受 IMX93 本地 IP 变化影响。
+
+**Q：多个社区能共用一台香港 VPS 吗？**  
+A：可以。frp 的 vhost 模式按域名路由，一台 VPS 可以同时服务 50+ 个社区的 IMX93，按需要扩容。
+
+**Q：KMS 私钥安全性会受影响吗？**  
+A：不会。私钥分片始终在 IMX93 的 TEE（TrustZone）内，香港 VPS 只做流量中转，看不到任何密钥内容。流量加密由 TLS 保证，frp 只是 TCP 透传。
+
+---
+
+## 八、相关链接
+
+- AirAccount KMS 接口文档：`kms/` 目录，`test-full-api.sh`
+- frp 项目：https://github.com/fatedier/frp
+- 全球可用性分析：`research/global-network/cloudflare-tunnel-global-availability.md`
+- 申请共享中继接入：https://github.com/AAStarCommunity/Brood/issues

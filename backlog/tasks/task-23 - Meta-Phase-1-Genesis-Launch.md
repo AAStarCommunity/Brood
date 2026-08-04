@@ -27,24 +27,24 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-06-21 扫描)
+### 📊 进度报告 (2026-07-07 扫描)
 
-**🚀 预估进度: 92%** | 9 天 2 次提交，最近一次 2026-06-20；**AAStar + AuraAI 双 landing 上线 + ZUAEC 第八届浙大校友创业大赛参赛研究入仓**
+**🚀 预估进度: 95%** | 近30天 13 次提交，最近一次 2026-06-24；本期主要变化：**relayer 日购买上限移除**（审计修复 #8）+ sale open/close ops 脚本完整落地；无新功能，sale 合约已就绪等待主网部署
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成
-- ✅ GToken launch contract — SaleContractV2 已部署、roles ticket prices 配置完成
-- ✅ 5-18 Hangzhou roadshow 完成
-- ✅ **gasless EIP-7702 三流 UX**：join-gasless.html (P3, on top of #8) 上线
-- ✅ **gasless-eoa-enhance** 分支 E2E 测试 + RUNBOOK + ACCEPTANCE 全套就绪
-- ✅ **AAStar + AuraAI landing pages 上线**（PR #12）+ 导航/标签修正
-- ✅ **ZUAEC 比赛研究入仓**（PR #13：Agent协作网络方向，对接 8-31 报名截止）
-- 🔧 主网部署 — 待执行
-- 🔧 ACN-Agent on Pi 技术规划 — Paper3 后续工程化进行中
+- ✅ GToken launch contract — SaleContractV2 audit-hardened 版重新部署
+- ✅ buyTokensFor/buyAPNTsFor + EIP-3009 receiveWithAuth + relayer 白名单集合
+- ✅ sale 发布门 hardening（gasless cap 豁免 + CEI + recipient event）
+- ✅ ops 开/关脚本 + 文档 + README 链接（#29）
+- ✅ **chore(relayer): 移除从未执行的日购买上限声明**（审计 #8, #28）
+- 🔧 主网正式部署 — 最后 5%，audit-hardened 版本待 GA 执行
 
 **📝 近期动态** (MushroomDAO/launch):
-- 2026-06-20: feat(site): AAStar + AuraAI landing pages + nav links + label fixes (#12)
-- 2026-06-?: research(zuaec): 第八届浙大校友创业大赛参赛研究（Agent协作网络）(#13)
+- 2026-06-24: chore(relayer): 移除从未执行的日购买上限声明 (审计 #8) (#28)
+- 2026-06-24: chore(redeploy): 仓库地址指向审计修复后新栈 (#27)
+- 2026-06-24: feat(ops): sale 开/关脚本 + 文档（#29，最新提交）
+- 本期无新提交（静默 ≥ 13 天）
 
-💡 站点对外门面在 ZUAEC 报名季前完成 AAStar/AuraAI 双 landing 升级，比赛研究入仓正式 commit 锁定参赛方向（H2 KR3 推进）。剩余 8% 为主网部署执行。
+💡 sale 合约审计修复完整，ops 工具链就绪。剩余 5%：主网 GA 正式部署（等待时机/资金/上线计划）。
 <!-- SECTION:DESCRIPTION:END -->
