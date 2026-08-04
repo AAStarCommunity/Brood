@@ -63,7 +63,7 @@
 
 ## 现在做什么
 
-- 领导 Mycelium Protocol 生态建设（AAstar + AuraAI + MushroomDAO）
+- 领导 Mycelium Protocol 生态建设（AAstar + iDoris.ai + MushroomDAO）
 - 博士论文：区块链账户凭证控制（Chiang Mai University）
 - 学术论文：Paper3 SuperPaymaster、Paper7 CommunityFi（DSR-Research-Flow）
 - 2026年5月 Demo Day：向 MBA 同学、前同事/领导、投资人展示数字公共物品愿景
@@ -75,5 +75,5 @@
 了解 Jason 的背景有助于：
 - 理解为什么技术决策优先考虑"普通用户友好性"而非最大化商业价值
 - 理解为什么 Apache 2.0 开源是默认选择
-- 理解跨组织协作（AAstar / AuraAI / MushroomDAO）的整体战略逻辑
+- 理解跨组织协作（AAstar / iDoris.ai / MushroomDAO）的整体战略逻辑
 - 在建议架构时，优先考虑去中心化和透明性而非便利的中心化方案

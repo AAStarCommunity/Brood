@@ -1,6 +1,6 @@
 ---
 id: TASK-45
-title: serial-run.py: machine-readable per-command output
+title: "serial-run.py: machine-readable per-command output"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:34'

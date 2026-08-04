@@ -21,12 +21,12 @@ allowed-tools: Bash(git *), Bash(find *), Bash(mkdir *), Bash(cd * && pnpm run b
 | 本地目录 | GitHub 组织 | 说明 |
 |:---|:---|:---|
 | `~/Dev/aastar/` | `AAStarCommunity` | 区块链基础设施（SuperPaymaster、AirAccount、SuperRelay 等） |
-| `~/Dev/auraai/` | `AuraAIHQ` | AI 基础设施（iDoris、Agent24、agent-speaker 等） |
+| `~/Dev/auraai/` | `iDoris-ai` | AI 基础设施（iDoris、Agent24、agent-speaker 等） |
 | `~/Dev/mycelium/` | `MushroomDAO` | 社区/个人/城市 OS（Sin90、Cos72、CometENS、Expresser 等） |
 
 当用户在 GitHub 新建仓库并 clone 到本地时，**必须**放在对应组织的目录下。例如：
 - `git clone git@github.com:AAStarCommunity/NewRepo.git ~/Dev/aastar/NewRepo`
-- `git clone git@github.com:AuraAIHQ/NewRepo.git ~/Dev/auraai/NewRepo`
+- `git clone git@github.com:iDoris-ai/NewRepo.git ~/Dev/auraai/NewRepo`
 - `git clone git@github.com:MushroomDAO/NewRepo.git ~/Dev/mycelium/NewRepo`
 
 Clone 备用目录（未找到本地仓库时临时 clone）：`~/Dev/tmp/`
@@ -51,7 +51,7 @@ CLONE_DIR="$HOME/Dev/tmp"
 ```
 📍 项目根目录: /Users/xxx/Dev/Brood
 🗂️  AAStarCommunity: ~/Dev/aastar/
-🗂️  AuraAIHQ:        ~/Dev/auraai/
+🗂️  iDoris-ai:        ~/Dev/auraai/
 🗂️  MushroomDAO:     ~/Dev/mycelium/
 📦 Clone 备用:       ~/Dev/tmp/
 ```
@@ -87,7 +87,7 @@ import os, subprocess
 # 固定目录 → 组织映射
 ORG_DIRS = {
     os.path.expanduser("~/Dev/aastar"):    "AAStarCommunity",
-    os.path.expanduser("~/Dev/auraai"):    "AuraAIHQ",
+    os.path.expanduser("~/Dev/auraai"):    "iDoris-ai",
     os.path.expanduser("~/Dev/mycelium"): "MushroomDAO",
 }
 
@@ -160,8 +160,32 @@ repo_name = os.path.basename(new_repo_path).lower()
 for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
     content = open(task_file).read()
     # 检查任务是否已有 references 指向该 repo
-    if new_repo_remote in content:
-        continue  # 已存在，跳过
+    # 按「归一化的 owner/repo 全名」比较——既不是 basename，也不是整条 URL 子串。
+    # ⚠️ 严禁只比较 basename（repo 名）：不同 org 下的同名仓库是两个不同的真实
+    #    仓库（如 AAStarCommunity/Cos72 与 MushroomDAO/Cos72，GitHub repo id 不同），
+    #    basename 匹配会把它们误判为同一个而永久漏加——比重复追加更隐蔽、更糟。
+    # 同时对已知的 org 改名做归一化（AuraAIHQ→iDoris-ai），避免改名后 owner 段
+    #    不同而把「其实已存在」误判为「不存在」再次重复追加。
+    # ⚠️ 测试夹具（必须覆盖，否则本回归会静默复现）：
+    #    用「同 basename / 不同 owner」样例——AAStarCommunity/Cos72 与
+    #    MushroomDAO/Cos72 必须判定为“不同仓库”（不去重）。
+    ORG_ALIASES = {"auraaihq": "idoris-ai"}  # 旧 org slug → 新 org slug（均小写）
+
+    def _norm_slug(owner, repo):
+        owner = ORG_ALIASES.get(owner.lower(), owner.lower())
+        repo = repo.lower().rstrip("/")
+        if repo.endswith(".git"):
+            repo = repo[:-4]
+        return f"{owner}/{repo}"
+
+    _m = re.search(r'github\.com[:/]([^/\s]+)/([^/\s]+)', new_repo_remote)
+    new_repo_slug = _norm_slug(_m.group(1), _m.group(2)) if _m else new_repo_remote.lower()
+    existing_slugs = {
+        _norm_slug(o, r)
+        for o, r in re.findall(r'github\.com/([^/\s]+)/([^/\s\'"]+)', content)
+    }
+    if new_repo_slug in existing_slugs:
+        continue  # 已存在（owner/repo 全名归一化后匹配），跳过
     # 在任务标题、描述中搜索仓库名关键词（不区分大小写）
     if repo_name in content.lower() or repo_name.replace("-", "") in content.lower():
         # 提取 task ID 用于日志
@@ -186,7 +210,7 @@ for task_file in sorted(glob.glob(tasks_dir + "/*.md")):
 📡 生态地图扫描完成
    三大目录已有仓库: {N} 个
      ~/Dev/aastar/:    {N} 个（AAStarCommunity）
-     ~/Dev/auraai/:    {N} 个（AuraAIHQ）
+     ~/Dev/auraai/:    {N} 个（iDoris-ai）
      ~/Dev/mycelium/:  {N} 个（MushroomDAO）
    🆕 新发现: {N} 个（已加入地图 + 搜索任务匹配）
    ❓ 本地缺失: {N} 个（未 clone）

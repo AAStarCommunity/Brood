@@ -1,7 +1,7 @@
 # AAstar — 对外接口规范
 
 > 文档类型：接口契约（Interface Contracts）
-> 维护者：jason | 最后更新：2026-05-30
+> 维护者：jason | 最后更新：2026-07-08
 > 关联：`orgs/aastar/PROFILE.md`
 
 ---
@@ -11,7 +11,7 @@
 ### 1. AirAccount — 账户基础设施
 
 **仓库**: `github.com/AAStarCommunity/AirAccount`
-**版本**: v2025.09.29-kms-web-ui（git tag，KMS 分支生产中）
+**版本**: v0.27.3-Beta5（KMS+WebAuthn，Sepolia 生产中）
 
 | 接口 | 类型 | 说明 |
 |-----|------|------|
@@ -36,7 +36,7 @@
 ### 2. SuperPaymaster — Gas 抽象支付
 
 **仓库**: `github.com/AAStarCommunity/SuperPaymaster`
-**版本**: v5.3.0-dev（git tag，含 UUPS 升级，Sepolia 已部署）
+**版本**: v5.4.1-rc.1（slash-threshold-evidence-unify，BLS 模块 Sepolia 已部署）
 
 **核心接口（ERC-4337 标准层）**
 
@@ -97,7 +97,7 @@
 ### 4. AAStar SDK — 开发者集成包
 
 **仓库**: `github.com/AAStarCommunity/aastar-sdk`（monorepo，pnpm workspace）
-**版本**: v0.18.0（`@aastar/monorepo`）
+**版本**: v0.39.0（DVT operator registration API + BLSAggregator ABI sync）
 **Sub-packages**: `core` / `sdk` / `dapp` / `enduser` / `operator` / `paymaster` / `identity` / `data` / `tokens` / `x402`
 
 ```typescript
@@ -120,11 +120,42 @@ const tx = await SuperPaymaster.sendGasless({
 
 ---
 
+### 5. 合约接口契约 / Cross-repo Versioned Contracts
+
+> 本节收录跨仓库调用的稳定接口 selector，作为版本管理权威来源。
+> owner 仓库变更接口时须通过 CC 任务通知 brood 更新版本行。
+
+#### `isValidOwnerAuth` — AirAccount owner-gate
+
+| 字段 | 值 |
+|------|-----|
+| **接口** | `function isValidOwnerAuth(bytes32 userOpHash, bytes calldata ownerAuth) external view returns (bytes4)` |
+| **Selector / 成功 magic** | `0xa0cf00cf`（= `isValidOwnerAuth.selector`，刻意不用 ERC-1271 `0x1626ba7e`，避免混淆） |
+| **失败返回** | `0xffffffff`（fail-closed，永不 revert） |
+| **宿主合约** | `AirAccountExtension`，经 `AAStarAirAccountV7` fallback 路由 |
+| **owner** | `airaccount-contract` |
+| **consumers** | DVT `YetAnotherAA-Validator` v1.12.0（`blockchain.service.ts` owner-gate）；AirAccount KMS |
+| **稳定自** | v0.23.0（issue #159）；经 v0.24/25/26/27.0 未变 |
+| **当前实现（Sepolia v0.27.0）** | impl `0x4a76dEf9eE4EE44eF6D0B2a327a068B5B7931E1C`；Extension `0xEcE87546989Da7df573b107D54a0ead0aCB49923` |
+| **参考账户** | e2e_account `0x92EA8b02D34A4D5d10f0Db9Ea894e8bC72e292e8`（owner `0xb5600060…`） |
+| **源码位置** | `src/core/AirAccountExtension.sol:1016` |
+
+**`ownerAuth` 编码规则（consumers 必读）**：
+
+| tag | 含义 | payload 构造 | 长度 |
+|-----|------|-------------|------|
+| `0x01` | owner ECDSA (secp256k1) | `personal_sign(userOpHash)`（EIP-191）；v=0/1 归一到 27/28；low-S 强制；ownerAuth = `0x01 ‖ sig` | 严格 66 字节，非 66 直接返回 `0xffffffff` |
+| `0x02` | owner WebAuthn passkey | `authenticatorData ‖ clientDataJSON ‖ …` | 可变 |
+
+> **版本管理约定**：`airaccount-contract` 升级该接口（改 selector/magic/tag 语义/宿主）时通过 CC 任务通知 brood，brood 更新本表版本行并同步 consumers。
+
+---
+
 ## 我们消费 / What We Consume
 
 | 来源组织 | 能力 | 用途 | 可选性 |
 |--------|------|------|------|
-| AuraAI | AI 推理 | AirAccount 用户行为分析 / 风险检测（规划中） | 可选 |
+| iDoris.ai | AI Agent 框架（ai-agent-framework） | AirAccount 用户行为分析 / 风险检测（规划中） | 可选 |
 | MushroomDAO | 协议治理 | 协议规范遵守 + 生态参与规则 | 可选 |
 | OpenPNTs | 积分协议 | SuperPaymaster 积分支付基础 | 核心 |
 
@@ -132,7 +163,7 @@ const tx = await SuperPaymaster.sendGasless({
 
 ## 跨组织集成指南
 
-### AuraAI 集成 AAstar
+### iDoris.ai 集成 AAstar
 
 ```
 场景：AI 代理通过 AirAccount 身份管理 + SuperPaymaster 付费

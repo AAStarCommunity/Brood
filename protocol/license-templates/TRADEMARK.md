@@ -43,7 +43,7 @@ The following names are trademarks of MushroomDAO and its affiliated entities:
 - **AirAccount**
 - **SuperPaymaster**
 - **OpenNest**
-- **AuraAI**
+- **iDoris.ai**
 
 ### Company & Organization Names
 - **HyperCapital**
@@ -56,7 +56,7 @@ The following logos are protected (actual files to be added):
 
 - MushroomDAO logo (mushroom icon + wordmark)
 - AAStar logo
-- AuraAI logo
+- iDoris.ai logo
 - Mycelium Protocol logo
 - GToken symbol
 

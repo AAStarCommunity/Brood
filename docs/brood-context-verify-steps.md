@@ -52,12 +52,12 @@ SuperPaymaster 当前的开发进度和路线图状态是什么？
 ### Step 4: 验证跨 repo 关联意识
 
 ```
-如果我要在 SuperPaymaster 里添加对 AuraAI 的支付结算支持，
+如果我要在 SuperPaymaster 里添加对 iDoris.ai 的支付结算支持，
 你会建议从哪里入手？涉及哪些现有接口？
 ```
 
 **期望**：
-- ✅ 提到 AuraAI 在生态中是 AI 能力层
+- ✅ 提到 iDoris.ai 在生态中是 AI 能力层
 - ✅ 提到 SuperPaymaster 的 xPNTs / 积分支付机制可以用于 AI 服务结算
 - ✅ 提到需要通过 AirAccount 管理 AI 代理的链上身份
 
@@ -70,7 +70,7 @@ SuperPaymaster 当前的开发进度和路线图状态是什么？
 | 协议使命 | 能准确描述菌丝协议核心理念 |
 | 组织定位 | 知道 SuperPaymaster 是 AAstar 组织的 Gas 抽象模块 |
 | 接口关系 | 知道与 AirAccount 的依赖关系 |
-| 跨组织意识 | 在建议中考虑其他组织（AuraAI/MushroomDAO）的存在 |
+| 跨组织意识 | 在建议中考虑其他组织（iDoris.ai/MushroomDAO）的存在 |
 
 ---
 

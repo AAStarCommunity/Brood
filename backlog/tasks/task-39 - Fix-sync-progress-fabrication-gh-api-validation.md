@@ -1,6 +1,6 @@
 ---
 id: TASK-39
-title: Fix /sync-progress fabrication: gh-api 200-OK validation before write
+title: "Fix /sync-progress fabrication: gh-api 200-OK validation before write"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:32'

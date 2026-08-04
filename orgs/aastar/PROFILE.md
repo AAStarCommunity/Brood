@@ -10,11 +10,11 @@ provides:
   - capability: daily-crypto-account
     interface: Your daily Web3 account: fingerprint login, no ETH needed
     repo: github.com/AAStarCommunity/AirAccount
-    version: v0.16.7
+    version: v0.27.3-Beta5
   - capability: gas-abstraction
     interface: ERC-4337 Paymaster (validatePaymasterUserOp / postOp)
     repo: github.com/AAStarCommunity/SuperPaymaster
-    version: v4.4.0
+    version: v5.4.1-rc.1
   - capability: bundler-gateway
     interface: ERC-4337 bundler RPC + OpenAPI
     repo: github.com/AAStarCommunity/SuperRelay
@@ -24,7 +24,7 @@ provides:
     repo: github.com/AAStarCommunity/AAStar_SDK
 depends_on:
   - org: auraai
-    capability: ai-inference
+    capability: ai-agent-framework
     optional: true
   - org: mycelium
     capability: protocol-governance

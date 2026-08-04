@@ -1,6 +1,6 @@
 ---
 id: TASK-42
-title: PR-Daemon: R1 prompt add rename-identifier repo-wide grep step
+title: "PR-Daemon: R1 prompt add rename-identifier repo-wide grep step"
 status: To Do
 assignee: []
 created_date: '2026-08-03 12:33'

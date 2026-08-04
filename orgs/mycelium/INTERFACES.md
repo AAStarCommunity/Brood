@@ -81,7 +81,7 @@ import { MyShop } from '@mushroom/cos72-shop';
 
 ### 5. Nostr Relay — Agent 通信基础设施
 
-**仓库**: `github.com/MushroomDAO/agent-speaker-relay`
+**仓库**: `github.com/iDoris-ai/agent-speaker-relay`
 **状态**: 活跃（strfry Docker）
 
 | 接口 | 说明 |
@@ -89,7 +89,7 @@ import { MyShop } from '@mushroom/cos72-shop';
 | Nostr WebSocket | NIP-01 标准 relay 端点 |
 | NIP-44 加密 | 端对端加密消息 |
 
-**定位**：AuraAI agent 通信、WeChat-Nostr 桥接的基础设施
+**定位**：iDoris.ai agent 通信、WeChat-Nostr 桥接的基础设施
 
 ---
 
@@ -116,8 +116,8 @@ import { MyShop } from '@mushroom/cos72-shop';
 | AAstar / AirAccount | 账户身份 | Cos72 用户账户（邮箱即账户） | 核心 |
 | AAstar / SuperPaymaster | Gas 抽象 | Cos72 用户免 Gas 参与治理/任务 | 核心 |
 | AAstar / CometENS | ENS 子域名 | mushroom.cv、forest.mushroom.cv | 核心 |
-| AuraAI / Agent24 | AI 代理 | Sin90 个人 OS 的 AI 能力 | 可选 |
-| AuraAI / iDoris | AI 模型 | 社区 AI 服务（规划中） | 可选 |
+| iDoris.ai / Agent24 | AI 代理 | Sin90 个人 OS 的 AI 能力 | 可选 |
+| iDoris.ai / iDoris | AI 模型 | 社区 AI 服务（规划中） | 可选 |
 
 ---
 

@@ -59,7 +59,7 @@
 
 ### B. AI Agent 协作网络系列（`~/Dev/auraai/AgentSocial/`）
 
-✅ **已在 `auraai/AgentSocial` repo 中**（与 TASK-34 AuraAI 关联）
+✅ **已在 `auraai/AgentSocial` repo 中**（与 TASK-34 iDoris.ai 关联）
 
 **仓库三层定位**（来自 README）：
 

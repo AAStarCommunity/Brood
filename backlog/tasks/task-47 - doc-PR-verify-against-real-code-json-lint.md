@@ -1,6 +1,6 @@
 ---
 id: TASK-47
-title: doc PR: verify against real code + curl JSON-lint + arch from real routes
+title: "doc PR: verify against real code + curl JSON-lint + arch from real routes"
 status: To Do
 assignee: []
 created_date: '2026-08-03 13:47'
