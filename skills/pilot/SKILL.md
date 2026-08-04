@@ -33,7 +33,13 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 
 ## 全局硬约束（任何阶段都不可违反）
 
-这些是「有经验的程序员」的底线，写死在这里，任何子命令都遵守。**约束 1/2/4 不只靠自觉——`scripts/git-guard.sh` 在脚本层硬拦截 `add -A`、直推主干、合并 base≠集成分支；`scripts/safe-cleanup.sh` 在脚本层保证只 `-d` 删已合并+干净。危险动作一律走这两个脚本，不裸用 git/gh。**
+这些是「有经验的程序员」的底线，写死在这里，任何子命令都遵守。
+
+**分层强制（谁才是真正的保证）**：
+- **机械强制层（不可绕过、非劝告）= 真正的保证**：① GitHub **分支保护**（服务端兜底：主干需 PR + 审批，`enforce_admins`）；② 待建的 Claude Code plugin **PreToolUse hook**（在工具边界拦截模型真正要跑的 `git add -A`/推主干/危险合并，用真运行时判断、让 git 自己解析，模型忘不了也绕不过——见 backlog **TASK-40**，本 skill 的**首要强制手段**）。
+- **便利包装 + 纵深防御一层（best-effort）= `scripts/git-guard.sh` / `safe-cleanup.sh`**：覆盖常见危险形状（`add -A`、直推主干、合并 base≠集成分支、只 `-d` 删已合并+干净），日常危险动作**优先走这两个脚本**。但它们是 bash 劝告式包装——**不承诺对抗式滴水不漏**（bash 解析有害字符串本质上有边角），真正兜底靠上面的机械层。
+
+危险动作优先走 git-guard/safe-cleanup，不裸用 git/gh。
 
 1. **绝不 `git add -A` / `git add .`**。只 `git-guard.sh add <显式路径>`（裸 `git add -A` 会被 git-guard 拒绝）。理由：`-A` 会把未确认是否该跟踪的文件（密钥、`.env`、构建产物、临时文件）一起提交，是最危险的日常动作。提交前先 `git status` 看清，逐一列出要提交的路径。
 2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。
