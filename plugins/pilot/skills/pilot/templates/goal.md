@@ -13,7 +13,7 @@
 
 【怎么验证】按 tasks.md 里该 task 的验收命令逐条跑通，再跑 lint→typecheck→build→测试，全绿才提 PR。跑不过就修到过，不许标 DONE。开 PR 前必须做一次对抗式自审（找 race/安全/错误处理/边界/生产失败）。
 
-【怎么等评审】PR 由外部评审服务裁决，不是我自己评，也不许自己 --admin 合并。按契约约 20 分钟内出结果。开完 PR 用 Monitor 轮询 pr-monitor.sh 等回执，5 分钟起退避，PENDING 就继续等不要瞎改。拿到 APPROVED 就合并进 <集成分支> 并 safe-cleanup；拿到 CHANGES_REQUESTED 就先中立 triage（该改的改、不该改的回评论讲清业务理由、不阻塞的记进 followups），修完推上去触发再评审。
+【怎么等评审】PR 由外部评审服务裁决，不是我自己评，也不许自己 --admin 合并。按契约约 20 分钟内出结果。开完 PR 用 Monitor 跑 `pr-monitor.sh --pr <n> --wait-for-verdict`(它在没有新鲜裁决前保持静默),**并设 30 分钟硬上限**;只有评审 commit == 当前 head 才算裁决,到点仍没有就按 review-contract.md 的超时路径如实汇报后回主循环,不许瞎改也不许干等。拿到 APPROVED 就合并进 <集成分支> 并 safe-cleanup；拿到 CHANGES_REQUESTED 就先中立 triage（该改的改、不该改的回评论讲清业务理由、不阻塞的记进 followups），修完推上去触发再评审。
 
 【等待期间做什么】等回执不算停工：回主循环挑下一个 READY task 继续开工，不要空转干等。
 

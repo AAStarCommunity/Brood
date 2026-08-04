@@ -98,7 +98,13 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 5. **对抗式 review**（PR 前必做，见 `reference/pr-quality.md`）：换新上下文/子 agent 或 Codex（`/codex:rescue`），以「找 race/安全/错误处理/边界/生产失败」的挑剔视角审这段 diff。有阻塞问题 → 修 → 重新自测 → 再挑战，直到无阻塞。
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
 7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
-8. **开 PR**：`gh pr create --base <integration_branch> --title ... --body ...`（body 写清 task、验收命令、自测结果）。**绝不 `--admin` 直合，绝不推主干。**
+8. **开 PR**：先 `bash <skill>/scripts/preflight.sh run`（跑本仓库自己的检查，全绿才写戳记），再**走闸门**开 PR：
+   ```bash
+   bash <skill>/scripts/git-guard.sh pr-create --base <integration_branch> --title ... --body ...
+   ```
+   **绝不裸用 `gh pr create`**——闸门会拒绝「检查没跑过 / 戳记属于别的 commit」的 PR，裸调等于绕过它，
+   那道强制就形同虚设（它一度确实零调用：没有任何文档指引用它）。
+   body 写清 task、验收命令、自测结果。**绝不 `--admin` 直合，绝不推主干。**
 9. 把 Task 标 `IN_PROGRESS→PR_OPEN`，在 tasks.md/progress.md 记 PR 链接。**回到主循环顶端继续**——同时按 §PR 监控节奏盯这个 PR 的裁决（外部评审服务会处理它,见 `reference/review-contract.md`;pilot 不启动也不关心那个服务）。
 
 ### 2.5 无 READY task 了 → 批量清跟进账本（主线做完才做，绝不提前）

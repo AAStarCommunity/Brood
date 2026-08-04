@@ -22,9 +22,13 @@ pilot **不裁决自己的 PR**。它依赖一个**外部评审服务**,并且�
 用 `scripts/pr-monitor.sh`(读 `reviewDecision`,查一次就返回,不自我驱动)。按场景选驱动方式:
 
 - **刚开完 PR、想立刻盯到回执** → 用 **Monitor 工具**轮询
-  `bash <skill>/scripts/pr-monitor.sh --pr <n>`,**3–5 分钟一次**。
+  `bash <skill>/scripts/pr-monitor.sh --pr <n> --wait-for-verdict`。
+  该模式**在没有新鲜裁决前保持静默**——一次性形式会立刻打印,Monitor 会在几秒内就被触发并结束,
+  于是「3–5 分钟一次」和 30 分钟上限**根本不会发生**。
   **必须同时设一个 30 分钟的硬上限**(`timeout_ms` 或循环计数),满足任一条件即唤醒:
-  - `reviewDecision` 变成 `APPROVED` 或 `CHANGES_REQUESTED` → 按裁决行动;
+  - `verdict` 变成 `APPROVED` 或 `CHANGES_REQUESTED` → 按裁决行动。
+    **`verdict` 只在评审 commit == 当前 head 时才非 PENDING**:GitHub 的 `reviewDecision` 在推新
+    commit 后仍保留 `CHANGES_REQUESTED`,只看它会让 agent 反复 triage 自己早已修好的问题;
   - **到 30 分钟仍是 `PENDING`** → 走下面的「超时了怎么办」。
 
   **不设上限会让 agent 永久睡死**:契约承诺的是「有服务时约 20 分钟」,但服务不存在或

@@ -22,7 +22,10 @@ import yaml
 
 # Every directory the exporter reads records from. Tasks are the ones that have bitten us, but a
 # malformed doc or decision would corrupt its endpoint the same way.
-SCAN_DIRS = ["backlog/tasks", "backlog/docs", "backlog/decisions", "backlog/archive"]
+# backlog/milestones is exported to /api/milestones.json just like the others, so malformed
+# frontmatter there ships unchecked — the exact incident class this gate exists to prevent.
+SCAN_DIRS = ["backlog/tasks", "backlog/docs", "backlog/decisions", "backlog/archive",
+             "backlog/milestones"]
 FRONTMATTER = re.compile(r"^---\n(.*?)\n---", re.S)
 
 def main() -> int:
