@@ -1,7 +1,7 @@
 ---
 name: pilot
-version: 1.0.3
-description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=单轮开发循环（挑 READY task→开发→自测→对抗 review→PR→合并 preview），可被 /loop 反复调用跑通宵。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
+version: 1.1.0
+description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=无人值守交付循环（连续迭代:挑 READY task→开发→自测→对抗 review→PR→评审→合并，一个接一个直到全部交付），起跑前强制检查规划文档齐全并默认设 /goal 停止闸。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
 
@@ -12,8 +12,8 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, Sc
 ```
 pilot status   # 汇报进展 + 安全清理已合并分支/worktree（默认 dry-run）
 pilot plan     # Milestone(M1) → Feature(F1.1) → Task(T1.1.1) 三级规划
-pilot run      # 单轮开发循环，可被 /loop 反复调用
-pilot resume   # run 的别名：优先处理待办 PR，再挑新 task
+pilot run      # 无人值守交付循环:一直干到交付(文档门禁 + 默认设 /goal)
+pilot resume   # run 的别名:优先处理待办 PR,再挑新 task
 pilot doctor   # 检查本仓库是否具备自动运行条件
 ```
 
@@ -25,7 +25,7 @@ pilot doctor   # 检查本仓库是否具备自动运行条件
 |:---|:---|:---|
 | `status`（默认） | `phases/status.md` | 无子命令时默认走 status |
 | `plan` | `phases/plan.md` | |
-| `run` / `resume` | `phases/run.md` | 单轮迭代 |
+| `run` / `resume` | `phases/run.md` | **无人值守交付循环**:跑到交付为止,不是一轮就停 |
 | `doctor` | 见下方 §doctor | 轻量自检，不改动仓库 |
 | `review-status` | 见下方 §review-status | 汇报 PR-Daemon 评审进度（只读，任意仓库可调）|
 
@@ -78,7 +78,9 @@ pr_daemon_root: ~/Dev/tools/PR-Daemon  # 外部 PR 评审 daemon 根目录（也
 2b. **配置迁移硬检查**：若旧文件 `.repo-pilot.yml` 存在——
     - 只有旧文件、无 `.pilot.yml`：红字提示「`.repo-pilot.yml` 已弃用，运行 `git mv .repo-pilot.yml .pilot.yml`」；在迁移前 `run`/`status` 会读旧文件兜底。
     - **两个文件都在、且 `integration_branch` 不一致：`FAIL`（阻断）**——因为哪个生效不确定、错的那个可能把 PR 直合进主干。要求用户先删掉/合并旧文件再继续，`doctor` 不擅自改。
-3. `docs/agent/` 是否存在，`roadmap.md`/`tasks.md`/`progress.md` 是否齐全 —— 缺失则建议 `pilot plan`。
+3. **规划文档齐全度**（`run` 无人值守的硬前提）：`bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict`。
+   报 MISSING/EMPTY 就照实列出并建议 `pilot plan` 补齐——`run` 会在同一道门禁上 fail-closed 拒跑，
+   在这里先看见比半夜被拦住强。（脚本会识别「文件在但还是原样模板」：占位符没填等于没答。）
 4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
 5. `gh auth status` 是否可用（PR 流程需要）。
 5b. **git hook 是否真的在生效**（别假设 commit 有保护）：`bash <skill>/scripts/check-hooks.sh`。常见坑：`core.hooksPath` 指到**另一个 clone** 的 hooks 目录 → pre-commit 密钥扫描根本没跑,commit 裸奔却无人察觉。报 `BYPASSED` 就红着提示,并说明「**不要自动切回 `.githooks`**——扫描器有历史误报会让每次 commit 卡死,得先给已知误报加 baseline/allowlist 降噪,再手动开钩子」。只报告,不擅自 rewire。
@@ -103,7 +105,7 @@ status  ── 知道现在在哪、清干净战场
    ↓
 plan    ── 知道要去哪（M→F→T）、补齐规划层文档
    ↓
-run ↺   ── 一轮一个 READY task 推进，直到无 READY 或触发停止条件
+run ↺   ── 连续推进 READY task(一次一个,一个接一个),直到交付条件全满足
 ```
 
 `run` 依赖 `plan` 产出的 `docs/agent/` 文档做 check/对照；`plan` 依赖 `status` 给出的真实仓库状态。三者可单独调用，但首次接手一个仓库建议按序走一遍。

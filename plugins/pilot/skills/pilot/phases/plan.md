@@ -34,7 +34,13 @@
 | `spec.md` | 数据模型/状态机/错误处理，精确到能建表 | 复杂系统时 |
 | `research.md` | 立项依据、开源全景、差异化、License 边界 | 新方向立项时 |
 
-信息流：`research → acceptance → architecture + spec → roadmap → tasks → progress`。上层是下层的前置约束，越往下越可执行。**不要跳步**：至少要有 `roadmap` + `tasks` + `progress` 才能让 `run` 跑起来。
+信息流：`research → acceptance → architecture + spec → roadmap → tasks → progress`。上层是下层的前置约束，越往下越可执行。**不要跳步**。
+
+**两条门槛线**（`run` 起跑时用 `scripts/check-docs.sh` 确定性判定，不是看感觉）：
+- **无人值守（`run` 默认）**：**七件套全要**，且必须真填过——文件在但还是原样模板（占位符没动）一样判不合格。没人在旁边时，规划层的每个空档都会变成模型独自替用户拍板。
+- **有人盯着（用户明确降级 `--minimal`）**：`roadmap` + `tasks` + `progress` 三件即可。
+
+`plan` 的产出要冲着第一条去：**把七件套都填成能照着执行的样子**，而不是把模板拷进去就算完。
 
 ## D. 收尾
 
