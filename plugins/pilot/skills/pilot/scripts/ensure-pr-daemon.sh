@@ -36,6 +36,28 @@ if [ ! -x "$watch" ] && [ ! -f "$watch" ]; then
   exit 2
 fi
 
+refresh_focus_daily() {
+  # Once-per-day, IDEMPOTENT recompute of the daemon's scan list (top-N most-recently-
+  # pushed repos + pinned). ANY repo's `pilot status` lands here, so the day's first
+  # status refreshes the shared global list and every later call is a cheap no-op (the
+  # date stamp lives in the daemon's config dir, not here). Best-effort + BOUNDED: a
+  # slow/failed gh call must never block ensuring the daemon. Only reached from `ensure`
+  # (a mutating path) — `check`/doctor stay strictly read-only and never trigger this.
+  local focus="$root/scripts/refresh-scan-focus.sh"
+  [ -x "$focus" ] || return 0
+  [ "${PILOT_SKIP_FOCUS_REFRESH:-0}" = "1" ] && return 0
+  local to="${PILOT_FOCUS_TIMEOUT:-45}" tmp="/tmp/pilot-focus.$$"
+  "$focus" daily >"$tmp" 2>&1 &
+  local p=$!
+  ( sleep "$to"; kill -0 "$p" 2>/dev/null && kill "$p" 2>/dev/null ) &
+  local w=$!
+  if wait "$p" 2>/dev/null; then :; fi
+  kill "$w" 2>/dev/null || true; wait "$w" 2>/dev/null || true
+  grep -iE 'idempotent|recorded|wrote|repos|fail|timed' "$tmp" 2>/dev/null | head -2 | sed 's/^/  focus: /' || true
+  rm -f "$tmp"
+  return 0
+}
+
 is_running() {
   # Authoritative signal = the actual loop PROCESS. pgrep also avoids the SIGPIPE-under-
   # pipefail trap that `bash "$watch" status | grep -q` falls into (grep -q closes the pipe
@@ -61,6 +83,9 @@ case "$sub" in
     exit 3
     ;;
   ensure)
+    # Refresh the shared scan list first (idempotent/day), THEN ensure the daemon — so
+    # even when the daemon is already up, today's list is current before we return.
+    refresh_focus_daily
     if is_running; then
       echo "PR_DAEMON: already running — nothing to do (your PRs will be picked up)."
       exit 0
