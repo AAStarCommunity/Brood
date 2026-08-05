@@ -171,7 +171,14 @@ case "$sub" in
       '') die "usage: git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [allowlisted gh flags]" ;;
       -*) die "refusing '$n' as the PR selector on merge-pr — the PR NUMBER must come first, before any flag.
   A flag landed where the number belongs, so it was never checked against the allowlist at all." ;;
-      *[!0-9]*) die "refusing PR selector '$n' on merge-pr — pass a bare PR NUMBER.
+      # ENUMERATED, not a range. `[!0-9]` is a collation range, so which characters count as
+      # "between 0 and 9" depends on LC_COLLATE: under fa_IR / ar_SA the Eastern-Arabic digits
+      # ٥ (U+0665) and ۵ (U+06F5) fall inside it and were accepted as a "bare PR number" (measured
+      # across C / en_US.UTF-8 / fa_IR / fa_IR.UTF-8 / ar_SA.UTF-8). Nothing was exploitable —
+      # those two die one step later at `gh pr view`, and letters / `/` / `:` / `.` never entered
+      # the range, so the URL and branch-name refusals held in every locale — but the first gate of
+      # a safety rail should not have a locale-dependent notion of "digit".
+      *[!0123456789]*) die "refusing PR selector '$n' on merge-pr — pass a bare PR NUMBER.
   A URL or a branch name overrides the pinned --repo and would target a DIFFERENT repository,
   using THIS repo's branch protection as the proof. (Verified against gh 2.92.0.)" ;;
     esac
@@ -288,8 +295,11 @@ except Exception:
 if isinstance(d, dict) and "required_pull_request_reviews" in d:
     print((d.get("required_pull_request_reviews") or {}).get("required_approving_review_count") or 0)
 ' 2>/dev/null || true)"
+      # Enumerated for the same reason as the selector check above. This one is fed by python's
+      # `print()` of a JSON integer, so it is ASCII in practice — changed anyway so the file holds
+      # ONE notion of "is this a number", rather than one that is locale-proof and one that is not.
       case "$approvals" in
-        ''|*[!0-9]*)
+        ''|*[!0123456789]*)
           # Split the two causes — they need opposite fixes (rotate the token vs. protect the
           # branch), and the API already tells us which one it is in its `message` field.
           why="$(printf '%s' "$prot" | python3 -c 'import json,sys
