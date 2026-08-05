@@ -48,7 +48,7 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 6. **状态即文档**。每推进一步都更新 `docs/agent/tasks.md` 与 `docs/agent/progress.md`；宁可慢，不可让文档与仓库真实状态脱节。
 7. **无人值守时不猜产品决策**。遇到影响产品方向/验收/架构的未知，把相关 task 标 `BLOCKED` 并记录待决问题，继续做不受影响的 task；绝不擅自替用户拍板。
 
-> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`**。子命令会在需要时指引你读它们。
+> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`**；需求文档在飞书/Notion 上时怎么探测、怎么降级（pilot 不安装也不启动任何文档源）见 `reference/doc-sources.md`。子命令会在需要时指引你读它们。
 
 ## 配置：`.pilot.yml`
 

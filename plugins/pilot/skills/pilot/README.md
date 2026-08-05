@@ -15,6 +15,7 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 - **安全清理**：只删「已合并进集成分支 + 干净」的分支/worktree；只 `git branch -d`（永不 `-D`）；默认 dry-run，`--apply` 才动手；护住主干/集成/当前/protected/脏 worktree。逻辑全在 `scripts/safe-cleanup.sh`，不靠模型临场判断。
 - **PR 纪律**：绝不 `git add -A`；绝不直推/直合主干；一个 task = 一个分支 = 一个 worktree = 一个 PR；PR 前必自测 + 对抗式 review。
 - **外部 review 回路（已生产验证）**：pilot **不自评 PR**——开好 PR 后只盯自己 PR 的状态（`scripts/pr-monitor.sh --pr <n> --wait-for-verdict`，内置 3–5 分钟轮询与 **30 分钟硬上限**；只有评审 commit == 当前 head 才算裁决）。裁决由**外部评审服务**给出，契约见 `reference/review-contract.md`：排队 5–10 分钟、评审 5–10 分钟，通常 20 分钟内出 `APPROVED`/`CHANGES_REQUESTED`（超大 PR 例外）。推新 commit 自动触发再评审。**那个服务是什么、装在哪、覆盖哪些仓库，pilot 一概不知也不启动**——只依赖这份契约。
+- **外部文档源（飞书 / Notion）**：需求和验收标准常常不在仓库里。pilot **不安装、不启动、不封装**任何文档源——只在运行时探测能力是否存在，有就用、没有就如实说明并降级。契约见 `reference/doc-sources.md`。**这些是独立的全局 skill，不是 pilot 的一部分**：任何仓库、任何会话都能直接用，不需要先进 pilot。
 - **可被 /loop 驱动跑通宵**：`pilot run` 是单轮迭代，`/loop 10m pilot run` 即可持续推进 READY tasks。
 
 ## 能力总览
@@ -92,7 +93,7 @@ pilot/
 ├── phases/{status,plan,run}.md
 ├── scripts/                 # 确定性核心（read-only 扫描 / 安全清理 / PR 监控）
 │   ├── repo-scan.sh  safe-cleanup.sh  pr-monitor.sh
-├── reference/               # git-safety / pr-quality / pre-pr-review / review-contract / task-schema / review-triage / followup-ledger
+├── reference/               # git-safety / pr-quality / pre-pr-review / review-contract / doc-sources / task-schema / review-triage / followup-ledger
 ├── templates/               # roadmap/tasks/progress/acceptance/architecture/spec/research + .pilot.yml
 ├── install.sh
 └── README.md
