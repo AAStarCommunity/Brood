@@ -74,7 +74,9 @@ while [ $# -gt 0 ]; do
     --apply)         apply=1; shift ;;
     --squash-merged) squash_merged=1; shift ;;
     --remote)        do_remote=1; shift ;;
-    -h|--help)       sed -n '2,/^# ---8<--- end of header ---8<---$/p' "$0" | grep '^#'; exit 0 ;;
+    # `grep '^#'` keeps comment lines — but the sentinel IS a comment line, so it was printed
+    # verbatim at the end of every --help. Drop it explicitly.
+    -h|--help)       sed -n '2,/^# ---8<--- end of header ---8<---$/p' "$0" | grep '^#' | grep -v '^# ---8<---'; exit 0 ;;
     *) echo "safe-cleanup: unknown argument '$1'" >&2
        echo "  usage: safe-cleanup.sh [--integration <b>] [--protect \"a,b\"] [--apply] [--squash-merged] [--remote] [--remote-name <r>]" >&2
        exit 2 ;;
@@ -99,15 +101,32 @@ if ! git show-ref --verify --quiet "refs/heads/$integration"; then
   echo "ERROR: integration branch '$integration' not found locally; refusing to guess. Pass --integration." >&2
   exit 1
 fi
+# Use the FULL ref everywhere the integration branch is resolved. As a bare name it is subject to
+# the same tag-beats-branch precedence as any other: with a tag also called `main`, `git branch -r
+# --merged main` answered about the TAG's commit and listed `origin/unmerged-precious` as merged —
+# and §3 (`--remote`) has no `-d` safety net, so `--apply` destroyed it server-side. The ambiguity
+# warning git prints was being swallowed by `2>/dev/null`, so nothing surfaced.
+integration_ref="refs/heads/$integration"
 
 is_protected() {
   local name="$1"
   [ "$name" = "$current_branch" ] && return 0
   [ "$name" = "$integration" ] && return 0
-  local IFS=','
-  for p in $protect_csv; do
-    p="$(echo "$p" | xargs)"   # trim whitespace
-    p="${p%/}"                 # tolerate trailing slash (e.g. "hotfix/")
+  # Split with `read -ra`, not word-splitting, and trim with parameter expansion, not `echo | xargs`.
+  # xargs parses SHELL QUOTING, so it mangled exactly the names that most need protecting:
+  # `a\b` came back as `ab`, and `keep'me` (a legal refname) killed xargs on an unterminated quote,
+  # yielding an empty string that the `continue` below silently dropped — the branch then fell
+  # through to the `-D` path. Measured: `--protect "keep'me"` printed `would delete keep'me`.
+  # `set -f` so a pattern like `rel*` is compared literally instead of being glob-expanded against
+  # the working directory.
+  local -a pats=(); local p
+  set -f
+  IFS=',' read -ra pats <<< "$protect_csv"
+  set +f
+  for p in "${pats[@]}"; do
+    p="${p#"${p%%[![:space:]]*}"}"   # trim leading whitespace
+    p="${p%"${p##*[![:space:]]}"}"   # trim trailing whitespace
+    p="${p%/}"                       # tolerate trailing slash (e.g. "hotfix/")
     [ -z "$p" ] && continue
     [ "$name" = "$p" ] && return 0
     # Boundary set copied VERBATIM from git-guard.sh's is_protected. The two scripts ship in the
@@ -152,11 +171,14 @@ gh_init() {
 # that is the whole reason this function exists. Requiring it would return the feature to the
 # dead-code state it was written to fix. Base convergence is the correct narrowing; ancestry
 # is not available here.
-merged_pr_for() {
-  local b="$1" sha out rc
+#
+# Takes a resolved SHA, not a ref name. The caller resolves it once and keeps it, so the evidence
+# and the sha that authorises the deletion are the SAME object by construction — there is no second
+# resolution that could land on a different commit (or, before this round, on a same-named TAG).
+merged_pr_for() {  # merged_pr_for <sha>
+  local sha="$1" out rc
   gh_init
   [ "$gh_state" = "ready" ] || { printf 'ERR'; return 0; }
-  sha="$(git rev-parse --verify --quiet "$b^{commit}" 2>/dev/null)" || return 0
   [ -n "$sha" ] || return 0
   # $integration goes in as DATA via $ENV, never interpolated into the jq program. Building the
   # program by string substitution let a git-legal branch name rewrite the predicate: with
@@ -182,6 +204,50 @@ merged_pr_for() {
   esac
 }
 
+# ---- the ONE exit for `-D` ---------------------------------------------------------------------
+# Both destructive call sites (loose branches in §1b, worktree branches in §2) go through here.
+# They have now taken a HALF fix three rounds running — round 2 fixed the recovery handle only in
+# the branch loop, round 3 fixed ref resolution only in handle_wt, and round 4 found the branch loop
+# had meanwhile RE-INTRODUCED the very tag hijack round 3 fixed. One shared function is what makes
+# the next half-fix structurally impossible.
+#
+# `git update-ref -d <fullref> <expected-sha>` instead of `git branch -D <name>`:
+#   1. FULL REF, so git never applies its bare-name lookup rules — under those, `refs/tags/x` wins
+#      over `refs/heads/x`, which is how evidence gathered from a TAG came to authorise deleting a
+#      same-named unmerged BRANCH (measured: branch decoy=3661392 vs tag decoy=fece62f).
+#   2. EXPECTED-OLD-VALUE, making it an atomic compare-and-swap: if the tip moved between evidence
+#      and deletion, the delete FAILS instead of destroying newer work. That closes the TOCTOU
+#      window without the second `gh` round-trip the previous round added — so this also puts the
+#      cost back at one API call per branch, as the docs claim.
+#   3. The sha it swaps against is the one the evidence was gathered for, printed as the recovery
+#      handle. Same object end to end.
+destroy_branch() {  # destroy_branch <refs/heads/name> <expected-sha> <label>
+  local ref="$1" expect="$2" label="$3" short="${ref#refs/heads/}"
+  if git update-ref -d "$ref" "$expect" 2>/dev/null; then
+    # %q-quote the name in the restore hint: `feat/x$(id)` is a legal refname, and an unquoted
+    # hint is a command substitution the moment someone pastes it.
+    printf '  deleted  %s  (%s)  was=%s  → restore: git branch %q %s\n' \
+      "$short" "$label" "$expect" "$short" "$expect"
+    return 0
+  fi
+  # Two ways to get here and both mean "do not delete": the CAS found a different tip (someone
+  # committed since the evidence was collected), or the ref is already gone.
+  printf '  SKIP (tip moved since evidence was collected, or ref already gone)  %s\n' "$short"
+  return 1
+}
+
+# Membership tests without a pipeline. `producer | grep -Fqx` looks harmless but `grep -q` exits at
+# the first match, the producer takes SIGPIPE, and with `set -o pipefail` the whole pipeline returns
+# 141 — a MATCH reported as a failure. Reproduced with a 5000-line producer (`MATCH-LOST rc=141`);
+# at :349 that silently demoted a git-native merged worktree branch from the `-d` path to the `-D`
+# path. Pure bash matching has no producer to kill.
+list_has() {  # list_has <newline-separated-list> <needle>
+  case $'\n'"$1"$'\n' in
+    *$'\n'"$2"$'\n'*) return 0 ;;
+  esac
+  return 1
+}
+
 mode="DRY-RUN (pass --apply to execute)"
 [ "$apply" = "1" ] && mode="APPLY"
 echo "== pilot safe-cleanup =="
@@ -195,18 +261,22 @@ while IFS= read -r line; do
     branch\ refs/heads/*) wt_branches="${wt_branches}${line#branch refs/heads/}"$'\n' ;;
   esac
 done < <(git worktree list --porcelain 2>/dev/null)
-is_in_worktree() { printf '%s' "$wt_branches" | grep -Fqx "$1"; }
+is_in_worktree() { list_has "$wt_branches" "$1"; }
+
+# Computed ONCE, from the full integration ref, and reused by every "is this already merged?" test
+# below. Previously each test re-ran `git branch --merged | sed | grep -q` — three separate chances
+# to hit the SIGPIPE/pipefail bug and the bare-name ambiguity, per branch.
+git_merged_names="$(git branch --format='%(refname:short)' --merged "$integration_ref" 2>/dev/null || true)"
 
 # ---- 1. Merged local branches ------------------------------------------------
 echo "## Local merged branches"
 merged_list=()
 while IFS= read -r b; do
-  b="$(echo "$b" | sed 's/^[* +] *//')"
   [ -z "$b" ] && continue
   if is_protected "$b"; then continue; fi
   if is_in_worktree "$b"; then continue; fi   # leave worktree branches to section 2
   merged_list+=("$b")
-done < <(git branch --merged "$integration" 2>/dev/null)
+done <<< "$git_merged_names"
 
 if [ "${#merged_list[@]}" -eq 0 ]; then
   echo "  (none)"
@@ -230,7 +300,10 @@ echo "## Squash-merged local branches"
 # a SUBSHELL — anything it assigns to gh_state is discarded on return. Relying on that left the
 # "cannot verify" branch permanently unreachable, so a missing/unauthenticated gh printed the
 # same "(none)" as a genuinely clean repo. "Could not check" must never look like "nothing found".
-# COST GATE. Each candidate costs one gh API call; a plain `pilot status` dry-run measured
+# COST GATE. ONE gh call per candidate, in both dry-run and apply. (Round 4 briefly made apply 2N
+# by re-querying to close the TOCTOU window; `update-ref`'s expected-old-value does that atomically
+# instead, so the number below is accurate again — rate limiting is this feature's most likely
+# failure mode and doubling the calls made it twice as easy to hit.) A plain `pilot status` dry-run measured
 # 25 calls / 20.6s on this repo, and status.md step 4 runs exactly that. Without --squash-merged
 # spend ZERO calls and say so — silence would be indistinguishable from "nothing found", the very
 # confusion B3 exists to prevent.
@@ -240,11 +313,16 @@ if [ "$squash_merged" != "1" ]; then
   echo "       not an ancestor — so cleanable branches usually appear HERE, not there."
 else
 gh_init
-sq_names=()
+sq_refs=()
+sq_shas=()
 sq_prs=()
 sq_errors=0
-while IFS= read -r b; do
-  [ -z "$b" ] && continue
+# Iterate over FULL refs. The previous round stripped them back to bare names with sed, which threw
+# away the disambiguation `%(refname:short)` performs and handed every later step a name that git
+# resolves tag-first — the Critical this round.
+while IFS= read -r ref; do
+  [ -z "$ref" ] && continue
+  b="${ref#refs/heads/}"
   # Say WHY a branch never appears. Silently skipping protected names made e.g. `integration-tests`
   # permanently uncleanable with zero visible reason once the boundary set widened.
   if is_protected "$b"; then
@@ -252,15 +330,22 @@ while IFS= read -r b; do
     # on are structurally protected and saying so every run is noise; what needed a visible reason
     # is the third kind — e.g. `integration-tests` swept up by the widened boundary set, which
     # otherwise vanishes from every section with nothing explaining why.
-    if [ "$apply" != "1" ] && [ "$b" != "$integration" ] && [ "$b" != "$current_branch" ]; then
+    # Printed in APPLY too. Gating it on dry-run hid the reason in the exact invocation run.md:78
+    # defines as the standard post-merge command (`--squash-merged … --apply`) — i.e. the fix for
+    # "say why a branch never appears" was invisible in the only call that matters.
+    if [ "$b" != "$integration" ] && [ "$b" != "$current_branch" ]; then
       echo "  KEEP (protected by name/pattern)  $b"
     fi
     continue
   fi
   is_in_worktree "$b" && continue
   # Anything git already calls merged was handled above.
-  git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$b" && continue
-  pr="$(merged_pr_for "$b")"
+  list_has "$git_merged_names" "$b" && continue
+  # Resolve the tip ONCE, from the full ref, and carry it: this sha is what the evidence is about
+  # and what authorises the delete.
+  sha="$(git rev-parse --verify --quiet "$ref^{commit}" 2>/dev/null || true)"
+  [ -n "$sha" ] || continue
+  pr="$(merged_pr_for "$sha")"
   # Count PER-BRANCH lookup failures separately. gh_state only records init-level failure;
   # a 403/5xx on an individual branch used to land in the same "no evidence" bucket, so a
   # rate-limited run printed a byte-identical "(none)" to a genuinely clean repo — and a
@@ -269,10 +354,10 @@ while IFS= read -r b; do
   # to be able to.
   if [ "$pr" = "ERR" ]; then sq_errors=$((sq_errors + 1)); continue; fi
   [ -z "$pr" ] && continue
-  sq_names+=("$b"); sq_prs+=("$pr")
-done < <(git branch --format='%(refname)' 2>/dev/null | sed 's#^refs/heads/##')
+  sq_refs+=("$ref"); sq_shas+=("$sha"); sq_prs+=("$pr")
+done < <(git branch --format='%(refname)' 2>/dev/null)
 
-if [ "${#sq_names[@]}" -eq 0 ]; then
+if [ "${#sq_refs[@]}" -eq 0 ]; then
   if [ "$gh_state" = "unavailable" ]; then
     echo "  (cannot verify — gh not installed/authenticated, or repo not resolvable; branches KEPT)"
   elif [ "$sq_errors" -gt 0 ]; then
@@ -282,25 +367,17 @@ if [ "${#sq_names[@]}" -eq 0 ]; then
   fi
 else
   i=0
-  while [ "$i" -lt "${#sq_names[@]}" ]; do
-    b="${sq_names[$i]}"; pr="${sq_prs[$i]}"
+  while [ "$i" -lt "${#sq_refs[@]}" ]; do
+    ref="${sq_refs[$i]}"; sha="${sq_shas[$i]}"; pr="${sq_prs[$i]}"
     if [ "$apply" = "1" ]; then
-      # -D, justified by the merged-PR evidence just gathered for THIS tip commit.
-      # Capture the sha FIRST and print it ourselves: git's "Deleted branch X (was abc1234)." is
-      # the ONLY handle for recovering a -D'd branch, and the earlier version sent it to
-      # /dev/null. Redirect git's stdout to keep the report structured, but surface the sha.
-      # Evidence was gathered in the first loop; ~0.8s per gh call means a 25-branch run leaves a
-      # ~20s window in which a concurrent agent could commit to one of these branches. `-D` skips
-      # the recheck that makes section 1's `-d` immune, so re-confirm the tip before destroying it.
-      sha_short="$(git rev-parse --short "$b" 2>/dev/null || echo unknown)"
-      if [ "$(merged_pr_for "$b")" != "$pr" ]; then
-        echo "  SKIP (tip changed since evidence was collected)  $b"; i=$((i + 1)); continue
-      fi
-      if git branch -D -- "$b" >/dev/null 2>&1; then
-        echo "  deleted  $b  (merged via PR #$pr)  was=$sha_short  → restore: git branch $(printf '%q' "$b") $sha_short"
-      else echo "  SKIP (delete failed)  $b"; fi
+      # The CAS inside destroy_branch is the TOCTOU guard: evidence gathering costs ~0.8s per gh
+      # call, so a 25-branch run leaves a ~20s window for a concurrent agent to commit. Previously
+      # that was covered by re-calling `gh` per branch (doubling the cost and misreporting rate
+      # limits as "tip changed"); the expected-old-value does it atomically, for free, and cannot
+      # confuse a lookup failure with a moved tip.
+      destroy_branch "$ref" "$sha" "merged via PR #$pr" || true
     else
-      echo "  would delete  $b  (merged via PR #$pr)"
+      echo "  would delete  ${ref#refs/heads/}  (merged via PR #$pr)"
     fi
     i=$((i + 1))
   done
@@ -346,7 +423,8 @@ handle_wt() {
     echo "  KEEP (not a merged feature branch)  $path  [$short]"
     return
   fi
-  if git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$short"; then
+  local wt_sha=""
+  if list_has "$git_merged_names" "$short"; then
     via="git"
   elif [ "$squash_merged" != "1" ]; then
     # Same cost gate as section 1b: this ran BEFORE the flag check and was the bulk of the
@@ -355,9 +433,14 @@ handle_wt() {
     return
   else
     # Resolve via the FULL ref, never the bare short name: with a tag of the same name,
-    # `git rev-parse decoy` picks the TAG, so evidence — and the recovery handle added this
-    # round — would describe the wrong commit. `$branch` is already refs/heads/<name> here.
-    wt_pr="$(merged_pr_for "${branch:-$short}")"
+    # `git rev-parse decoy` picks the TAG, so evidence — and the recovery handle — would describe
+    # the wrong commit. `$branch` is already refs/heads/<name> here.
+    wt_sha="$(git rev-parse --verify --quiet "${branch:-refs/heads/$short}^{commit}" 2>/dev/null || true)"
+    if [ -z "$wt_sha" ]; then
+      echo "  KEEP (cannot resolve tip — NOT 'unmerged')  $path  [$short]"
+      return
+    fi
+    wt_pr="$(merged_pr_for "$wt_sha")"
     if [ "$wt_pr" = "ERR" ]; then
       echo "  KEEP (could not verify — lookup failed, NOT 'unmerged')  $path  [$short]"
       return
@@ -371,13 +454,15 @@ handle_wt() {
   if [ "$apply" = "1" ]; then
     if git worktree remove "$path" 2>/dev/null; then
       echo "  removed  $path  [$short]  ($via)"
-      # -d for git-native evidence; -D only where a merged PR with base=$integration proves it.
+      # -d for git-native evidence; the shared CAS destroy for the evidence-based path.
+      # `git worktree remove` refuses a DIRTY worktree but not a clean one whose tip advanced, so
+      # this path needs the same compare-and-swap the loose-branch path has — it is the identical
+      # destructive act on the identical kind of ref.
       if [ "$via" = "git" ]; then
         git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
       else
-        local wsha; wsha="$(git rev-parse --short "${branch:-$short}" 2>/dev/null || echo unknown)"
-        git branch -D -- "$short" >/dev/null 2>&1 \
-          && echo "    + deleted branch $short ($via)  was=$wsha  → restore: git branch $(printf '%q' "$short") $wsha" || true
+        printf '  '   # keep destroy_branch's line aligned under the worktree it belongs to
+        destroy_branch "${branch:-refs/heads/$short}" "$wt_sha" "$via" || true
       fi
     else
       echo "  SKIP (remove failed)  $path  [$short]"
@@ -417,8 +502,21 @@ if [ "$do_remote" = "1" ]; then
     else
       echo "  would delete  $remote_name/$short"
     fi
-  done < <(git branch -r --merged "$integration" 2>/dev/null)
-  [ "$any" = "0" ] && echo "  (none)"
+  done < <(git branch -r --merged "$integration_ref" 2>/dev/null)
+  if [ "$any" = "0" ]; then
+    echo "  (none)"
+    # Say what this section can and cannot see. It uses ONLY the git-native predicate, which in a
+    # squash-merge repo returns 0 rows by construction — the same dead-end that made §1 useless and
+    # is this feature's whole reason for existing. Printing a bare "(none)" here would repeat the
+    # original sin one section further down: a guard that reports "nothing to do" when what it means
+    # is "I cannot see anything from here". Remote squash-merged branches are NOT handled (FU-9).
+    [ "$squash_merged" = "1" ] && \
+      echo "   NB: this section uses only \`git branch -r --merged\`, which a squash-merge repo makes"
+    [ "$squash_merged" = "1" ] && \
+      echo "       return nothing. --squash-merged does NOT extend here — remote branches need manual"
+    [ "$squash_merged" = "1" ] && \
+      echo "       cleanup or GitHub's auto-delete-on-merge. This is 'not checked', not 'nothing found'."
+  fi
   echo
 fi
 

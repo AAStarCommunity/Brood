@@ -25,7 +25,7 @@
      这条命令**不带** `--squash-merged`，所以「Squash-merged local branches」一节会打印
      `(not checked — one gh API call per branch; pass --squash-merged to check)` ——
      那是**没查**，不是**没有**，别当成「干净」。
-   - **本仓库用 squash 合并时必看**：`git branch --merged` 在 squash 仓库里**恒返回 0**，
+   - **本仓库用 squash 合并时必看**：`git branch --merged` 在 squash 仓库里**通常返回 0**（零提交的废弃分支仍会被它列出），
      上面那条命令的「Local merged branches」会永远是 `(none)`。脚本会在
      「Squash-merged local branches」一节把候选列出来（每条附已合并的 PR 号），
      此时改用：
