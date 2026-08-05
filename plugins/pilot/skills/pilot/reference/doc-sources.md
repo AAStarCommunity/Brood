@@ -43,6 +43,33 @@ Notion 的对应坑:token 有效 **≠** 能看到目标页面。integration 只
 分别返回 8 条和 100+ 条),而且单页上限 100 条 —— 搜不到不等于读不到。要确认某页能否读,
 **直接去读它**(`GET /v1/pages/<id>` 或递归遍历 children),那才是权威判据。
 
+## 列表 API 不是可读清单(两个平台都是)
+
+**「列不出来」不等于「读不到」。** 这条踩过两次,方向相反但根因相同:列表接口反映的是
+*索引/成员关系*,不是*访问权限*。拿列表当清单,会得出「这个账号是空的」这种错误结论。
+
+- **飞书**:`wiki spaces list` **不返回个人文档库**(`space_type: my_library`),
+  `drive files list` 对根目录返回 0 —— 但同一时刻,个人库里的文档 `docs +fetch` 全部读得到。
+- **Notion**:`/v1/search` 有索引延迟且单页上限 100 —— 同一个 token,加 connection 前后
+  分别返回 8 条和 100+ 条。
+
+**可靠的做法:从一个已知的文档链接反查容器,再遍历容器。**
+
+```bash
+# 飞书:doc URL/token → 它所在的空间 → 该空间全部节点
+lark-cli wiki spaces get_node --token <node_token> --json     # → space_id
+lark-cli wiki nodes list --space-id <space_id> --json
+lark-cli docs +fetch --doc <token> --doc-format markdown --as user
+```
+
+```bash
+# Notion:入口页 → 递归子页面(search 只作发现用途)
+notion.py tree <入口页> --depth N
+notion.py read <page>
+```
+
+要判断某个文档能不能读,**直接去读它**,那才是权威判据。
+
 ## pilot 侧只读
 
 `plan` / `run` 从这些源**只读取**,绝不写回。需求文档是人在维护的事实来源,
