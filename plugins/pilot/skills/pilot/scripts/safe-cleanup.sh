@@ -49,15 +49,25 @@ squash_merged=0
 do_remote=0
 remote_name="origin"
 
+# Unknown arguments are REFUSED, not skipped. `*) shift ;;` silently dropped a typo like
+# `--integraton main`, and `integration` then fell back to a guess from origin/HEAD — so
+# `--apply` would delete against a baseline the caller never asked for. `--integration` is the
+# one argument whose typo is unrecoverable, and run.md requires callers to pass it explicitly.
+# (Same reasoning that turned git-guard's flag denylist into a refuse-unknown allowlist in this
+# very commit; it applies here for identical reasons.)
+need_val() { [ "$2" -ge 2 ] || { echo "safe-cleanup: '$1' requires a value" >&2; exit 2; }; }
 while [ $# -gt 0 ]; do
   case "$1" in
-    --integration) integration="${2:-}"; shift 2 ;;
-    --protect)     protect_csv="${protect_csv},${2:-}"; shift 2 ;;
-    --apply)       apply=1; shift ;;
+    --integration)   need_val "$1" $#; integration="$2"; shift 2 ;;
+    --protect)       need_val "$1" $#; protect_csv="${protect_csv},$2"; shift 2 ;;
+    --remote-name)   need_val "$1" $#; remote_name="$2"; shift 2 ;;
+    --apply)         apply=1; shift ;;
     --squash-merged) squash_merged=1; shift ;;
-    --remote)      do_remote=1; shift ;;
-    --remote-name) remote_name="${2:-origin}"; shift 2 ;;
-    *) shift ;;
+    --remote)        do_remote=1; shift ;;
+    -h|--help)       sed -n '2,40p' "$0"; exit 0 ;;
+    *) echo "safe-cleanup: unknown argument '$1'" >&2
+       echo "  usage: safe-cleanup.sh [--integration <b>] [--protect \"a,b\"] [--apply] [--squash-merged] [--remote] [--remote-name <r>]" >&2
+       exit 2 ;;
   esac
 done
 
@@ -109,19 +119,39 @@ gh_init() {
   return 0
 }
 
-# Echo the number of a MERGED PR that introduced this branch's tip commit, or nothing.
-# Nothing = no evidence = keep the branch. Every failure path (no gh, no auth, API error,
-# unparseable answer) lands on "nothing" — the check can only ever ADD permission to delete.
+# Echo one of three things, and the difference matters:
+#   <number>  a MERGED PR whose BASE is $integration introduced this branch's tip commit
+#   ERR       the lookup itself failed (rate limit, 5xx, missing scope) — verdict UNKNOWN
+#   (empty)   the lookup succeeded and found no such PR — no evidence
+#
+# `.base.ref == $integration` is load-bearing, not decoration. Without it the test is merely
+# "some merged PR touched this tip", which a STACKED PR satisfies: child merged into a parent
+# feature branch, parent's own PR later closed unmerged — the child's tip then carries merge
+# evidence forever while its work never reached the integration branch. Measured in a sandbox:
+# a commit `git merge-base --is-ancestor … main` calls unreachable was still offered for
+# deletion. Brood happens to have integration == default == main, which masks this entirely;
+# pilot's documented default shape is `preview != main`, where it bites.
+#
+# NB: an `--is-ancestor $sha $integration` test is deliberately NOT added on top. In a
+# squash-merge repo the tip is BY CONSTRUCTION never an ancestor of the integration branch —
+# that is the whole reason this function exists. Requiring it would return the feature to the
+# dead-code state it was written to fix. Base convergence is the correct narrowing; ancestry
+# is not available here.
 merged_pr_for() {
-  local b="$1" sha out
+  local b="$1" sha out rc
   gh_init
-  [ "$gh_state" = "ready" ] || return 0
+  [ "$gh_state" = "ready" ] || { printf 'ERR'; return 0; }
   sha="$(git rev-parse --verify --quiet "$b^{commit}" 2>/dev/null)" || return 0
   [ -n "$sha" ] || return 0
   out="$(gh api "repos/$gh_repo/commits/$sha/pulls" \
-         --jq '[.[] | select(.merged_at != null) | .number] | first // empty' 2>/dev/null || true)"
+         --jq "[.[] | select(.merged_at != null and .base.ref == \"$integration\") | .number] | first // empty" 2>/dev/null)"
+  rc=$?
+  # A failed CALL is not the same as an empty ANSWER. Rate limiting is the most likely failure
+  # here precisely because this feature spends one API call per branch.
+  [ "$rc" -ne 0 ] && { printf 'ERR'; return 0; }
   case "$out" in
-    ''|*[!0-9]*) return 0 ;;   # empty, error text, or anything non-numeric → no evidence
+    '') return 0 ;;            # 200 with no matching PR → genuinely no evidence
+    *[!0-9]*) printf 'ERR' ;;  # 200 but unparseable → treat as unknown, never as "no"
     *) printf '%s' "$out" ;;
   esac
 }
@@ -177,6 +207,7 @@ echo "## Squash-merged local branches"
 gh_init
 sq_names=()
 sq_prs=()
+sq_errors=0
 while IFS= read -r b; do
   b="$(echo "$b" | sed 's/^[* +] *//')"
   [ -z "$b" ] && continue
@@ -185,6 +216,13 @@ while IFS= read -r b; do
   # Anything git already calls merged was handled above.
   git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$b" && continue
   pr="$(merged_pr_for "$b")"
+  # Count PER-BRANCH lookup failures separately. gh_state only records init-level failure;
+  # a 403/5xx on an individual branch used to land in the same "no evidence" bucket, so a
+  # rate-limited run printed a byte-identical "(none)" to a genuinely clean repo — and a
+  # partially failed run silently dropped the branches it could not check. status.md (added in
+  # this same PR) tells the model to say "could not verify, not nothing"; it needs this signal
+  # to be able to.
+  if [ "$pr" = "ERR" ]; then sq_errors=$((sq_errors + 1)); continue; fi
   [ -z "$pr" ] && continue
   sq_names+=("$b"); sq_prs+=("$pr")
 done < <(git branch --format='%(refname:short)' 2>/dev/null)
@@ -192,6 +230,8 @@ done < <(git branch --format='%(refname:short)' 2>/dev/null)
 if [ "${#sq_names[@]}" -eq 0 ]; then
   if [ "$gh_state" = "unavailable" ]; then
     echo "  (cannot verify — gh not installed/authenticated, or repo not resolvable; branches KEPT)"
+  elif [ "$sq_errors" -gt 0 ]; then
+    echo "  ($sq_errors branch(es) could not be verified — KEPT. NOT the same as 'nothing to clean'.)"
   else
     echo "  (none)"
   fi
@@ -210,6 +250,8 @@ else
     fi
     i=$((i + 1))
   done
+  # A partial result must never read as a complete one.
+  [ "$sq_errors" -gt 0 ] && echo "  ($sq_errors more branch(es) could not be verified — KEPT; this list is INCOMPLETE)"
 fi
 echo
 
@@ -238,20 +280,49 @@ handle_wt() {
     echo "  KEEP (dirty, $dirty changes)  $path  [$short]"
     return
   fi
-  # merged check
-  if [ "$short" = "(detached)" ] || is_protected "$short" || ! git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$short"; then
+  # merged check — git-native first, then the same squash evidence section 1b uses.
+  # Using ONLY `git branch --merged` here would have left worktrees permanently uncleanable in a
+  # squash repo: that predicate returns 0 rows by construction, which is the entire premise of
+  # this PR. Missing it meant the fix stopped at loose branches while `SKILL.md`'s own doctrine
+  # ("一个 task = 一个分支 = 一个 worktree = 一个 PR") makes the worktree the dominant unit, and
+  # `phases/status.md` reports worktree cleanup on every `pilot status`.
+  local wt_pr="" via=""
+  if [ "$short" = "(detached)" ] || is_protected "$short"; then
     echo "  KEEP (not a merged feature branch)  $path  [$short]"
     return
   fi
+  if git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$short"; then
+    via="git"
+  else
+    wt_pr="$(merged_pr_for "$short")"
+    if [ "$wt_pr" = "ERR" ]; then
+      echo "  KEEP (could not verify — lookup failed, NOT 'unmerged')  $path  [$short]"
+      return
+    fi
+    if [ -z "$wt_pr" ]; then
+      echo "  KEEP (not a merged feature branch)  $path  [$short]"
+      return
+    fi
+    if [ "$squash_merged" != "1" ]; then
+      echo "  KEEP (squash-merged via PR #$wt_pr) — pass --squash-merged to include  $path  [$short]"
+      return
+    fi
+    via="squash-PR#$wt_pr"
+  fi
   if [ "$apply" = "1" ]; then
     if git worktree remove "$path" 2>/dev/null; then
-      echo "  removed  $path  [$short]"
-      git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
+      echo "  removed  $path  [$short]  ($via)"
+      # -d for git-native evidence; -D only where a merged PR with base=$integration proves it.
+      if [ "$via" = "git" ]; then
+        git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
+      else
+        git branch -D -- "$short" 2>/dev/null && echo "    + deleted branch $short ($via)" || true
+      fi
     else
       echo "  SKIP (remove failed)  $path  [$short]"
     fi
   else
-    echo "  would remove  $path  [$short]  (+ delete branch $short)"
+    echo "  would remove  $path  [$short]  ($via)  (+ delete branch $short)"
   fi
 }
 while IFS= read -r line; do
