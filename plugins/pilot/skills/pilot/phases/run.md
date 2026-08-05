@@ -96,6 +96,7 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 3. **实现**：对照 `architecture.md`/`spec.md` 写代码，范围严格限制在该 task 的「开发范围」，不顺手做别的。
 4. **自测**：先针对性测试，再 lint → typecheck → build → 集成测试。有失败就修到全绿。
 5. **对抗式 review**（PR 前必做，见 `reference/pr-quality.md`）：换新上下文/子 agent 或 Codex（`/codex:rescue`），以「找 race/安全/错误处理/边界/生产失败」的挑剔视角审这段 diff。有阻塞问题 → 修 → 重新自测 → 再挑战，直到无阻塞。
+   **审几轮不由你自己说了算**：跑 `bash <skill>/scripts/grade-change.sh` 拿 `ROUNDS=`（A/B 级 = 3 轮，每轮换一个 lens），规则见 [`reference/pre-pr-review.md`](../reference/pre-pr-review.md)。
 6. **自审 diff**：`git diff` 逐块看，确认没有调试代码、密钥、无关改动。**别指望 pre-commit 钩子兜底**——先 `bash <skill>/scripts/check-hooks.sh`,若报 `BYPASSED`(hooksPath 指到别处/空目录),commit 时的密钥扫描根本没跑,这一步的人肉排查就是**唯一防线**,务必逐字节看清无密钥/token/`.env`/私钥。
 7. **提交**：`git status` → **`bash <skill>/scripts/git-guard.sh add <逐个显式路径>`**（绝不 `-A`/`.`，git-guard 会硬拒绝）→ `git commit`（conventional commit）→ **`bash <skill>/scripts/git-guard.sh push <remote> <branch>`**（推主干会被硬拒绝）。
 8. **开 PR**：先 `bash <skill>/scripts/preflight.sh run`（跑本仓库自己的检查，全绿才写戳记），再**走闸门**开 PR：

@@ -28,7 +28,11 @@
 #
 # `wait_min` (not `age_min`) drives the timeout rule: age_min counts from PR creation, so on any
 # re-review round it is already far past the cap the moment waiting starts, and the "no review
-# service" branch would fire on a PR that is being actively reviewed.
+# service" branch would fire on a PR that is being actively reviewed. wait_min counts from the
+# LATER of (head commit's committedDate, newest review's submitted_at) — the moment the current
+# round's wait actually began. Keying it off the review alone reproduces the same bug one step
+# down: triaging and fixing a verdict routinely takes longer than the 30-min cap, so the next
+# round would time out the instant it started.
 #
 # Exit: 0 = printed (fresh verdict, or one-shot report), 3 = --wait-for-verdict hit the cap.
 set -uo pipefail
@@ -53,7 +57,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-FIELDS="number,title,headRefName,reviewDecision,mergeable,isDraft,url,statusCheckRollup,createdAt,headRefOid"
+FIELDS="number,title,headRefName,reviewDecision,mergeable,isDraft,url,statusCheckRollup,createdAt,headRefOid,commits"
 
 # Print one PR's status, resolving verdict freshness against the REST reviews endpoint.
 report_one() {
@@ -69,12 +73,17 @@ report_one() {
 import json, os
 from datetime import datetime, timezone
 
-def mins_since(ts):
+def parse(ts):
     try:
-        return int((datetime.now(timezone.utc)
-                    - datetime.fromisoformat(ts.replace("Z", "+00:00"))).total_seconds() // 60)
+        return datetime.fromisoformat((ts or "").replace("Z", "+00:00"))
     except Exception:
+        return None
+
+def mins_since(ts):
+    d = parse(ts)
+    if d is None:
         return -1
+    return int((datetime.now(timezone.utc) - d).total_seconds() // 60)
 
 pr = json.loads(os.environ["PR_JSON"])
 try:
@@ -97,7 +106,15 @@ if raw_decision in ("", "REVIEW_REQUIRED"):
 # A verdict counts only when it was posted ON the current head.
 verdict = raw_decision if (raw_decision != "PENDING" and rsha and rsha == head) else "PENDING"
 
-wait_min = mins_since(rsub) if rsub else mins_since(pr.get("createdAt") or "")
+# The current round's wait began at the LATER of "head was committed" and "last verdict landed".
+# Either one alone is already past the 30-min cap on a normal re-review round.
+commits = pr.get("commits") or []
+head_commit = next((c for c in reversed(commits)
+                    if isinstance(c, dict) and (not head or c.get("oid") == head)), None)
+if head_commit is None and commits:
+    head_commit = commits[-1]
+starts = [d for d in (parse((head_commit or {}).get("committedDate")), parse(rsub)) if d]
+wait_min = mins_since(max(starts).isoformat()) if starts else mins_since(pr.get("createdAt") or "")
 age_min = mins_since(pr.get("createdAt") or "")
 checks = [c.get("conclusion") or c.get("state") for c in (pr.get("statusCheckRollup") or [])]
 

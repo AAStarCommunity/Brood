@@ -528,7 +528,12 @@ async function exportStaticBacklog() {
     try {
       const completedDir = path.join(process.cwd(), 'backlog', 'completed');
       const completedFiles = await fs.readdir(completedDir).catch(() => []);
-      const taskFiles = completedFiles.filter(f => f.startsWith('task-') && f.endsWith('.md'));
+      // Sort: readdir order is filesystem-dependent (APFS vs ext4 differ), and dist/ is committed
+      // and byte-compared by the reproducibility guard — unsorted merge order would fail it for
+      // a non-reason as soon as there are ≥2 completed tasks.
+      const taskFiles = completedFiles
+        .filter(f => f.startsWith('task-') && f.endsWith('.md'))
+        .sort();
 
       if (taskFiles.length > 0) {
         const tasksJsonPath = path.join(apiDir, 'tasks.json');

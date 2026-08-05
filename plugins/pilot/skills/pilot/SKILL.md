@@ -44,7 +44,7 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、**开 PR 走 `git-guard.sh pr-create`**(先 `preflight.sh run` 让本仓库的检查真跑过)、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。
 3. **一个 task = 一个分支 = 一个（可选）worktree = 一个 PR**。不在一个分支里顺手做别的 task。
 4. **删除分支只用 `git branch -d`，永不 `-D`**；删除只针对「已合并 + 干净」的分支/worktree；一切经 `scripts/safe-cleanup.sh`，默认 dry-run。
-5. **PR 之前必须自审 + 对抗 review**（见 `reference/pr-quality.md`）。没过 review 的代码不进 PR，没 approve 的 PR 不合并。
+5. **PR 之前必须自审 + 对抗 review**（怎么审见 `reference/pr-quality.md`，**审几轮由 `scripts/grade-change.sh` 机械定级，见 `reference/pre-pr-review.md`**——A/B 级 3 轮，不是作者自己说了算）。没过 review 的代码不进 PR，没 approve 的 PR 不合并。
 6. **状态即文档**。每推进一步都更新 `docs/agent/tasks.md` 与 `docs/agent/progress.md`；宁可慢，不可让文档与仓库真实状态脱节。
 7. **无人值守时不猜产品决策**。遇到影响产品方向/验收/架构的未知，把相关 task 标 `BLOCKED` 并记录待决问题，继续做不受影响的 task；绝不擅自替用户拍板。
 
