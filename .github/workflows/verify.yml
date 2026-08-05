@@ -70,6 +70,38 @@ jobs:
           export PATH="$PWD/node_modules/.bin:$PATH"   # the pinned bin wins over any registry lookup
           npm run build
 
+          # ONE field in the export is derived from the wall clock, not from the sources:
+          # `projectHealth.averageTaskAge` (mean task age in days, computed against "now" by the
+          # backlog CLI). It is not stable even within a day — measured 98 at 04:15 UTC and 99
+          # about fifteen minutes later — so a byte-comparison of dist/ turns red at a random
+          # moment with nobody having changed anything. A guard that goes red for a non-reason
+          # teaches people to ignore red guards, which is worse than not having it.
+          #
+          # So neutralise exactly that field before diffing, rather than dropping it from the
+          # payload: the SPA bundle reads it (dist/chunk-*.js), so removing it would blank a real
+          # number on the live site to make CI look good — fixing the wrong side.
+          #
+          # Deliberately a TEXT substitution, not a JSON round-trip: re-serialising would risk
+          # its own byte differences (non-ASCII escaping, key order) and manufacture the very
+          # false diffs this job exists to detect. Every other byte of statistics.json stays
+          # guarded — this pins one integer to whatever is committed, nothing else.
+          python3 - <<'PY'
+          import pathlib, re, subprocess
+          p = pathlib.Path("dist/api/statistics.json")
+          if p.exists():
+              old = subprocess.run(["git", "show", "HEAD:dist/api/statistics.json"],
+                                   capture_output=True, text=True)
+              m = re.search(r'"averageTaskAge":\s*(-?\d+)', old.stdout) if old.returncode == 0 else None
+              if m:
+                  text, n = re.subn(r'"averageTaskAge":\s*-?\d+',
+                                    '"averageTaskAge":' + m.group(1), p.read_text())
+                  if n:
+                      p.write_text(text)
+                  print(f"pinned averageTaskAge to committed value {m.group(1)} ({n} site(s))")
+              else:
+                  print("no committed averageTaskAge to pin against — comparing as-is")
+          PY
+
           # `git diff` compares TRACKED files only, so a file the build CREATES is untracked and
           # completely invisible to it — the guard would pass while shipping a dangling reference.
           # That is not hypothetical: this very PR added a doc-8 entry to docs.json/search.json
