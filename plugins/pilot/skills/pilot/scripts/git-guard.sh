@@ -154,6 +154,27 @@ case "$sub" in
     ;;
   merge-pr)
     n="${1:-}"; [ $# -gt 0 ] && shift
+    # ---- VET THE SELECTOR, not just the flags --------------------------------------------------
+    # `gh pr merge` takes `[<number> | <url> | <branch>]`, and a URL selector OVERRIDES `--repo`
+    # completely — verified on gh 2.92.0: `gh pr view <url-of-other-repo/pull/N> --repo this/repo`
+    # returns the URL's PR. A URL here would make every check below read THIS repo (protection,
+    # trunk-ness — they all use the locally-resolved $repo) while `exec gh pr merge` lands in a
+    # DIFFERENT one: this repo's branch protection used as proof to merge someone else's PR.
+    # That is exactly what refusing `--repo`/`-R` below exists to prevent — so vetting the flags
+    # while never looking at the selector was not a rail, it was a rail with the gate left open.
+    #
+    # Runs BEFORE the parse loop, deliberately. Positioned after it, `merge-pr --integration x`
+    # (PR number simply forgotten) died inside the loop instead, blaming `x` as an "extra
+    # positional argument" — pointing at --integration's VALUE for a mistake made two tokens
+    # earlier. The selector is consumed first, so it must be judged first.
+    case "$n" in
+      '') die "usage: git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [allowlisted gh flags]" ;;
+      -*) die "refusing '$n' as the PR selector on merge-pr — the PR NUMBER must come first, before any flag.
+  A flag landed where the number belongs, so it was never checked against the allowlist at all." ;;
+      *[!0-9]*) die "refusing PR selector '$n' on merge-pr — pass a bare PR NUMBER.
+  A URL or a branch name overrides the pinned --repo and would target a DIFFERENT repository,
+  using THIS repo's branch protection as the proof. (Verified against gh 2.92.0.)" ;;
+    esac
     integration=""
     allow_trunk=0
     args=()
@@ -175,7 +196,11 @@ case "$sub" in
         # fail. (The previously-denied `--admin` / `--repo` / `-R` / `--delete-branch` are simply
         # absent from the list below; the two that people actually reach for keep their specific
         # error messages so the refusal explains itself.)
-        --squash|--merge|--rebase|--auto) args+=("$1"); shift ;;
+        # Short forms included deliberately: gh documents `-s/-m/-r` as exact aliases of
+        # `--squash/--merge/--rebase`. Allowing the long form while refusing its own official
+        # short form makes the guard look arbitrary, and a guard that looks arbitrary gets
+        # routed around — this script's own comments say so.
+        --squash|-s|--merge|-m|--rebase|-r|--auto) args+=("$1"); shift ;;
         # Value-taking, in both the separate and attached forms.
         --body|-b|--body-file|-F|--subject|-t|--match-head-commit)
           [ $# -ge 2 ] || die "'$1' requires a value"
@@ -188,13 +213,12 @@ case "$sub" in
           die "refusing '$1' on merge-pr — deletes the PR head branch; clean up branches via safe-cleanup.sh" ;;
         -*)
           die "refusing unrecognised flag '$1' on merge-pr — this is an ALLOWLIST.
-  Permitted: --squash --merge --rebase --auto --body/-b --body-file/-F --subject/-t --match-head-commit
+  Permitted: --squash/-s --merge/-m --rebase/-r --auto --body/-b --body-file/-F --subject/-t --match-head-commit
   If '$1' is genuinely safe, add it to the allowlist in git-guard.sh with a note on why." ;;
         *)
           die "refusing extra positional argument '$1' on merge-pr — the PR number is the first argument and there are no others" ;;
       esac
     done
-    [ -n "$n" ] || die "usage: git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [gh args]"
     [ -n "$integration" ] || die "merge-pr requires --integration <branch>"
     command -v gh >/dev/null 2>&1 || die "gh not installed"
     # Pin the repo so the base check and the actual merge target the SAME repo.
@@ -230,6 +254,15 @@ case "$sub" in
       # handled by GitHub branch protection, which is server-side and therefore stronger than this
       # script. So require PROOF of it rather than taking the flag's word — and fail CLOSED when
       # the proof cannot be read.
+      #
+      # NB: `dismiss_stale_reviews` IS load-bearing here, and is checked below. Both proofs this
+      # branch collects are snapshots taken RIGHT NOW (protection requires an approval now; the PR
+      # is APPROVED now), while `--auto` — and, per gh's own help, any merge into a repo using a
+      # merge queue, flag or no flag — defers the real merge to GitHub. Nothing in this script runs
+      # again at that moment. So without stale-dismissal, commits pushed after these checks pass
+      # inherit the old approval and land on trunk unreviewed, which is the one thing this rail
+      # exists to stop. Contrast with `enforce_admins` in the next paragraph: that one is not
+      # load-bearing precisely because the check it would protect is re-enforced by this script.
       #
       # NB: this deliberately does NOT check `enforce_admins`. It is not load-bearing here — the
       # `reviewDecision == APPROVED` check below is enforced by this script regardless of who is
@@ -278,6 +311,22 @@ except Exception:
       esac
       [ "$approvals" -ge 1 ] || die "--allow-trunk: branch '$integration' does not require an approving review (required_approving_review_count=$approvals) — refusing.
   Protect the branch first; otherwise merging into trunk really is unreviewed self-merge."
+      # Parsed from the SAME captured $prot — no second API call, so this cannot disagree with the
+      # approval count above. Empty (unparseable / key absent) falls through to the same refusal as
+      # an explicit false: unverified is treated as absent, like every other proof on this path.
+      dismiss="$(printf '%s' "$prot" | python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+if isinstance(d, dict) and "required_pull_request_reviews" in d:
+    print("1" if (d.get("required_pull_request_reviews") or {}).get("dismiss_stale_reviews") else "0")
+' 2>/dev/null || true)"
+      [ "$dismiss" = "1" ] || die "--allow-trunk: branch '$integration' does not dismiss stale approvals (dismiss_stale_reviews=${dismiss:-unreadable}) — refusing.
+  The two proofs this rail relies on are snapshots taken right now, but --auto (and a merge queue,
+  with or without the flag) defers the actual merge — and nothing here re-checks at that point.
+  Without stale-dismissal, commits pushed after this moment ride in on the old approval.
+  Fix: enable 'Dismiss stale pull request approvals when new commits are pushed' on '$integration'."
       decision="$(gh pr view "$n" --repo "$repo" --json reviewDecision --jq '.reviewDecision // ""' 2>/dev/null || true)"
       [ "$decision" = "APPROVED" ] || die "--allow-trunk: PR #$n reviewDecision is '${decision:-unknown}', not APPROVED — refusing.
   Wait for the verdict (see reference/review-contract.md). Never self-approve, never --admin."
@@ -295,6 +344,6 @@ except Exception:
     exec gh pr merge "$n" --repo "$repo" ${args[@]+"${args[@]}"}
     ;;
   *)
-    echo "git-guard.sh: add <path...> | push <remote> <branch> | merge-pr <n> --integration <b> [--allow-trunk] [gh args]" >&2
+    echo "git-guard.sh: add <path...> | push <remote> <branch> | merge-pr <n> --integration <b> [--allow-trunk] [allowlisted gh flags]" >&2
     exit 2 ;;
 esac
