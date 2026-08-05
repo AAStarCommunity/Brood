@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.1.0
+version: 1.3.0
 description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由外部评审服务裁决要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
@@ -8,6 +8,9 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, Sc
 # pilot — 仓库级开发操作系统
 
 一个 skill、三个阶段，把「一个仓库」从盘点带到持续开发。可移植到 Claude Code 与 Codex。
+
+> **pilot 是唯一入口 skill，其余 skill(飞书文档源、Notion、…)都是配套和附属。** 配套能力该不该装、装哪个、装到全局还是项目级、装完怎么验证，由 pilot 安排——见 `reference/doc-sources.md`。
+> **注意「入口」是编排责任，不是运行时依赖**：pilot 不 import、不启动任何配套 skill，只探测能力在不在，不在就说明缺什么并降级。硬依赖曾经让 pilot 和一个外部 daemon 死锁在一起，花了 6 轮评审才拆干净——「pilot 是入口」不是把它写回去的理由。
 
 ```
 pilot status   # 汇报进展 + 安全清理已合并分支/worktree（默认 dry-run）
@@ -48,7 +51,7 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 6. **状态即文档**。每推进一步都更新 `docs/agent/tasks.md` 与 `docs/agent/progress.md`；宁可慢，不可让文档与仓库真实状态脱节。
 7. **无人值守时不猜产品决策**。遇到影响产品方向/验收/架构的未知，把相关 task 标 `BLOCKED` 并记录待决问题，继续做不受影响的 task；绝不擅自替用户拍板。
 
-> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`**。子命令会在需要时指引你读它们。
+> 详细的 git 安全规则见 `reference/git-safety.md`；PR 质量与 review 流程见 `reference/pr-quality.md`；task 状态机与字段见 `reference/task-schema.md`；**收到评审回执后怎么中立裁决（不盲从/不盲拒、按业务上下文判 comment 对错）见 `reference/review-triage.md`；判为「不阻塞」的跟进项怎么记进账本、绝不丢、主线做完后批量做掉见 `reference/followup-ledger.md`**；**pilot 是唯一入口 skill，飞书/Notion 等文档源是配套——该装什么、怎么装、怎么探测、拿不到怎么降级，都由 pilot 安排，见 `reference/doc-sources.md`**（注意：入口是编排责任，pilot 运行时仍不 import、不启动任何配套 skill）。子命令会在需要时指引你读它们。
 
 ## 配置：`.pilot.yml`
 
