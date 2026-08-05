@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.3.0
+version: 1.4.0
 description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由外部评审服务裁决要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
@@ -64,6 +64,8 @@ protect_patterns: [release, hotfix]   # 额外保护的分支前缀
 remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true
 docs_dir: docs/agent         # 规划/运行态文档目录
+planning_requires:           # 可选。规划已在别处时,声明它的本地路径,起跑门禁改查这些
+  - backlog/tasks            #（不声明 = 老行为:查 docs_dir 下那七个固定文件名)
 ```
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。
@@ -79,9 +81,13 @@ docs_dir: docs/agent         # 规划/运行态文档目录
 2b. **配置迁移硬检查**：若旧文件 `.repo-pilot.yml` 存在——
     - 只有旧文件、无 `.pilot.yml`：红字提示「`.repo-pilot.yml` 已弃用，运行 `git mv .repo-pilot.yml .pilot.yml`」；在迁移前 `run`/`status` 会读旧文件兜底。
     - **两个文件都在、且 `integration_branch` 不一致：`FAIL`（阻断）**——因为哪个生效不确定、错的那个可能把 PR 直合进主干。要求用户先删掉/合并旧文件再继续，`doctor` 不擅自改。
-3. **规划文档齐全度**（`run` 无人值守的硬前提）：`bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict`。
+3. **规划层齐全度**（`run` 无人值守的硬前提）：`bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict`。
    报 MISSING/EMPTY 就照实列出并建议 `pilot plan` 补齐——`run` 会在同一道门禁上 fail-closed 拒跑，
    在这里先看见比半夜被拦住强。（脚本会识别「文件在但还是原样模板」：占位符没填等于没答。）
+   **看输出的 `source=` 字段**：`dir=` 表示查的是 docs_dir 下那七个文件；`source=planning_requires(...)` 表示
+   这个仓库在 `.pilot.yml` 里声明了别的规划源，查的是那些路径。**规划已经在 backlog.md / issue tracker /
+   别的工具里的仓库,报 NOT ready 时不要建议把规划重抄进七件套**——那违反 plan.md §A.3(已有规划不要重复造)。
+   正确建议是声明 `planning_requires:` 指向真正的规划源。
 4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
 5. `gh auth status` 是否可用（PR 流程需要）。
 5b. **git hook 是否真的在生效**（别假设 commit 有保护）：`bash <skill>/scripts/check-hooks.sh`。常见坑：`core.hooksPath` 指到**另一个 clone** 的 hooks 目录 → pre-commit 密钥扫描根本没跑,commit 裸奔却无人察觉。报 `BYPASSED` 就红着提示,并说明「**不要自动切回 `.githooks`**——扫描器有历史误报会让每次 commit 卡死,得先给已知误报加 baseline/allowlist 降噪,再手动开钩子」。只报告,不擅自 rewire。

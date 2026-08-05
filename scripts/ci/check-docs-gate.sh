@@ -12,6 +12,9 @@
 set -uo pipefail
 
 GATE="plugins/pilot/skills/pilot/scripts/check-docs.sh"
+# Absolute form: assertion 5 must `cd` into a fixture (planning_requires entries are repo-relative
+# by design), and a relative $GATE stops resolving the moment we leave the repo root.
+GATE_ABS="$PWD/$GATE"
 TEMPLATES="plugins/pilot/skills/pilot/templates"
 fails=0
 
@@ -38,7 +41,11 @@ check() {  # check <description> <expected_rc> <actual_rc>
   fi
 }
 
-run() { bash "$GATE" --docs-dir "$tmp" "$@" >/dev/null 2>&1; echo $?; }
+# --no-config on EVERY call: these assertions are about the gate's own logic against a fixture
+# directory, and this script runs from the repo root. Without it, the gate would read this repo's
+# .pilot.yml, see `planning_requires:`, and check backlog/ instead of $tmp — every assertion below
+# would keep printing "ok" while testing something else entirely. Assertion 7 pins that down.
+run() { bash "$GATE" --no-config --docs-dir "$tmp" "$@" >/dev/null 2>&1; echo $?; }
 
 echo "check-docs.sh fail-closed assertions:"
 
@@ -59,7 +66,7 @@ check "zero threshold rejected"        2 "$(PILOT_DOC_MIN_BYTES=0    run --stric
 
 # 3. Missing files must be rejected too (the gate's other half).
 empty="$(mktemp -d)"
-check "empty docs dir rejected" 1 "$(bash "$GATE" --docs-dir "$empty" --strict >/dev/null 2>&1; echo $?)"
+check "empty docs dir rejected" 1 "$(bash "$GATE" --no-config --docs-dir "$empty" --strict >/dev/null 2>&1; echo $?)"
 rm -rf "$empty"
 
 # 4. The gate must still PASS on genuinely filled docs — otherwise it is just broken, and a gate
@@ -73,7 +80,42 @@ for d in research acceptance architecture spec roadmap tasks progress; do
     echo "补充说明:这一段用于验证门禁在文档确实填写之后能够正常放行,而不是一律拒绝。"
   } > "$filled/$d.md"
 done
-check "filled docs accepted" 0 "$(bash "$GATE" --docs-dir "$filled" --strict >/dev/null 2>&1; echo $?)"
+check "filled docs accepted" 0 "$(bash "$GATE" --no-config --docs-dir "$filled" --strict >/dev/null 2>&1; echo $?)"
+
+rm -rf "$filled"
+
+# 5. An alternative planning source (`planning_requires:`) must be held to the SAME content bar.
+#    It replaces WHICH paths are checked, never WHETHER they have to be real — a knob that let a
+#    repo declare its way past the gate would be the fail-open this whole script exists to catch.
+#    Run from inside the fixture (entries must be repo-relative), so the gate needs an ABS path.
+alt="$(mktemp -d)"; mkdir -p "$alt/plan-src" "$alt/blank-src"
+: > "$alt/blank-src/placeholder.md"
+{
+  echo "# 规划源"
+  echo "本文件包含足够的实质内容,用于验证门禁在替代规划源下能够正常放行,而不是一律拒绝。"
+  echo "第二段补充说明,确保真实内容超过最小字节阈值。"
+} > "$alt/plan-src/tasks.md"
+check "planning_requires: dir with real content accepted" 0 \
+  "$(cd "$alt" && bash "$GATE_ABS" --planning-requires "plan-src" --strict >/dev/null 2>&1; echo $?)"
+check "planning_requires: dir of blank files rejected" 1 \
+  "$(cd "$alt" && bash "$GATE_ABS" --planning-requires "blank-src" --strict >/dev/null 2>&1; echo $?)"
+check "planning_requires: absent path rejected" 1 \
+  "$(cd "$alt" && bash "$GATE_ABS" --planning-requires "plan-src,nope" --strict >/dev/null 2>&1; echo $?)"
+rm -rf "$alt"
+
+# 6. The knob must not be usable to switch the gate OFF. Each of these would otherwise pass
+#    unconditionally in any repo holding a single non-empty file.
+check "planning_requires='.' refused"      2 "$(bash "$GATE" --planning-requires "." --strict >/dev/null 2>&1; echo $?)"
+check "planning_requires='/' refused"      2 "$(bash "$GATE" --planning-requires "/" --strict >/dev/null 2>&1; echo $?)"
+check "planning_requires absolute refused" 2 "$(bash "$GATE" --planning-requires "/etc" --strict >/dev/null 2>&1; echo $?)"
+# A glob is refused rather than expanded: word-splitting an unquoted list ALSO globs, so `backlog/*`
+# used to arrive pre-expanded as the paths it matched and the literal check never saw a `*`.
+check "planning_requires glob refused"     2 "$(bash "$GATE" --planning-requires "backlog/*" --strict >/dev/null 2>&1; echo $?)"
+
+# 7. --no-config must actually isolate the fixture from this repo's declaration. If someone drops
+#    the flag from run() above, THIS is the assertion that goes red instead of the suite silently
+#    testing backlog/ while claiming to test pristine templates.
+check "--no-config ignores repo declaration" 1 "$(bash "$GATE" --no-config --docs-dir "$tmp" --strict >/dev/null 2>&1; echo $?)"
 rm -rf "$filled"
 
 echo
