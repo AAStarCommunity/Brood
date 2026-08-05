@@ -12,6 +12,11 @@
 # This is the same failure shape this repo keeps hitting: one fact written twice, then diverging.
 # The fix is not vigilance, it is a check.
 #
+# SCOPE: exactly these two files declare the pilot version, and nothing else does — verified by
+# grep at the time of writing (README.md carries no version string; the `1.1.1`-looking token in
+# it is a Task ID). If a third place ever starts declaring it, add it here — this guard does not
+# discover declarations, it compares the two it is told about.
+#
 # Exit: 0 = in sync, 1 = drift or unreadable.
 set -euo pipefail
 
