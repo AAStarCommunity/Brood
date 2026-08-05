@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import http from 'node:http';
@@ -63,6 +64,55 @@ async function computeMilestoneProgress() {
     result[`lane:milestone:${key}`] = val;
   }
   return result;
+}
+
+// Strip machine-specific data out of the CLI's API payloads before they are written to dist/.
+//
+// The backlog.md REST API returns absolute filesystem paths (`filePath`, `projectPath`,
+// `rootConfigPath` — e.g. "/Users/jason/Dev/Brood/backlog/tasks/…") and mtime-derived
+// `lastModified` stamps. Two separate problems, one root cause:
+//
+//   1. dist/ is committed and diffed against a fresh build to prove it is reproducible. Those
+//      fields can never match across machines — a CI runner checks out at /home/runner/work/… —
+//      so 49/49 tasks differ and the guard is red on every PR forever. A permanently-red guard
+//      gets bypassed, which is worse than having no guard.
+//   2. dist/ is uploaded verbatim to a public site, so those paths publish the maintainer's home
+//      directory layout to anyone who fetches /api/status.json.
+//
+// Fixing this by excluding more files from the diff is NOT acceptable: all four contaminated files
+// are the ones that carry the actual content, so excluding them would leave the guard watching
+// only index.html and hashed assets — green while shipping exactly the stale data it exists to
+// catch. Sanitize at the source instead: paths become repo-relative, mtimes are dropped.
+const REPO_ROOT = process.cwd();
+
+function sanitizeApiPayload(text) {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return text;                       // not JSON (or already a string blob) — leave untouched
+  }
+
+  const walk = (node) => {
+    if (Array.isArray(node)) return node.map(walk);
+    if (!node || typeof node !== 'object') return node;
+    const out = {};
+    for (const [key, value] of Object.entries(node)) {
+      // Drop mtime-derived stamps outright: they change on every checkout and carry no meaning
+      // for a static export (git already records when content changed).
+      if (key === 'lastModified') continue;
+      if (typeof value === 'string' && (key === 'filePath' || key === 'projectPath' || key === 'rootConfigPath')) {
+        out[key] = value.startsWith(REPO_ROOT)
+          ? (value.slice(REPO_ROOT.length).replace(/^\/+/, '') || '.')
+          : value;
+        continue;
+      }
+      out[key] = walk(value);
+    }
+    return out;
+  };
+
+  return JSON.stringify(walk(data));
 }
 
 async function fetchFromLocal(endpoint, retries = 5) {
@@ -190,7 +240,22 @@ async function exportStaticBacklog() {
   await assertPortFree(PORT);
 
   console.log('Starting local backlog server for export...');
-  const server = spawn('npx', ['backlog', 'browser', '--no-open', '-p', PORT.toString()], {
+  // Use the version pinned in package.json, never whatever `npx` resolves. Two failures came from
+  // not doing this: (a) the bare name `backlog` on the registry is an UNRELATED package, so on a
+  // machine without a global install npx fetches the wrong tool; (b) even with the right tool, the
+  // CLI version decides the content-hashed asset names and payload shape — a local 1.45.0 and a CI
+  // 1.49.3 produce different dist/ from identical sources, so "is dist/ reproducible?" can never be
+  // answered. Pinning is what makes that question meaningful at all.
+  const localBin = path.join(process.cwd(), 'node_modules', '.bin', 'backlog');
+  const backlogBin = fsSync.existsSync(localBin) ? localBin : 'npx';
+  const backlogArgs = backlogBin === 'npx'
+    ? ['--no-install', 'backlog', 'browser', '--no-open', '-p', PORT.toString()]
+    : ['browser', '--no-open', '-p', PORT.toString()];
+  if (backlogBin === 'npx') {
+    console.warn('WARNING: node_modules/.bin/backlog not found — run `pnpm install` so the pinned ' +
+                 'backlog.md version is used. dist/ built without it may not be reproducible.');
+  }
+  const server = spawn(backlogBin, backlogArgs, {
     stdio: 'ignore'
   });
   // Surface spawn/exit failures instead of sleeping through them and scraping nothing (or worse,
@@ -206,11 +271,15 @@ async function exportStaticBacklog() {
   if (serverExited) throw new Error(`Local backlog server ${serverExited}`);
 
   try {
-    await fs.rm(distDir, { recursive: true, force: true });
-    await fs.mkdir(apiDir, { recursive: true });
-
+    // Prove the server actually answers BEFORE destroying the existing dist/. Wiping first means a
+    // failed run leaves an empty dist/ — and since dist/ is committed and deployed verbatim, anyone
+    // who then commits "what the build produced" wipes the live site. Fetching index.html first
+    // costs one request and converts that outage into a plain error with dist/ untouched.
     console.log('Fetching index.html...');
     const indexBuffer = await fetchFromLocal('/');
+
+    await fs.rm(distDir, { recursive: true, force: true });
+    await fs.mkdir(apiDir, { recursive: true });
     let indexHtml = indexBuffer.toString('utf-8');
 
     // Parse static assets loaded in index.html (CSS, JS, icons)
@@ -449,7 +518,7 @@ async function exportStaticBacklog() {
         const data = await fetchFromLocal('/api/' + ep);
         const targetPath = path.join(apiDir, ep + '.json');
         await fs.mkdir(path.dirname(targetPath), { recursive: true });
-        await fs.writeFile(targetPath, data);
+        await fs.writeFile(targetPath, sanitizeApiPayload(data));
       } catch (err) {
         console.warn('Warning: could not fetch /api/' + ep);
       }
@@ -459,7 +528,12 @@ async function exportStaticBacklog() {
     try {
       const completedDir = path.join(process.cwd(), 'backlog', 'completed');
       const completedFiles = await fs.readdir(completedDir).catch(() => []);
-      const taskFiles = completedFiles.filter(f => f.startsWith('task-') && f.endsWith('.md'));
+      // Sort: readdir order is filesystem-dependent (APFS vs ext4 differ), and dist/ is committed
+      // and byte-compared by the reproducibility guard — unsorted merge order would fail it for
+      // a non-reason as soon as there are ≥2 completed tasks.
+      const taskFiles = completedFiles
+        .filter(f => f.startsWith('task-') && f.endsWith('.md'))
+        .sort();
 
       if (taskFiles.length > 0) {
         const tasksJsonPath = path.join(apiDir, 'tasks.json');
@@ -512,8 +586,14 @@ async function exportStaticBacklog() {
             definitionOfDoneItems: [],
             description: description,
             priority: get('priority') || 'medium',
-            filePath: path.join(completedDir, file),
-            lastModified: new Date().toISOString(),
+            // Repo-relative, and NO wall-clock stamp. This record is written straight to
+            // dist/api/tasks.json below, bypassing the per-endpoint sanitizer — so it has to be
+            // clean at construction. An absolute path here republishes the maintainer's home
+            // directory (the leak this file already fixes on the other write path), and
+            // `new Date()` makes two builds seconds apart differ, which breaks the
+            // dist-reproducible guard outright. Dormant today only because backlog/completed/ is
+            // empty; the first completed task would bring both bugs back at once.
+            filePath: path.join('backlog', 'completed', file),
             source: 'local'
           };
 
@@ -524,7 +604,39 @@ async function exportStaticBacklog() {
           }
         }
 
-        await fs.writeFile(tasksJsonPath, JSON.stringify(tasksData));
+        // Sanitize here too. The fields above are already clean, but this is the second write path
+        // into dist/api/ and the first one's sanitizer does not cover it — a future edit that adds
+        // another machine-specific field would silently republish it. Route every dist/api write
+        // through the same filter so "is this payload clean?" has one answer, not two.
+        await fs.writeFile(tasksJsonPath, sanitizeApiPayload(JSON.stringify(tasksData)));
+
+        // Mirror the merged tasks into search.json. The CLI never saw backlog/completed/, so
+        // without this a completed task exists in tasks.json but is unfindable in the site's
+        // search — and the consistency assertion (rightly) fails because the two files disagree.
+        // Fixing the count by loosening the assertion would have kept the real defect: the task
+        // would still be missing from search. Keep the wrapper shape {type,score,task} the CLI uses.
+        try {
+          const searchPath = path.join(apiDir, 'search.json');
+          const searchRaw = JSON.parse(await fs.readFile(searchPath, 'utf8'));
+          if (Array.isArray(searchRaw)) {
+            const known = new Set(
+              searchRaw.filter(e => e && e.type === 'task' && e.task).map(e => e.task.id)
+            );
+            let added = 0;
+            for (const t of tasksData) {
+              if (t.source === 'local' && !known.has(t.id)) {
+                searchRaw.push({ type: 'task', score: null, task: t });
+                added += 1;
+              }
+            }
+            if (added > 0) {
+              await fs.writeFile(searchPath, sanitizeApiPayload(JSON.stringify(searchRaw)));
+              console.log(`  + Mirrored ${added} completed task(s) into search.json`);
+            }
+          }
+        } catch (err) {
+          console.warn('Warning: could not mirror completed tasks into search.json:', err.message);
+        }
       }
     } catch (err) {
       console.warn('Warning: could not merge completed tasks:', err.message);

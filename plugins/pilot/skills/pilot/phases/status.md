@@ -14,15 +14,7 @@
 
 3. **读运行态**：若 `docs/agent/progress.md` 存在，Read 它，提取「正在开发的 Feature / Task、阻塞项」。若不存在，说明还没 `plan` 过。
 
-4. **确保评审在线**（ensure daemon）：本仓库走 PR→review 流程，PR 提上去要有外部 PR-Daemon 评审，否则等到天荒地老。运行
-   ```
-   bash <skill>/scripts/ensure-pr-daemon.sh ensure
-   ```
-   （`ensure` = 未运行时拉起、已运行则幂等 no-op；根目录取 `.pilot.yml` 的 `pr_daemon_root` / `$PILOT_PR_DAEMON_ROOT` / 默认 `~/Dev/tools/PR-Daemon`）。把结果（已在线 / 已拉起 / 拉起失败）一行带进第 5 步汇报。**这一步落实 SKILL.md doctor 第 6 步「status 阶段会自动拉起」的承诺，不可省。**
-   - 顺带：`ensure` 会做一次**每日幂等**的「扫描清单刷新」（daemon 只审「**主干最后提交**最近的 Top-N 仓库 + 手动 pin」）。任意仓库当天第一次 `pilot status` 会刷新这份**全局共享**清单并按日期记账，其余调用皆 no-op；GitHub 每天只命中一次。有界 best-effort，失败/超时保留现有清单，绝不阻塞。**doctor 只读，不触发此刷新。**
-   - 排序指标是**默认分支的最后提交时间**，不是 `repo.pushedAt`——后者会被任何 ref 的推送刷新（dependabot/renovate 推 PR 分支），让主干静默一个月的仓库照样显得活跃、把真正在开发的挤出 Top-N。要让某个仓库无视活跃度恒被扫描：`bash <pr_daemon_root>/scripts/refresh-scan-focus.sh add <owner/repo>`。
-
-5. **汇报**（三段式，简明）：
+4. **汇报**（三段式，简明）：
    - **当前进展**：正在开发的 Feature/Task（来自 progress.md）；当前分支 + 是否有未提交改动。
    - **仓库盘点**：本地 N 个分支 / 远程 M 个分支 / K 个 worktree；其中 X 个本地分支已合并进 `<integration>`（可清理）。
    - **清理计划**：运行
@@ -31,14 +23,14 @@
      ```
      （**dry-run**，只打印 would-delete / would-remove / KEEP）。把结果原样呈现。
 
-6. **征询清理**：把 dry-run 计划给用户，**问是否执行**。得到确认后才加 `--apply`：
+5. **征询清理**：把 dry-run 计划给用户，**问是否执行**。得到确认后才加 `--apply`：
    ```
    bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> --apply
    ```
    - 要连带删远程已合并分支：仅当 `.pilot.yml` 的 `allow_remote_cleanup: true`，且用户明确同意，才加 `--remote`。
    - 无人值守模式（由 /loop 调用且用户已预先授权清理）：可直接 `--apply`，但**永远不加 `--remote`** 除非配置显式开启。
 
-7. **建议下一步**：基于 progress.md 指出「下一个该做的 READY task」；若没有规划文档，建议 `pilot plan`。
+6. **建议下一步**：基于 progress.md 指出「下一个该做的 READY task」；若没有规划文档，建议 `pilot plan`。
 
 ## 纪律
 
