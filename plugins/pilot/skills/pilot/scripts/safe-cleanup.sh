@@ -40,6 +40,7 @@
 # Usage:
 #   safe-cleanup.sh [--integration <branch>] [--protect "a,b,c"] [--apply] [--squash-merged]
 #                   [--remote] [--remote-name origin]
+# ---8<--- end of header ---8<---
 set -euo pipefail
 
 integration=""
@@ -60,7 +61,10 @@ remote_name="origin"
 # silent-swallow class B2 exists to close.
 need_val() {
   [ "$2" -ge 2 ] || { echo "safe-cleanup: '$1' requires a value" >&2; exit 2; }
-  case "$3" in -*) echo "safe-cleanup: '$1' requires a value, got flag '$3'" >&2; exit 2 ;; esac
+  case "$3" in
+    -*) echo "safe-cleanup: '$1' requires a value, got flag '$3'" >&2; exit 2 ;;
+    "") echo "safe-cleanup: '$1' requires a non-empty value" >&2; exit 2 ;;
+  esac
 }
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -70,7 +74,7 @@ while [ $# -gt 0 ]; do
     --apply)         apply=1; shift ;;
     --squash-merged) squash_merged=1; shift ;;
     --remote)        do_remote=1; shift ;;
-    -h|--help)       sed -n '2,46p' "$0"; exit 0 ;;
+    -h|--help)       sed -n '2,/^# ---8<--- end of header ---8<---$/p' "$0" | grep '^#'; exit 0 ;;
     *) echo "safe-cleanup: unknown argument '$1'" >&2
        echo "  usage: safe-cleanup.sh [--integration <b>] [--protect \"a,b\"] [--apply] [--squash-merged] [--remote] [--remote-name <r>]" >&2
        exit 2 ;;
@@ -232,8 +236,8 @@ echo "## Squash-merged local branches"
 # confusion B3 exists to prevent.
 if [ "$squash_merged" != "1" ]; then
   echo "  (not checked — one gh API call per branch; pass --squash-merged to check)"
-  echo "   NB: in a squash-merge repo the section above is ALWAYS (none), so cleanable"
-  echo "       branches would appear HERE, not there."
+  echo "   NB: in a squash-merge repo the section above is USUALLY (none) — squashed work is"
+  echo "       not an ancestor — so cleanable branches usually appear HERE, not there."
 else
 gh_init
 sq_names=()
@@ -241,7 +245,18 @@ sq_prs=()
 sq_errors=0
 while IFS= read -r b; do
   [ -z "$b" ] && continue
-  is_protected "$b" && continue
+  # Say WHY a branch never appears. Silently skipping protected names made e.g. `integration-tests`
+  # permanently uncleanable with zero visible reason once the boundary set widened.
+  if is_protected "$b"; then
+    # Only surface PATTERN-protected names. The integration branch and the branch you are standing
+    # on are structurally protected and saying so every run is noise; what needed a visible reason
+    # is the third kind — e.g. `integration-tests` swept up by the widened boundary set, which
+    # otherwise vanishes from every section with nothing explaining why.
+    if [ "$apply" != "1" ] && [ "$b" != "$integration" ] && [ "$b" != "$current_branch" ]; then
+      echo "  KEEP (protected by name/pattern)  $b"
+    fi
+    continue
+  fi
   is_in_worktree "$b" && continue
   # Anything git already calls merged was handled above.
   git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$b" && continue
@@ -255,7 +270,7 @@ while IFS= read -r b; do
   if [ "$pr" = "ERR" ]; then sq_errors=$((sq_errors + 1)); continue; fi
   [ -z "$pr" ] && continue
   sq_names+=("$b"); sq_prs+=("$pr")
-done < <(git branch --format='%(refname:short)' 2>/dev/null)
+done < <(git branch --format='%(refname)' 2>/dev/null | sed 's#^refs/heads/##')
 
 if [ "${#sq_names[@]}" -eq 0 ]; then
   if [ "$gh_state" = "unavailable" ]; then
@@ -274,9 +289,15 @@ else
       # Capture the sha FIRST and print it ourselves: git's "Deleted branch X (was abc1234)." is
       # the ONLY handle for recovering a -D'd branch, and the earlier version sent it to
       # /dev/null. Redirect git's stdout to keep the report structured, but surface the sha.
+      # Evidence was gathered in the first loop; ~0.8s per gh call means a 25-branch run leaves a
+      # ~20s window in which a concurrent agent could commit to one of these branches. `-D` skips
+      # the recheck that makes section 1's `-d` immune, so re-confirm the tip before destroying it.
       sha_short="$(git rev-parse --short "$b" 2>/dev/null || echo unknown)"
+      if [ "$(merged_pr_for "$b")" != "$pr" ]; then
+        echo "  SKIP (tip changed since evidence was collected)  $b"; i=$((i + 1)); continue
+      fi
       if git branch -D -- "$b" >/dev/null 2>&1; then
-        echo "  deleted  $b  (merged via PR #$pr)  was=$sha_short  → restore: git branch $b $sha_short"
+        echo "  deleted  $b  (merged via PR #$pr)  was=$sha_short  → restore: git branch $(printf '%q' "$b") $sha_short"
       else echo "  SKIP (delete failed)  $b"; fi
     else
       echo "  would delete  $b  (merged via PR #$pr)"
@@ -333,7 +354,10 @@ handle_wt() {
     echo "  KEEP (not merged per git; pass --squash-merged to also check for a squash merge)  $path  [$short]"
     return
   else
-    wt_pr="$(merged_pr_for "$short")"
+    # Resolve via the FULL ref, never the bare short name: with a tag of the same name,
+    # `git rev-parse decoy` picks the TAG, so evidence — and the recovery handle added this
+    # round — would describe the wrong commit. `$branch` is already refs/heads/<name> here.
+    wt_pr="$(merged_pr_for "${branch:-$short}")"
     if [ "$wt_pr" = "ERR" ]; then
       echo "  KEEP (could not verify — lookup failed, NOT 'unmerged')  $path  [$short]"
       return
@@ -351,9 +375,9 @@ handle_wt() {
       if [ "$via" = "git" ]; then
         git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
       else
-        local wsha; wsha="$(git rev-parse --short "$short" 2>/dev/null || echo unknown)"
+        local wsha; wsha="$(git rev-parse --short "${branch:-$short}" 2>/dev/null || echo unknown)"
         git branch -D -- "$short" >/dev/null 2>&1 \
-          && echo "    + deleted branch $short ($via)  was=$wsha  → restore: git branch $short $wsha" || true
+          && echo "    + deleted branch $short ($via)  was=$wsha  → restore: git branch $(printf '%q' "$short") $wsha" || true
       fi
     else
       echo "  SKIP (remove failed)  $path  [$short]"

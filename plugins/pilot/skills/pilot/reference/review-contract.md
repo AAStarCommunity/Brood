@@ -51,7 +51,7 @@ pilot **不裁决自己的 PR**。它依赖一个**外部评审服务**,并且�
                 └─ CHANGES_REQUESTED → 中立 triage → 修 → 推 → 回到「等回执」
 ```
 
-- **`APPROVED`** → `git-guard.sh merge-pr <n> --integration <b> --squash`,然后 `safe-cleanup.sh`。
+- **`APPROVED`** → `git-guard.sh merge-pr <n> --integration <b> --squash`,然后 `safe-cleanup.sh --squash-merged`。
 - **`CHANGES_REQUESTED`** → 先按 [`review-triage.md`](review-triage.md) 做中立裁决(该改的改 / 判错的
   回评论讲清业务理由 / 不阻塞的记进 [`followup-ledger.md`](followup-ledger.md)),修完推上去
   **自动触发下一轮评审**,回到等回执。

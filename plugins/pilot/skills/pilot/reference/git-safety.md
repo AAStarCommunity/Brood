@@ -26,7 +26,7 @@
 
 ## 删除（清理）
 - **删本地分支默认只用 `git branch -d`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
-- **唯一的 `-D` 例外：squash-merge 仓库。** 那里 `git branch --merged` **恒返回 0** —— squash 重写补丁，
+- **唯一的 `-D` 例外：squash-merge 仓库。** 那里 `git branch --merged` **通常返回 0** —— squash 重写补丁，
   原 commit 不是集成分支的祖先。实测本仓库 28 个分支、`git branch --merged main` 返回 0，
   于是这个脚本在自己家里**什么都清理不了**，人只能手工 `-D`，比脚本存在还糟。
   所以 `safe-cleanup.sh --squash-merged` 引入第二种**服务端**证据：GitHub 的
