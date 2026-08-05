@@ -34,9 +34,14 @@ lark-cli auth login --domain docs,drive,wiki --no-wait --json   # 拿 verificati
 lark-cli auth login --device-code <上一步的 device_code>          # 用户授权后收尾
 ```
 
-Notion 的对应坑:token 有效 **≠** 能看到目标页面。Notion integration 只能看到
-**显式 share 给它的页面**,`/v1/search` 返回的就是全部可见范围 —— 少了就去 Notion 里
-把那一页(或它的父页面)share 给 integration,这一步只能人在 UI 里做。
+Notion 的对应坑:token 有效 **≠** 能看到目标页面。integration 只能看到被 connect 的页面 ——
+但**后代会继承**:在入口页(workspace 顶层那一页)上连一次,底下所有子页面都可读。
+实测:单个 connection 加在入口页,4 层深的孙子页照样读得到。所以正确的补法是
+**在入口页连一次**,而不是逐页 share;这一步只能人在 Notion UI 里做(`···` → Connections)。
+
+**不要用 `/v1/search` 判断可见范围。** 它有索引延迟(同一 token 在加 connection 前后
+分别返回 8 条和 100+ 条),而且单页上限 100 条 —— 搜不到不等于读不到。要确认某页能否读,
+**直接去读它**(`GET /v1/pages/<id>` 或递归遍历 children),那才是权威判据。
 
 ## pilot 侧只读
 
