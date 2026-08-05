@@ -88,7 +88,12 @@ planning_requires:           # 可选。规划已在别处时,声明它的本地
    这个仓库在 `.pilot.yml` 里声明了别的规划源，查的是那些路径。**规划已经在 backlog.md / issue tracker /
    别的工具里的仓库,报 NOT ready 时不要建议把规划重抄进七件套**——那违反 plan.md §A.3(已有规划不要重复造)。
    正确建议是声明 `planning_requires:` 指向真正的规划源。
-4. 是否有集成分支（`git show-ref refs/heads/<integration>`）；无则提示先建。
+4. **集成分支**（`git show-ref refs/heads/<integration>`）。**分支不存在时不要一律说「先建一个」**——先分清是哪一种，三种情况的正确答案完全不同：
+   - **`.pilot.yml` 里 `integration_branch` == `base_branch`**（单主干仓库，PR 直接开向主干）→ **这是合法配置，什么都不缺**。不要建议建集成分支。提示：合并走 `git-guard.sh merge-pr <n> --integration <base> --allow-trunk`，并说明 `--allow-trunk` 不是绕过（仍要求分支保护要求审批、PR 已 `APPROVED`、且该分支开启了 stale-dismissal，读不到就 fail-closed）。
+   - **没有 `.pilot.yml`**（于是 `integration_branch` 落到默认值 `preview`）**且默认分支存在** → **默认值对这个仓库很可能是错的**，别让用户去建一个 `preview` 来迁就默认值。先问：这个仓库是单主干（PR 直接进 `main`）还是双分支流（`preview` 汇总后再进 `main`）？单主干 → 写 `.pilot.yml` 把 `integration_branch` 设成主干名，合并加 `--allow-trunk`；确实要双分支流 → 才建 `preview`。
+   - **`.pilot.yml` 明写了一个既不是主干、也不存在的集成分支** → 这才是真缺失，提示建它（或改配置）。
+
+   本仓库（Brood）就是第一种，`.pilot.yml` 里有注释写明原因，可作范例。
 5. `gh auth status` 是否可用（PR 流程需要）。
 5b. **git hook 是否真的在生效**（别假设 commit 有保护）：`bash <skill>/scripts/check-hooks.sh`。常见坑：`core.hooksPath` 指到**另一个 clone** 的 hooks 目录 → pre-commit 密钥扫描根本没跑,commit 裸奔却无人察觉。报 `BYPASSED` 就红着提示,并说明「**不要自动切回 `.githooks`**——扫描器有历史误报会让每次 commit 卡死,得先给已知误报加 baseline/allowlist 降噪,再手动开钩子」。只报告,不擅自 rewire。
 6. **评审契约提醒**（不探测、不启动任何外部服务）：本仓库的 PR 由**外部评审服务**裁决，
