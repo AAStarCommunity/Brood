@@ -3,18 +3,22 @@
 需求、设计、验收标准常常**不在仓库里** —— 在飞书云文档或 Notion 页面上。这份契约说明
 pilot 怎么用它们，以及**不做什么**。
 
-## pilot 不拥有这些能力
+## pilot 是入口,配套能力由它安排
 
-和 [`review-contract.md`](review-contract.md) 是同一个原则:
+**pilot 是唯一入口 skill;飞书、Notion 这些文档源是它的配套。** 该不该装、装哪一个、
+装到全局还是项目级、装完怎么验证 —— 由 pilot 安排。用户不该被要求自己记住几十个 skill 谁是谁,
+也不该自己去判断这台机器缺什么。
 
-> pilot **不安装、不启动、不封装**任何文档源。它只在运行时**探测**能力是否存在,
-> 有就用,没有就降级。装没装、装在哪、用哪个账号,都是环境的事,不是 pilot 的事。
+**但「入口」是编排责任,不是运行时依赖。** pilot 自己**不 import、不启动、不封装**任何文档源:
+它只在需要时**探测**能力是否存在,有就用,没有就如实说明缺什么、给出装法,并降级继续干活。
 
-原因很实际:pilot 会装到很多仓库、很多机器上。把飞书/Notion 的具体调用写进 pilot,
-等于让每一台没配 token 的机器都带着一个坏掉的依赖 —— 这正是 pr-daemon 那次耦合的教训。
+> 这条界线不是洁癖。pilot 会装到很多仓库、很多机器上;把飞书/Notion 的具体调用写进 pilot,
+> 等于让每一台没配 token 的机器都带着一个坏掉的依赖 —— 就是 pr-daemon 那次耦合,
+> 花了 6 轮评审才拆干净。**「pilot 是入口」不是把硬依赖写回去的理由。**
+> 同一个原则见 [`review-contract.md`](review-contract.md)。
 
-**这些能力是全局 skill,不是 pilot 的一部分。** 任何仓库、任何会话都能直接用它们,
-不需要先进 pilot;pilot 只是在 `plan` / `run` 需要外部需求文档时**指个路**。
+实际使用时,用户自然说一句「读一下这篇飞书文档」,harness 可能直接命中 `lark-doc` 而不经过 pilot ——
+**这不违反入口约定**。约定管的是「能力从哪来、谁负责装、谁负责讲清楚」,不是每一次调用都必须过 pilot。
 
 ## 探测(机械的,不要凭印象)
 
@@ -74,6 +78,34 @@ notion.py read <page>
 
 `plan` / `run` 从这些源**只读取**,绝不写回。需求文档是人在维护的事实来源,
 agent 往里写等于在没人看着的时候改需求。产出要发出去,是**另一件事**,由用户显式发起。
+
+## 没装的时候怎么装(这是 pilot 的职责)
+
+探测失败不是终点 —— pilot 要能说清楚**缺哪一步、这一步怎么补**。以下都是实测过的:
+
+```bash
+# 飞书:CLI → 配套 skill → 建应用 → 用户身份授权
+npm install -g @larksuite/cli
+npx -y skills add https://open.feishu.cn -g --skill lark-doc -y   # 再依次 lark-drive/lark-wiki/lark-shared
+lark-cli config init --new                        # 建应用;阻塞,后台跑并把 URL 交给用户
+lark-cli auth login --domain docs,drive,wiki      # 用户身份;同样阻塞自轮询
+```
+
+三个坑,不避开就装不上:
+
+- **`-g` 必须显式给**。不给的话 `skills` CLI 按 cwd 自动判断,在仓库里跑就装成项目级了。
+- **一次只能装一个 skill**。逗号分隔无效;官方文档里的 `--skill -y` 会把 `-y` 当成 skill 名,
+  结果只列不装。
+- **授权用阻塞式,不要 `--no-wait`**。device code 只有 10 分钟,而「发链接 → 用户授权 → 用户回话 →
+  再去换 token」这个来回本身就会超时(实测连续失败两次)。阻塞式自己轮询,用户点完当场就成。
+
+```bash
+# Notion:装全局 + 认 token + 认入口页
+bash <notion-publish skill>/install.sh --global
+# token 走 $JHF_NOTION_TOKEN;入口页写在该 skill 的 config.json 的 default_parent
+```
+
+Notion 侧要人工做的只有一件:**在入口页加一次 connection**(`···` → Connections),后代自动继承。
 
 ## 拿不到的时候(降级路径)
 
