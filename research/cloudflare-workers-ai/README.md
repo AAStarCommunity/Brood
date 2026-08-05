@@ -4,6 +4,10 @@
 > 调研问题:Cloudflare 能不能直接提供最新的开源模型 API(GLM / DeepSeek / Kimi / MiniMax / Qwen 等),
 > 从而让「应用」和「AI」在同一个运行时里有机结合?
 
+> **后续分析**:[`cost-analysis-api-vs-coding-plan.md`](cost-analysis-api-vs-coding-plan.md) ——
+> 把这里的 Cloudflare 价格和各家官方定价做了对照,结论是 **CF 照搬官方牌价、没有成本优势**,
+> 并给出「日常开发买 coding plan、评审走官方 API」的选型建议。
+
 ## 结论先行
 
 **能,而且比预期好。** 你点名的模型**几乎全部可用**,并且**全部通过同一个 `env.AI.run()` 调用、
