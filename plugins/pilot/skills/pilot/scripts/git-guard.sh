@@ -243,9 +243,10 @@ case "$sub" in
       # captured text and makes the JSON unparseable, which silently degrades every branch below
       # to "cannot read protection". (Measured: merging stderr broke the working case.)
       prot="$(gh api "repos/$repo/branches/$integration/protection" 2>/dev/null || true)"
-      # `2>&1` above keeps the API's error BODY (it carries `message`), so parse the captured text
-      # rather than re-querying. Only a real protection object yields a number; anything else
-      # (error JSON, empty, HTML) falls through to the fail-closed branch below.
+      # `gh api` puts the error BODY (which carries `message`) on STDOUT, so the capture above
+      # holds it without needing stderr — that is why `.message` parsing and the "Branch not
+      # protected" branch below are reachable. Only a real protection object yields a number;
+      # anything else (error JSON, empty, HTML) falls through to the fail-closed branch.
       approvals="$(printf '%s' "$prot" | python3 -c 'import json,sys
 try:
     d = json.load(sys.stdin)

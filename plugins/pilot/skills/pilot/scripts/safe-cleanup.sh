@@ -55,16 +55,22 @@ remote_name="origin"
 # one argument whose typo is unrecoverable, and run.md requires callers to pass it explicitly.
 # (Same reasoning that turned git-guard's flag denylist into a refuse-unknown allowlist in this
 # very commit; it applies here for identical reasons.)
-need_val() { [ "$2" -ge 2 ] || { echo "safe-cleanup: '$1' requires a value" >&2; exit 2; }; }
+# Counting arity is not enough: `--protect --apply` passed the arity test and swallowed --apply,
+# so the script printed mode=DRY-RUN and exited 0 while the caller believed it had run. Same
+# silent-swallow class B2 exists to close.
+need_val() {
+  [ "$2" -ge 2 ] || { echo "safe-cleanup: '$1' requires a value" >&2; exit 2; }
+  case "$3" in -*) echo "safe-cleanup: '$1' requires a value, got flag '$3'" >&2; exit 2 ;; esac
+}
 while [ $# -gt 0 ]; do
   case "$1" in
-    --integration)   need_val "$1" $#; integration="$2"; shift 2 ;;
-    --protect)       need_val "$1" $#; protect_csv="${protect_csv},$2"; shift 2 ;;
-    --remote-name)   need_val "$1" $#; remote_name="$2"; shift 2 ;;
+    --integration)   need_val "$1" $# "${2:-}"; integration="$2"; shift 2 ;;
+    --protect)       need_val "$1" $# "${2:-}"; protect_csv="${protect_csv},$2"; shift 2 ;;
+    --remote-name)   need_val "$1" $# "${2:-}"; remote_name="$2"; shift 2 ;;
     --apply)         apply=1; shift ;;
     --squash-merged) squash_merged=1; shift ;;
     --remote)        do_remote=1; shift ;;
-    -h|--help)       sed -n '2,40p' "$0"; exit 0 ;;
+    -h|--help)       sed -n '2,46p' "$0"; exit 0 ;;
     *) echo "safe-cleanup: unknown argument '$1'" >&2
        echo "  usage: safe-cleanup.sh [--integration <b>] [--protect \"a,b\"] [--apply] [--squash-merged] [--remote] [--remote-name <r>]" >&2
        exit 2 ;;
@@ -100,7 +106,12 @@ is_protected() {
     p="${p%/}"                 # tolerate trailing slash (e.g. "hotfix/")
     [ -z "$p" ] && continue
     [ "$name" = "$p" ] && return 0
-    case "$name" in "$p"/*) return 0 ;; esac   # e.g. release/* protects release/1.2
+    # Boundary set copied VERBATIM from git-guard.sh's is_protected. The two scripts ship in the
+    # same skill and must not disagree about what "protected" means: with the old `"$p"/*` a
+    # `release-1.2` that git-guard REFUSES to push to was still offered here as a deletion
+    # candidate. Harmless while this script only used `-d`; this PR added `-D`, which turns the
+    # divergence into data loss. `[-_/.0-9]` (not `*`) so `main` cannot swallow `mainline`.
+    case "$name" in "$p"[-_/.0-9]*) return 0 ;; esac
   done
   return 1
 }
@@ -149,9 +160,14 @@ merged_pr_for() {
   # a merged PR whose base was some other branch then counted as evidence, ending in an
   # irreversible `git branch -D`. That is the exact failure class the base check was added to
   # close, re-entering through the check itself.
+  # `rc=0; … || rc=$?` instead of a bare `$?`: under `set -e` a failing command substitution only
+  # survives because bash suspends errexit inside `$( )` and `inherit_errexit` is off by default.
+  # Verified: convert either call site to a non-cmdsub form and the script exits 1 silently right
+  # after printing the section header, truncating the report with no error. This form keeps the
+  # real status AND survives `shopt -s inherit_errexit` or a future non-cmdsub caller.
+  rc=0
   out="$(PILOT_INTEG="$integration" gh api "repos/$gh_repo/commits/$sha/pulls" \
-         --jq '[.[] | select(.merged_at != null and .base.ref == $ENV.PILOT_INTEG) | .number] | first // empty' 2>/dev/null)"
-  rc=$?
+         --jq '[.[] | select(.merged_at != null and .base.ref == $ENV.PILOT_INTEG) | .number] | first // empty' 2>/dev/null)" || rc=$?
   # A failed CALL is not the same as an empty ANSWER. Rate limiting is the most likely failure
   # here precisely because this feature spends one API call per branch.
   [ "$rc" -ne 0 ] && { printf 'ERR'; return 0; }
@@ -210,12 +226,20 @@ echo "## Squash-merged local branches"
 # a SUBSHELL — anything it assigns to gh_state is discarded on return. Relying on that left the
 # "cannot verify" branch permanently unreachable, so a missing/unauthenticated gh printed the
 # same "(none)" as a genuinely clean repo. "Could not check" must never look like "nothing found".
+# COST GATE. Each candidate costs one gh API call; a plain `pilot status` dry-run measured
+# 25 calls / 20.6s on this repo, and status.md step 4 runs exactly that. Without --squash-merged
+# spend ZERO calls and say so — silence would be indistinguishable from "nothing found", the very
+# confusion B3 exists to prevent.
+if [ "$squash_merged" != "1" ]; then
+  echo "  (not checked — one gh API call per branch; pass --squash-merged to check)"
+  echo "   NB: in a squash-merge repo the section above is ALWAYS (none), so cleanable"
+  echo "       branches would appear HERE, not there."
+else
 gh_init
 sq_names=()
 sq_prs=()
 sq_errors=0
 while IFS= read -r b; do
-  b="$(echo "$b" | sed 's/^[* +] *//')"
   [ -z "$b" ] && continue
   is_protected "$b" && continue
   is_in_worktree "$b" && continue
@@ -245,19 +269,23 @@ else
   i=0
   while [ "$i" -lt "${#sq_names[@]}" ]; do
     b="${sq_names[$i]}"; pr="${sq_prs[$i]}"
-    if [ "$squash_merged" = "1" ] && [ "$apply" = "1" ]; then
+    if [ "$apply" = "1" ]; then
       # -D, justified by the merged-PR evidence just gathered for THIS tip commit.
-      if git branch -D -- "$b" >/dev/null 2>&1; then echo "  deleted  $b  (merged via PR #$pr)"
+      # Capture the sha FIRST and print it ourselves: git's "Deleted branch X (was abc1234)." is
+      # the ONLY handle for recovering a -D'd branch, and the earlier version sent it to
+      # /dev/null. Redirect git's stdout to keep the report structured, but surface the sha.
+      sha_short="$(git rev-parse --short "$b" 2>/dev/null || echo unknown)"
+      if git branch -D -- "$b" >/dev/null 2>&1; then
+        echo "  deleted  $b  (merged via PR #$pr)  was=$sha_short  → restore: git branch $b $sha_short"
       else echo "  SKIP (delete failed)  $b"; fi
-    elif [ "$squash_merged" = "1" ]; then
-      echo "  would delete  $b  (merged via PR #$pr)"
     else
-      echo "  candidate  $b  (merged via PR #$pr) — pass --squash-merged to include"
+      echo "  would delete  $b  (merged via PR #$pr)"
     fi
     i=$((i + 1))
   done
   # A partial result must never read as a complete one.
   [ "$sq_errors" -gt 0 ] && echo "  ($sq_errors more branch(es) could not be verified — KEPT; this list is INCOMPLETE)"
+fi
 fi
 echo
 
@@ -299,6 +327,11 @@ handle_wt() {
   fi
   if git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$short"; then
     via="git"
+  elif [ "$squash_merged" != "1" ]; then
+    # Same cost gate as section 1b: this ran BEFORE the flag check and was the bulk of the
+    # 25-call / 20.6s plain dry-run.
+    echo "  KEEP (not merged per git; pass --squash-merged to also check for a squash merge)  $path  [$short]"
+    return
   else
     wt_pr="$(merged_pr_for "$short")"
     if [ "$wt_pr" = "ERR" ]; then
@@ -307,10 +340,6 @@ handle_wt() {
     fi
     if [ -z "$wt_pr" ]; then
       echo "  KEEP (not a merged feature branch)  $path  [$short]"
-      return
-    fi
-    if [ "$squash_merged" != "1" ]; then
-      echo "  KEEP (squash-merged via PR #$wt_pr) — pass --squash-merged to include  $path  [$short]"
       return
     fi
     via="squash-PR#$wt_pr"
@@ -322,7 +351,9 @@ handle_wt() {
       if [ "$via" = "git" ]; then
         git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
       else
-        git branch -D -- "$short" 2>/dev/null && echo "    + deleted branch $short ($via)" || true
+        local wsha; wsha="$(git rev-parse --short "$short" 2>/dev/null || echo unknown)"
+        git branch -D -- "$short" >/dev/null 2>&1 \
+          && echo "    + deleted branch $short ($via)  was=$wsha  → restore: git branch $short $wsha" || true
       fi
     else
       echo "  SKIP (remove failed)  $path  [$short]"
