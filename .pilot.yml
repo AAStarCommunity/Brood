@@ -1,0 +1,15 @@
+# pilot 配置 — Brood
+#
+# 注意 integration_branch = main：Brood 是单主干仓库，没有 preview 集成分支。
+# pilot 的默认值是 preview，那对本仓库是错的。合并走
+# `git-guard.sh merge-pr <n> --integration main --allow-trunk`，
+# 该 flag 不是绕过：它仍要求分支保护要求审批、且该 PR 已 APPROVED。
+base_branch: main
+integration_branch: main
+protect_patterns: [release, hotfix, cla-signatures]
+remote: origin
+allow_remote_cleanup: false
+docs_dir: docs/agent
+
+# 不设 preflight：preflight.sh 会自动发现 scripts/ci/*.{sh,py} 与 package.json 的 build，
+# 那已经覆盖本仓库全部检查。显式写一条只会让同一个检查跑两遍。
