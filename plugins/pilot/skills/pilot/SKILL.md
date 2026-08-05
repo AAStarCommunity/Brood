@@ -41,7 +41,7 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 危险动作优先走 git-guard/safe-cleanup，不裸用 git/gh。
 
 1. **绝不 `git add -A` / `git add .`**。只 `git-guard.sh add <显式路径>`（裸 `git add -A` 会被 git-guard 拒绝）。理由：`-A` 会把未确认是否该跟踪的文件（密钥、`.env`、构建产物、临时文件）一起提交，是最危险的日常动作。提交前先 `git status` 看清，逐一列出要提交的路径。
-2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、**开 PR 走 `git-guard.sh pr-create`**(先 `preflight.sh run` 让本仓库的检查真跑过)、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。
+2. **绝不直接 push 到主干（main/master），绝不直接合并自己的 PR 到主干**。push 走 `git-guard.sh push`、**开 PR 走 `git-guard.sh pr-create`**(先 `preflight.sh run` 让本仓库的检查真跑过)、合并走 `git-guard.sh merge-pr --integration <b>`（推主干 / 合并 base≠集成分支都会被硬拒绝）。所有代码变更走：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`，见 `.pilot.yml`）。主干只由集成分支经受控流程进入。**单主干仓库**（没有集成分支，PR 直接开向 `main`）加 `--allow-trunk`——它**不是绕过**：仍要求该分支的 GitHub 保护规则要求审批、且这个 PR 已经 `APPROVED`，读不到保护规则就拒绝（fail-closed）。
 3. **一个 task = 一个分支 = 一个（可选）worktree = 一个 PR**。不在一个分支里顺手做别的 task。
 4. **删除分支只用 `git branch -d`，永不 `-D`**；删除只针对「已合并 + 干净」的分支/worktree；一切经 `scripts/safe-cleanup.sh`，默认 dry-run。
 5. **PR 之前必须自审 + 对抗 review**（怎么审见 `reference/pr-quality.md`，**审几轮由 `scripts/grade-change.sh` 机械定级，见 `reference/pre-pr-review.md`**——A/B 级 3 轮，不是作者自己说了算）。没过 review 的代码不进 PR，没 approve 的 PR 不合并。
