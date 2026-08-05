@@ -212,14 +212,53 @@ case "$sub" in
     if [ "$is_trunk" = "1" ]; then
       # --allow-trunk relaxes WHERE we may merge, never WHETHER the work was reviewed. The rail
       # exists to stop "self-merging into trunk unreviewed"; on a single-trunk repo that danger is
-      # handled by GitHub branch protection, which is stronger than this script (server-side, and
-      # `enforce_admins` binds admins too). So require PROOF of it rather than taking the flag's
-      # word — and fail CLOSED when the proof cannot be read.
-      approvals="$(gh api "repos/$repo/branches/$integration/protection" \
-        --jq '.required_pull_request_reviews.required_approving_review_count // 0' 2>/dev/null || true)"
+      # handled by GitHub branch protection, which is server-side and therefore stronger than this
+      # script. So require PROOF of it rather than taking the flag's word — and fail CLOSED when
+      # the proof cannot be read.
+      #
+      # NB: this deliberately does NOT check `enforce_admins`. It is not load-bearing here — the
+      # `reviewDecision == APPROVED` check below is enforced by this script regardless of who is
+      # merging, so an admin-bypassable branch still cannot get an unapproved PR through this
+      # path. (Brood happens to enable it, but that is a property of one repo, not a guarantee
+      # this rail relies on. Saying otherwise in a comment would make the argument rest on
+      # something never verified.)
+      # stdout ONLY. `gh api` puts BOTH the success object and the error body (which carries
+      # `message`) on stdout, so one capture serves both paths. Do NOT fold in stderr: anything
+      # else on it — a shell hook's diagnostics, gh's own "(HTTP 404)" line — lands inside the
+      # captured text and makes the JSON unparseable, which silently degrades every branch below
+      # to "cannot read protection". (Measured: merging stderr broke the working case.)
+      prot="$(gh api "repos/$repo/branches/$integration/protection" 2>/dev/null || true)"
+      # `2>&1` above keeps the API's error BODY (it carries `message`), so parse the captured text
+      # rather than re-querying. Only a real protection object yields a number; anything else
+      # (error JSON, empty, HTML) falls through to the fail-closed branch below.
+      approvals="$(printf '%s' "$prot" | python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+if isinstance(d, dict) and "required_pull_request_reviews" in d:
+    print((d.get("required_pull_request_reviews") or {}).get("required_approving_review_count") or 0)
+' 2>/dev/null || true)"
       case "$approvals" in
-        ''|*[!0-9]*) die "--allow-trunk: cannot read branch protection for '$integration' (needs admin scope, or the branch is unprotected) — refusing.
-  Without it there is nothing forcing review on trunk, which is exactly what this rail prevents." ;;
+        ''|*[!0-9]*)
+          # Split the two causes — they need opposite fixes (rotate the token vs. protect the
+          # branch), and the API already tells us which one it is in its `message` field.
+          why="$(printf '%s' "$prot" | python3 -c 'import json,sys
+try:
+    print((json.load(sys.stdin) or {}).get("message") or "")
+except Exception:
+    print("")
+' 2>/dev/null || true)"
+          case "$why" in
+            *"Branch not protected"*|*"Branch not found"*)
+              die "--allow-trunk: branch '$integration' has no protection rule (GitHub said: $why) — refusing.
+  Protect the branch and require at least one approving review first; without that, merging into
+  trunk really is an unreviewed self-merge." ;;
+            *)
+              die "--allow-trunk: cannot read branch protection for '$integration'${why:+ (GitHub said: $why)} — refusing.
+  Reading protection needs admin rights on the repo; re-run with a token that has them.
+  Refusing rather than assuming, because unverified protection is the same as none." ;;
+          esac ;;
       esac
       [ "$approvals" -ge 1 ] || die "--allow-trunk: branch '$integration' does not require an approving review (required_approving_review_count=$approvals) — refusing.
   Protect the branch first; otherwise merging into trunk really is unreviewed self-merge."

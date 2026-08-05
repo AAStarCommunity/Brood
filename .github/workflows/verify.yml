@@ -35,6 +35,14 @@ jobs:
       - name: Parse every backlog/tasks/*.md frontmatter
         run: python3 scripts/ci/check-task-yaml.py
 
+  version-sync:
+    name: pilot version matches in both files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: plugin.json and SKILL.md must declare the same version
+        run: bash scripts/ci/check-version-sync.sh
+
   docs-gate:
     name: check-docs.sh fails closed
     runs-on: ubuntu-latest
@@ -91,15 +99,27 @@ jobs:
           if p.exists():
               old = subprocess.run(["git", "show", "HEAD:dist/api/statistics.json"],
                                    capture_output=True, text=True)
-              m = re.search(r'"averageTaskAge":\s*(-?\d+)', old.stdout) if old.returncode == 0 else None
+              # Accept a decimal too. The CLI emits an integer today, but an `\d+`-only pattern
+              # would stop matching the day it emits 98.5 — and the failure mode is SILENT: the
+              # else-branch fires, nothing gets pinned, and the guard quietly goes back to being
+              # randomly red with a message that says "no committed value" rather than "the format
+              # changed". Widen the pattern, and print what was actually seen when it misses.
+              NUM = r'-?\d+(?:\.\d+)?'
+              m = re.search(r'"averageTaskAge":\s*(' + NUM + r')', old.stdout) if old.returncode == 0 else None
               if m:
-                  text, n = re.subn(r'"averageTaskAge":\s*-?\d+',
+                  text, n = re.subn(r'"averageTaskAge":\s*' + NUM,
                                     '"averageTaskAge":' + m.group(1), p.read_text())
                   if n:
                       p.write_text(text)
+                  # NB: pinning proves CONSISTENCY WITH WHAT IS COMMITTED, not that the number is
+                  # semantically right. If a bad value ever gets committed, this guard will go on
+                  # endorsing it. Do not read a green run here as "the statistic is correct".
                   print(f"pinned averageTaskAge to committed value {m.group(1)} ({n} site(s))")
               else:
-                  print("no committed averageTaskAge to pin against — comparing as-is")
+                  near = re.search(r'.{0,40}averageTaskAge.{0,40}', old.stdout or '')
+                  print("no committed averageTaskAge to pin against — comparing as-is"
+                        + (f" | saw: ...{near.group(0)}..." if near
+                           else " | the key is absent from the committed file"))
           PY
 
           # `git diff` compares TRACKED files only, so a file the build CREATES is untracked and
