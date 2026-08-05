@@ -143,8 +143,14 @@ merged_pr_for() {
   [ "$gh_state" = "ready" ] || { printf 'ERR'; return 0; }
   sha="$(git rev-parse --verify --quiet "$b^{commit}" 2>/dev/null)" || return 0
   [ -n "$sha" ] || return 0
-  out="$(gh api "repos/$gh_repo/commits/$sha/pulls" \
-         --jq "[.[] | select(.merged_at != null and .base.ref == \"$integration\") | .number] | first // empty" 2>/dev/null)"
+  # $integration goes in as DATA via $ENV, never interpolated into the jq program. Building the
+  # program by string substitution let a git-legal branch name rewrite the predicate: with
+  # `x"or(true)or"` the comparison becomes `.base.ref == "x"or(true)or""` — constantly true — and
+  # a merged PR whose base was some other branch then counted as evidence, ending in an
+  # irreversible `git branch -D`. That is the exact failure class the base check was added to
+  # close, re-entering through the check itself.
+  out="$(PILOT_INTEG="$integration" gh api "repos/$gh_repo/commits/$sha/pulls" \
+         --jq '[.[] | select(.merged_at != null and .base.ref == $ENV.PILOT_INTEG) | .number] | first // empty' 2>/dev/null)"
   rc=$?
   # A failed CALL is not the same as an empty ANSWER. Rate limiting is the most likely failure
   # here precisely because this feature spends one API call per branch.
