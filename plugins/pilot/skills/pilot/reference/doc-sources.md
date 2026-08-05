@@ -22,10 +22,24 @@ pilot 怎么用它们，以及**不做什么**。
 
 ## 探测(机械的,不要凭印象)
 
-| 源 | 可用的判据 | 命令 |
+**探测分三层,逐层往下,任一层不过就停在那一层并报出缺的是哪一层。**
+不要自己发明判据 —— 同一件事两处各写一套判法然后分叉,是这个仓库反复栽过的坑。
+
+| 层 | 飞书 | Notion |
 |:---|:---|:---|
-| **飞书** | `lark-cli` 存在 **且** user 身份 `ready` | `lark-cli auth status --json --verify` → `identities.user.status` |
-| **Notion** | integration token 存在且 `users/me` 返回 200 | `GET https://api.notion.com/v1/users/me` |
+| **① 能力装了没** | `command -v lark-cli` 退出码 0 | 该 skill 的 `scripts/notion.py` 存在 |
+| **② 凭证有没有** | `lark-cli auth status --json --verify` 的 `identities.user.status == "ready"` | `GET /v1/users/me` 返回 200 |
+| **③ 目标读不读得到** | `lark-cli docs +fetch --doc <token> --as user` 返回 `ok: true` | `GET /v1/pages/<id>` 返回 200 |
+
+**三层缺一不可,而且失败在哪一层决定了怎么补**:① 缺 → 去装(见下节);② 缺 → 让用户授权;
+③ 缺 → 权限没覆盖到那个具体文档/页面,只能人去开。把这三种笼统报成「读不到」,用户没法行动。
+
+**第 ② 层的关键**:飞书 `identity` 显示 `bot` **不代表**能读你的文档。bot 身份只能看
+「共享给这个应用的东西」,**读用户自己的云文档必须 user 身份**。
+只看 `ok: true` 或 `bot: ready` 就当作可用,是这份契约里最容易犯的错。
+
+**第 ③ 层不能省。** 前两层全绿仍然可能读不到目标 —— 而且这一层是唯一的权威判据,
+详见下面「列表 API 不是可读清单」。
 
 飞书那条的**关键**:`identity` 显示 `bot` 不代表能读你的文档。bot 身份只能看
 「共享给这个应用的东西」,**读用户自己的云文档必须 user 身份**。
@@ -34,9 +48,13 @@ pilot 怎么用它们，以及**不做什么**。
 user 身份缺失时的补法(要用户在浏览器里点):
 
 ```bash
-lark-cli auth login --domain docs,drive,wiki --no-wait --json   # 拿 verification_url
-lark-cli auth login --device-code <上一步的 device_code>          # 用户授权后收尾
+# 阻塞式,放后台跑,把输出里的 verification_url 交给用户。它自己轮询,用户点完当场完成。
+lark-cli auth login --domain docs,drive,wiki
 ```
+
+⚠️ **不要用 `--no-wait` + `--device-code` 两段式。** device code 只有 10 分钟,而
+「发链接 → 用户去授权 → 用户回来告诉你 → 你再去换 token」这个来回本身就会超时 ——
+实测连续失败两次,换成阻塞式一次就成。详见下节安装部分。
 
 Notion 的对应坑:token 有效 **≠** 能看到目标页面。integration 只能看到被 connect 的页面 ——
 但**后代会继承**:在入口页(workspace 顶层那一页)上连一次,底下所有子页面都可读。
