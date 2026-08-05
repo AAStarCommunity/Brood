@@ -15,6 +15,13 @@
 - **绝不 `git push` 到主干（main/master）**。主干受保护。
 - **绝不合并自己的 PR 到主干**，绝不 `gh pr merge --admin` 绕过 review。
 - 所有变更：feature 分支 → PR → review → 合并到**集成分支**（默认 `preview`）。主干只由集成分支经受控流程进入。
+- **单主干仓库**（没有集成分支，PR 直接开向 `main`）是合法形态。这时用
+  `git-guard.sh merge-pr <n> --integration main --allow-trunk`。这个 flag **不放松「必须被 review」**，
+  只放松「合到哪里」：它仍要求该分支的 GitHub 分支保护规则 `required_approving_review_count >= 1`
+  **且**该 PR 的 `reviewDecision == APPROVED`；保护规则读不到就直接拒绝（fail-closed）。
+  `--admin` 在任何情况下都仍然被拒。
+  > 为什么要留这个口子：没有它，护栏在单主干仓库里根本用不了，人只能裸用 `gh pr merge` 绕过去——
+  > **一个必须被绕过的护栏，比没有护栏更糟**，因为它教会人绕过护栏。
 - 一个 task = 一个分支 = 一个（可选）worktree = 一个 PR。分支命名 `<type>/<taskid>-<slug>`，如 `feat/T1.3.2-admin-init`。
 
 ## 删除（清理）
