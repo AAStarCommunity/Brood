@@ -8,7 +8,7 @@
 # Usage:
 #   git-guard.sh add <path> [<path>...]
 #   git-guard.sh push <remote> <branch>
-#   git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [extra gh args...]
+#   git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [allowlisted gh flags]
 #
 # Exit codes: 2 = usage error, 3 = BLOCKED by a rail. On success it execs the real command.
 set -euo pipefail
@@ -167,16 +167,31 @@ case "$sub" in
         # routed around with a bare `gh pr merge`, which teaches people to route around guards.
         # So: opt in explicitly, and the opt-in still has to PROVE the danger is handled (below).
         --allow-trunk) allow_trunk=1; shift ;;
-        # Refuse flags that defeat the rail: --admin bypasses branch protection; --repo/-R
-        # would point the merge at a different repo than the base check validated.
-        # Prefix/attached-value forms bypass an exact-string blocklist: --admin=true, --repo=o/r,
-        # -Ro/r all defeat the rail, so match those shapes too.
-        --admin|--admin=*|--repo|--repo=*|-R|-R*) die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
-        # --delete-branch/-d deletes the PR's HEAD branch after merge; a PR with head=main would
-        # delete trunk. The head-branch protected-check below is the real guard; also refuse the
-        # flag outright so branch cleanup stays an explicit, separate safe-cleanup.sh decision.
-        -d|--delete-branch|--delete-branch=*) die "refusing '$1' on merge-pr — deletes the PR head branch; clean up branches via safe-cleanup.sh" ;;
-        *) args+=("$1"); shift ;;
+        # ---- ALLOWLIST, not a denylist -------------------------------------------------------
+        # A denylist can only refuse the dangerous flags that exist TODAY. When `gh pr merge`
+        # grows a new one that defeats branch protection, a denylist silently passes it through
+        # and nothing here notices. An allowlist fails the other way: an unrecognised flag is
+        # refused until someone deliberately adds it — which is the direction a guard should
+        # fail. (The previously-denied `--admin` / `--repo` / `-R` / `--delete-branch` are simply
+        # absent from the list below; the two that people actually reach for keep their specific
+        # error messages so the refusal explains itself.)
+        --squash|--merge|--rebase|--auto) args+=("$1"); shift ;;
+        # Value-taking, in both the separate and attached forms.
+        --body|-b|--body-file|-F|--subject|-t|--match-head-commit)
+          [ $# -ge 2 ] || die "'$1' requires a value"
+          args+=("$1" "$2"); shift 2 ;;
+        --body=*|--body-file=*|--subject=*|--match-head-commit=*) args+=("$1"); shift ;;
+        # Kept as named refusals purely for the message — the allowlist would reject them anyway.
+        --admin|--admin=*|--repo|--repo=*|-R|-R*)
+          die "refusing '$1' on merge-pr — it would bypass the safety rail" ;;
+        -d|--delete-branch|--delete-branch=*)
+          die "refusing '$1' on merge-pr — deletes the PR head branch; clean up branches via safe-cleanup.sh" ;;
+        -*)
+          die "refusing unrecognised flag '$1' on merge-pr — this is an ALLOWLIST.
+  Permitted: --squash --merge --rebase --auto --body/-b --body-file/-F --subject/-t --match-head-commit
+  If '$1' is genuinely safe, add it to the allowlist in git-guard.sh with a note on why." ;;
+        *)
+          die "refusing extra positional argument '$1' on merge-pr — the PR number is the first argument and there are no others" ;;
       esac
     done
     [ -n "$n" ] || die "usage: git-guard.sh merge-pr <n> --integration <branch> [--allow-trunk] [gh args]"
@@ -228,9 +243,10 @@ case "$sub" in
       # captured text and makes the JSON unparseable, which silently degrades every branch below
       # to "cannot read protection". (Measured: merging stderr broke the working case.)
       prot="$(gh api "repos/$repo/branches/$integration/protection" 2>/dev/null || true)"
-      # `2>&1` above keeps the API's error BODY (it carries `message`), so parse the captured text
-      # rather than re-querying. Only a real protection object yields a number; anything else
-      # (error JSON, empty, HTML) falls through to the fail-closed branch below.
+      # `gh api` puts the error BODY (which carries `message`) on STDOUT, so the capture above
+      # holds it without needing stderr — that is why `.message` parsing and the "Branch not
+      # protected" branch below are reachable. Only a real protection object yields a number;
+      # anything else (error JSON, empty, HTML) falls through to the fail-closed branch.
       approvals="$(printf '%s' "$prot" | python3 -c 'import json,sys
 try:
     d = json.load(sys.stdin)
