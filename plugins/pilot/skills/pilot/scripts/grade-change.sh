@@ -48,7 +48,21 @@ if [ -z "$base" ]; then
   done
 fi
 [ -z "$base" ] && base="main"
-git show-ref --verify --quiet "refs/heads/$base" || base="origin/$base"
+# An unresolvable base must FAIL, never fall through. `merge-base` against a nonexistent ref yields
+# an empty mb, the committed-diff branch is skipped, and a commit that touches .github/workflows
+# grades D / ROUNDS=0 / "no changes detected" — the A-class 3-round requirement vanishes silently.
+# Measured: same commit, `--base main` → GRADE=A, `--base preview` (not fetched) → GRADE=D. This
+# repo's integration branch IS `preview`, so a fresh clone or a worktree without `origin/preview`
+# hit it every time. Grading is the input to a gate; when it cannot be computed the answer is an
+# error, not the most permissive grade.
+if git show-ref --verify --quiet "refs/heads/$base"; then :
+elif git show-ref --verify --quiet "refs/remotes/origin/$base"; then base="origin/$base"
+else
+  echo "ERROR: cannot resolve base '$base' (no local branch, no origin/$base)." >&2
+  echo "  Fetch it (git fetch origin $base) or pass an existing one with --base." >&2
+  echo "  Refusing to grade against a missing base — that silently downgrades to D." >&2
+  exit 2
+fi
 
 # Changed files vs the merge-base, plus anything staged/unstaged — a change is a change whether or
 # not it has been committed yet; grading only committed work would let an author dodge by waiting.

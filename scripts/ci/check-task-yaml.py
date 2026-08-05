@@ -25,7 +25,7 @@ import yaml
 # backlog/milestones is exported to /api/milestones.json just like the others, so malformed
 # frontmatter there ships unchecked — the exact incident class this gate exists to prevent.
 SCAN_DIRS = ["backlog/tasks", "backlog/docs", "backlog/decisions", "backlog/archive",
-             "backlog/milestones"]
+             "backlog/milestones", "backlog/completed"]
 FRONTMATTER = re.compile(r"^---\n(.*?)\n---", re.S)
 
 def main() -> int:

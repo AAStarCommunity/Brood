@@ -142,9 +142,12 @@ case "$sub" in
       # Surface the mechanically-derived grade so the required self-review depth is not a matter of
       # the author's own opinion. A/B demand three adversarial rounds before this PR is opened.
       grade="$(sed -n 's/^grade=//p' "$(git rev-parse --git-dir)/pilot-preflight" 2>/dev/null)"
+      # Catch-all, not `A|B`: an empty or `unknown` grade means grade-change.sh could not run (e.g.
+      # the integration branch is not fetched, so it refuses rather than downgrading to D). Only an
+      # explicitly computed C/D may lower the bar — anything else gets the strictest requirement.
       case "$grade" in
-        A|B) echo "git-guard: grade $grade — reference/pre-pr-review.md requires 3 adversarial rounds before this PR." >&2 ;;
         C|D) echo "git-guard: grade $grade" >&2 ;;
+        *)   echo "git-guard: grade ${grade:-unknown} — reference/pre-pr-review.md requires 3 adversarial rounds before this PR." >&2 ;;
       esac
     fi
     exec gh pr create "$@"

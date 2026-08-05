@@ -48,14 +48,34 @@ pr=""
 wait_mode=0
 max_min="${PILOT_VERDICT_MAX_MIN:-30}"
 poll_sec="${PILOT_VERDICT_POLL_SEC:-240}"
+
+# Every value-taking flag must REFUSE a missing/non-numeric value rather than absorb the next flag
+# or fall through. `--pr` as the last argument used to `shift 2` on $#=1 — which shifts nothing —
+# and with `set -uo` (no -e) nothing aborted: the loop spun forever, silently, BEFORE --max-min was
+# ever read, so the cap this script exists to enforce could not fire. goal.md hands exactly this
+# command line to an unattended agent, so a missing <n> was a busy-wait deadlock in the overnight
+# loop. Same reason the values are checked for digits: `--pr --wait-for-verdict` must not quietly
+# become pr="--wait-for-verdict" with waiting turned off.
+need_num() {  # need_num <flag> <value>
+  case "${2:-}" in
+    ''|*[!0-9]*) echo "PR_MONITOR: $1 requires a number (got '${2:-}')" >&2; exit 2 ;;
+  esac
+}
 while [ $# -gt 0 ]; do
   case "$1" in
-    --pr)               pr="${2:-}"; shift 2 ;;
+    --pr)               need_num --pr "${2:-}";      pr="$2";       shift 2 ;;
     --wait-for-verdict) wait_mode=1; shift ;;
-    --max-min)          max_min="${2:-30}"; shift 2 ;;
-    *) shift ;;
+    --max-min)          need_num --max-min "${2:-}"; max_min="$2";  shift 2 ;;
+    -h|--help)          sed -n '2,30p' "$0"; exit 0 ;;
+    *) echo "PR_MONITOR: unknown argument '$1'" >&2; exit 2 ;;
   esac
 done
+# A zero/garbage poll interval turns the wait loop into the same busy-wait it was just fixed to
+# avoid, so the env override is validated too instead of trusted.
+case "$poll_sec" in ''|*[!0-9]*|0) poll_sec=240 ;; esac
+# `--max-min 0` is legitimate (report once, then time out), so 0 is allowed here — only non-numeric
+# env garbage falls back, since it would otherwise blow up the deadline arithmetic.
+case "$max_min" in ''|*[!0-9]*) max_min=30 ;; esac
 
 FIELDS="number,title,headRefName,reviewDecision,mergeable,isDraft,url,statusCheckRollup,createdAt,headRefOid,commits"
 
@@ -92,7 +112,12 @@ except Exception:
     reviews = []
 if not isinstance(reviews, list):
     reviews = []
-reviews = [r for r in reviews if isinstance(r, dict) and r.get("commit_id")]
+# Only a verdict-bearing review proves freshness. A COMMENTED (or DISMISSED) review sitting on the
+# current head would otherwise satisfy `rsha == head` and make a stale CHANGES_REQUESTED from an
+# earlier commit read as fresh — the exact confusion the SHA check exists to remove.
+reviews = [r for r in reviews
+           if isinstance(r, dict) and r.get("commit_id")
+           and (r.get("state") or "").upper() in ("APPROVED", "CHANGES_REQUESTED")]
 last = reviews[-1] if reviews else {}
 
 head = pr.get("headRefOid") or ""
