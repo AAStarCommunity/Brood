@@ -25,7 +25,17 @@
 - 一个 task = 一个分支 = 一个（可选）worktree = 一个 PR。分支命名 `<type>/<taskid>-<slug>`，如 `feat/T1.3.2-admin-init`。
 
 ## 删除（清理）
-- **删本地分支只用 `git branch -d`，永不 `-D`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
+- **删本地分支默认只用 `git branch -d`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
+- **唯一的 `-D` 例外：squash-merge 仓库。** 那里 `git branch --merged` **恒返回 0** —— squash 重写补丁，
+  原 commit 不是集成分支的祖先。实测本仓库 28 个分支、`git branch --merged main` 返回 0，
+  于是这个脚本在自己家里**什么都清理不了**，人只能手工 `-D`，比脚本存在还糟。
+  所以 `safe-cleanup.sh --squash-merged` 引入第二种**服务端**证据：GitHub 的
+  `/commits/{sha}/pulls` 告诉你「哪个 PR 把这个 commit 引入了仓库」，只有当它给出
+  `merged_at != null` 的 PR 时才允许 `-D`。
+  **按 commit 判、不按分支名判**，因为两个方向的错都真实发生过：
+  ① 漏删 —— `work-pr18` 这类分支名从没当过 PR head，但 tip 就是别的 PR 的已合并 head；
+  ② 误删 —— 分支名可复用，同名分支删掉重开后内容全不同，旧的 MERGED PR 仍然匹配名字。
+  没证据 / 没装 gh / 没登录 → **一律保留**，且明确报「无法核实」而不是「没有可清理的」。
 - 只删「已合并进集成分支 + 干净」的分支/worktree。
 - 一切经 `scripts/safe-cleanup.sh`，默认 dry-run，`--apply` 才执行。**不要在对话里手工逐个删**，避免漏判保护分支。
 - 删远程分支（`--remote`）需 `.pilot.yml` 里 `allow_remote_cleanup: true` + 用户明确同意；无人值守默认不删远程。

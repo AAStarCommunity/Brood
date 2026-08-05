@@ -3,23 +3,49 @@
 #
 # Guarantees (do not weaken these):
 #   * Dry-run by default. Nothing is deleted unless --apply is passed.
-#   * Local branches: only `git branch -d` (git refuses to delete unmerged). NEVER `-D`.
+#   * Local branches: `git branch -d` only (git itself refuses to delete unmerged work).
+#     The single exception is a branch with SERVER-SIDE proof it was squash-merged — see
+#     "Squash-merged branches" below. It needs --squash-merged, --apply, and the proof.
 #   * Never touch: the current branch, the integration branch, or any protected branch.
 #   * Worktrees: removed only if their working tree is CLEAN and their branch is merged.
 #   * Remote branches: only deleted with --remote (opt-in) AND only if merged + not protected.
 #   * A dirty worktree — and its remote branch — is always left completely alone.
 #
-# Known limitation (intentional, conservative): squash-merged branches are not
-# detected by `git branch --merged`, so they are SKIPPED, not deleted. Missing a
-# cleanup is safe; a wrong deletion is not. Delete those by hand if you want them gone.
+# Squash-merged branches (--squash-merged, opt-in):
+#   In a squash-merge repo `git branch --merged` returns NOTHING, ever — the squash rewrites the
+#   patch so the original commits are not ancestors of the integration branch. Measured here:
+#   28 local branches, `git branch --merged main` → 0. That made this script unable to clean
+#   anything at all in its own home repo, and an unusable guard gets replaced by hand-run `-D`,
+#   which is strictly worse than the guard existing.
+#
+#   So `--squash-merged` adds a SECOND source of merge evidence, and it is a real one, not a
+#   loosening: GitHub's `/commits/{sha}/pulls` says which PR introduced a commit to the
+#   repository. A branch qualifies only when that endpoint names a PR with `merged_at != null`
+#   for the branch's tip commit.
+#
+#   Why keyed on the COMMIT and not the branch name — both directions of the name-based mistake
+#   are real and were hit here:
+#     * miss  — `work-pr18` / `worktree-agent-*` were never any PR's head branch, yet their tips
+#               were the merged heads of #18 / #23. A name lookup calls them unmerged.
+#     * WRONG DELETE — branch names are reusable. Delete a branch, recreate it with unrelated
+#               work, and the old MERGED PR still matches the name. A name lookup deletes it.
+#   The commit-keyed check has neither failure mode. Verified against all four shapes:
+#   squash-merged head ✓, mid-branch commit ✓, closed-but-unmerged → no evidence ✓,
+#   never-had-a-PR → no evidence ✓.
+#
+#   Deleting these needs `git branch -D` (`-d` refuses, correctly — git cannot see the merge).
+#   That is the ONLY place -D is ever used, it requires --squash-merged AND --apply, and it
+#   requires the evidence above. No evidence, no gh, no auth → the branch is KEPT.
 #
 # Usage:
-#   safe-cleanup.sh [--integration <branch>] [--protect "a,b,c"] [--apply] [--remote] [--remote-name origin]
+#   safe-cleanup.sh [--integration <branch>] [--protect "a,b,c"] [--apply] [--squash-merged]
+#                   [--remote] [--remote-name origin]
 set -euo pipefail
 
 integration=""
 protect_csv="main,master,develop,preview,integration,release,hotfix"
 apply=0
+squash_merged=0
 do_remote=0
 remote_name="origin"
 
@@ -28,6 +54,7 @@ while [ $# -gt 0 ]; do
     --integration) integration="${2:-}"; shift 2 ;;
     --protect)     protect_csv="${protect_csv},${2:-}"; shift 2 ;;
     --apply)       apply=1; shift ;;
+    --squash-merged) squash_merged=1; shift ;;
     --remote)      do_remote=1; shift ;;
     --remote-name) remote_name="${2:-origin}"; shift 2 ;;
     *) shift ;;
@@ -68,6 +95,37 @@ is_protected() {
   return 1
 }
 
+# ---- squash-merge evidence (read-only; no fetch, no ref writes, so dry-run stays read-only) ----
+# Resolved once, lazily: most repos never need it, and `gh` may not be installed at all.
+gh_state="unknown"   # unknown | ready | unavailable
+gh_repo=""
+gh_init() {
+  [ "$gh_state" = "unknown" ] || return 0
+  gh_state="unavailable"
+  command -v gh >/dev/null 2>&1 || return 0
+  gh auth status >/dev/null 2>&1 || return 0
+  gh_repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"
+  [ -n "$gh_repo" ] && gh_state="ready"
+  return 0
+}
+
+# Echo the number of a MERGED PR that introduced this branch's tip commit, or nothing.
+# Nothing = no evidence = keep the branch. Every failure path (no gh, no auth, API error,
+# unparseable answer) lands on "nothing" — the check can only ever ADD permission to delete.
+merged_pr_for() {
+  local b="$1" sha out
+  gh_init
+  [ "$gh_state" = "ready" ] || return 0
+  sha="$(git rev-parse --verify --quiet "$b^{commit}" 2>/dev/null)" || return 0
+  [ -n "$sha" ] || return 0
+  out="$(gh api "repos/$gh_repo/commits/$sha/pulls" \
+         --jq '[.[] | select(.merged_at != null) | .number] | first // empty' 2>/dev/null || true)"
+  case "$out" in
+    ''|*[!0-9]*) return 0 ;;   # empty, error text, or anything non-numeric → no evidence
+    *) printf '%s' "$out" ;;
+  esac
+}
+
 mode="DRY-RUN (pass --apply to execute)"
 [ "$apply" = "1" ] && mode="APPLY"
 echo "== pilot safe-cleanup =="
@@ -104,6 +162,53 @@ else
     else
       echo "  would delete  $b"
     fi
+  done
+fi
+echo
+
+# ---- 1b. Squash-merged local branches (evidence-based; opt-in) ---------------
+# Separate section on purpose: these need `-D`, so they must never be confused with the
+# `-d`-safe list above. A branch appears here ONLY with a merged-PR number attached.
+echo "## Squash-merged local branches"
+# Probe HERE, in the main shell. `merged_pr_for` is only ever called as `$( ... )`, which runs in
+# a SUBSHELL — anything it assigns to gh_state is discarded on return. Relying on that left the
+# "cannot verify" branch permanently unreachable, so a missing/unauthenticated gh printed the
+# same "(none)" as a genuinely clean repo. "Could not check" must never look like "nothing found".
+gh_init
+sq_names=()
+sq_prs=()
+while IFS= read -r b; do
+  b="$(echo "$b" | sed 's/^[* +] *//')"
+  [ -z "$b" ] && continue
+  is_protected "$b" && continue
+  is_in_worktree "$b" && continue
+  # Anything git already calls merged was handled above.
+  git branch --merged "$integration" 2>/dev/null | sed 's/^[* +] *//' | grep -Fqx "$b" && continue
+  pr="$(merged_pr_for "$b")"
+  [ -z "$pr" ] && continue
+  sq_names+=("$b"); sq_prs+=("$pr")
+done < <(git branch --format='%(refname:short)' 2>/dev/null)
+
+if [ "${#sq_names[@]}" -eq 0 ]; then
+  if [ "$gh_state" = "unavailable" ]; then
+    echo "  (cannot verify — gh not installed/authenticated, or repo not resolvable; branches KEPT)"
+  else
+    echo "  (none)"
+  fi
+else
+  i=0
+  while [ "$i" -lt "${#sq_names[@]}" ]; do
+    b="${sq_names[$i]}"; pr="${sq_prs[$i]}"
+    if [ "$squash_merged" = "1" ] && [ "$apply" = "1" ]; then
+      # -D, justified by the merged-PR evidence just gathered for THIS tip commit.
+      if git branch -D -- "$b" >/dev/null 2>&1; then echo "  deleted  $b  (merged via PR #$pr)"
+      else echo "  SKIP (delete failed)  $b"; fi
+    elif [ "$squash_merged" = "1" ]; then
+      echo "  would delete  $b  (merged via PR #$pr)"
+    else
+      echo "  candidate  $b  (merged via PR #$pr) — pass --squash-merged to include"
+    fi
+    i=$((i + 1))
   done
 fi
 echo
