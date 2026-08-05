@@ -64,8 +64,9 @@ protect_patterns: [release, hotfix]   # 额外保护的分支前缀
 remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true
 docs_dir: docs/agent         # 规划/运行态文档目录
-planning_requires:           # 可选。规划已在别处时,声明它的本地路径,起跑门禁改查这些
-  - backlog/tasks            #（不声明 = 老行为:查 docs_dir 下那七个固定文件名)
+# 可选。规划已在别处时,声明它的本地路径,起跑门禁就改查这些(不声明 = 老行为:查上面那七个文件名)
+planning_requires:
+  - backlog/tasks
 ```
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。

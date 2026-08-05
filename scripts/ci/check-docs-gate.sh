@@ -107,6 +107,14 @@ rm -rf "$alt"
 #    unconditionally in any repo holding a single non-empty file.
 check "planning_requires='.' refused"      2 "$(bash "$GATE" --planning-requires "." --strict >/dev/null 2>&1; echo $?)"
 check "planning_requires='/' refused"      2 "$(bash "$GATE" --planning-requires "/" --strict >/dev/null 2>&1; echo $?)"
+# The repo-root refusal must be by RESOLUTION, not by a table of spellings. A literal table let
+# `.//`, `./.`, `././`, `.///` through — none is absolute, contains `..`, or globs — and the gate
+# then reported "ready, safe to run unattended" on a repo with no planning documents at all.
+# `.git` was the same trick with less typing: it exists in every git repo.
+for spelling in ".//" "./." "././" ".///" ".//." ".git" ".git/refs"; do
+  check "planning_requires='$spelling' refused" 2 \
+    "$(bash "$GATE" --planning-requires "$spelling" --strict >/dev/null 2>&1; echo $?)"
+done
 check "planning_requires absolute refused" 2 "$(bash "$GATE" --planning-requires "/etc" --strict >/dev/null 2>&1; echo $?)"
 # A glob is refused rather than expanded: word-splitting an unquoted list ALSO globs, so `backlog/*`
 # used to arrive pre-expanded as the paths it matched and the literal check never saw a `*`.
@@ -116,6 +124,31 @@ check "planning_requires glob refused"     2 "$(bash "$GATE" --planning-requires
 #    the flag from run() above, THIS is the assertion that goes red instead of the suite silently
 #    testing backlog/ while claiming to test pristine templates.
 check "--no-config ignores repo declaration" 1 "$(bash "$GATE" --no-config --docs-dir "$tmp" --strict >/dev/null 2>&1; echo $?)"
+
+# 8. The .pilot.yml parser must read the form this skill's OWN docs use — YAML allows a trailing
+#    `# comment` on the key line and on every item, and the first parser matched neither. It failed
+#    SILENTLY: declaration dropped, gate falls back to the seven filenames, repo told "NOT ready" —
+#    the exact false negative the feature exists to remove, delivered by the feature.
+yml="$(mktemp -d)"; mkdir -p "$yml/plan-src"
+(cd "$yml" && git init -q .)
+{ echo "# 规划源"; echo "这是一份真实内容,用于验证解析器能读到本 skill 文档里那种带行尾注释的写法。"; echo "第二段确保超过阈值。"; } > "$yml/plan-src/tasks.md"
+
+printf 'base_branch: main\nplanning_requires:           # 可选。规划已在别处时声明\n  - plan-src                 # 条目也可以带注释\n' > "$yml/.pilot.yml"
+check "config: key+item comments parsed" 0 "$(cd "$yml" && bash "$GATE_ABS" --strict >/dev/null 2>&1; echo $?)"
+
+printf 'planning_requires: [plan-src]   # 行内数组也允许注释\n' > "$yml/.pilot.yml"
+check "config: inline array + comment parsed" 0 "$(cd "$yml" && bash "$GATE_ABS" --strict >/dev/null 2>&1; echo $?)"
+
+#    Declared-but-unparseable must be LOUD. A silent fallback here is indistinguishable from the bug.
+printf 'planning_requires:\n' > "$yml/.pilot.yml"
+check "config: declared but empty aborts" 2 "$(cd "$yml" && bash "$GATE_ABS" --strict >/dev/null 2>&1; echo $?)"
+printf 'planning_requires: []\n' > "$yml/.pilot.yml"
+check "config: explicit empty list aborts" 2 "$(cd "$yml" && bash "$GATE_ABS" --strict >/dev/null 2>&1; echo $?)"
+
+#    No key at all is NOT an error — it is the documented default (check the seven docs).
+printf 'base_branch: main\n' > "$yml/.pilot.yml"
+check "config: no key falls back to docs" 1 "$(cd "$yml" && bash "$GATE_ABS" --strict >/dev/null 2>&1; echo $?)"
+rm -rf "$yml"
 rm -rf "$filled"
 
 echo

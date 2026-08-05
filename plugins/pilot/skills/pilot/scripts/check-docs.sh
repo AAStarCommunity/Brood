@@ -103,21 +103,51 @@ if [ -z "$planning_requires" ] && [ "$read_config" = "1" ]; then
   _top="$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
   for _f in "$_top/.pilot.yml" "$_top/.repo-pilot.yml"; do
     [ -f "$_f" ] || continue
+    # YAML permits a trailing `# comment` on the key line AND on every item. The first version of
+    # this parser matched `^planning_requires:[[:space:]]*$`, so the form documented in this very
+    # skill — `planning_requires:   # 可选…` — never matched: `inlist` stayed 0, the declaration was
+    # dropped SILENTLY, and the gate fell back to the seven filenames. That is precisely the false
+    # "NOT ready" this feature exists to remove, arriving through the feature itself. Item comments
+    # were worse: the shipped template's `- docs/agent/progress.md   # 运行态…` became the literal
+    # path `docs/agent/progress.md#运行态…` once whitespace was stripped.
+    # Strip only WHITESPACE-PRECEDED `#`, which is what YAML calls a comment, so a path that
+    # legitimately contains `#` survives.
     planning_requires="$(awk '
-      /^planning_requires:[[:space:]]*\[/ {
-        line = $0; sub(/^[^[]*\[/, "", line); sub(/\].*$/, "", line); print line; exit
+      function clean(s) {
+        sub(/[[:space:]]+#.*$/, "", s)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", s)
+        return s
       }
-      /^planning_requires:[[:space:]]*$/ { inlist = 1; next }
-      inlist {
-        # A block list ends at the first line that is not an indented `- item`.
-        if ($0 ~ /^[[:space:]]+-[[:space:]]*[^[:space:]]/) {
-          item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item); printf "%s,", item; next
-        }
-        if ($0 ~ /^[[:space:]]*$/) next
+      { line = $0; sub(/[[:space:]]+#.*$/, "", line) }
+      line ~ /^planning_requires:[[:space:]]*\[/ {
+        v = line; sub(/^[^[]*\[/, "", v); sub(/\].*$/, "", v)
+        n = split(v, a, ",")
+        for (i = 1; i <= n; i++) { t = clean(a[i]); if (t != "") printf "%s,", t }
         exit
       }
-    ' "$_f" | tr -d '"'"'"' ' | sed 's/,$//')"
-    [ -n "$planning_requires" ] && planning_src="$(basename "$_f")"
+      line ~ /^planning_requires:[[:space:]]*$/ { inlist = 1; next }
+      inlist {
+        # A block list ends at the first line that is not an indented `- item`.
+        if (line ~ /^[[:space:]]+-[[:space:]]*[^[:space:]]/) {
+          item = line; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
+          t = clean(item); if (t != "") printf "%s,", t
+          next
+        }
+        if (line ~ /^[[:space:]]*$/) next
+        exit
+      }
+    ' "$_f" | tr -d "\"'" | sed 's/,$//')"
+    if [ -n "$planning_requires" ]; then
+      planning_src="$(basename "$_f")"
+    elif grep -qE '^planning_requires:' "$_f" 2>/dev/null; then
+      # The key is THERE but nothing parsed out of it. Never fall back silently: a quiet fallback
+      # reports "NOT ready, go write the seven docs" to a repo that did declare its planning source,
+      # which is indistinguishable from the bug this feature fixes. Fail loudly instead.
+      echo "ERROR: $_f declares 'planning_requires:' but no usable entries parsed out of it." >&2
+      echo "  Expected either  planning_requires: [a, b]  or an indented block list of '- path' lines." >&2
+      echo "  Refusing to silently fall back to the default docs — that would report NOT ready for a repo that DID declare a source." >&2
+      exit 2
+    fi
     break
   done
 fi
@@ -196,9 +226,6 @@ if [ -n "$planning_requires" ]; then
     p="$(printf '%s' "$p" | sed -e 's|^[[:space:]]*||' -e 's|[[:space:]]*$||')"
     [ -z "$p" ] && continue
     case "$p" in
-      .|./|..|../|/|'~')
-        echo "ERROR: planning_requires entry '$p' matches the whole repo — that disables the gate rather than configuring it. Point it at the actual planning source (e.g. backlog/tasks)." >&2
-        exit 2 ;;
       /*|*..*)
         echo "ERROR: planning_requires entry '$p' must be a repo-relative path without '..' — refusing." >&2
         exit 2 ;;
@@ -210,6 +237,35 @@ if [ -n "$planning_requires" ]; then
         exit 2 ;;
     esac
     p="${p%/}"
+    # RESOLVE, then compare — do not try to enumerate the ways to spell ".". The first version
+    # matched a literal table (`. ./ .. ../ / ~`) and `.//`, `./.`, `././`, `.///` sailed straight
+    # through it: not absolute, no `..`, no glob. `${p%/}` then normalised them and the whole repo
+    # became the "planning source" — measured on a repo with NO planning docs at all:
+    #   (unconfigured)            → rc=1  ok=0/7  NOT ready
+    #   planning_requires: [.//]  → rc=0  ok=1/1  "ready — safe to run unattended"
+    # `.git` did the same in any git repo whatsoever. One resolve-and-compare closes that entire
+    # family (including symlinks, which is why -P) instead of waiting for the next spelling.
+    _abs=""
+    if [ -d "$p" ]; then _abs="$(cd "$p" 2>/dev/null && pwd -P || true)"
+    elif [ -e "$p" ]; then _abs="$(cd "$(dirname "$p")" 2>/dev/null && pwd -P || true)/$(basename "$p")"
+    fi
+    if [ -n "$_abs" ]; then
+      _root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
+      _rootp="$(cd "$_root" 2>/dev/null && pwd -P || printf '%s' "$_root")"
+      if [ "$_abs" = "$_rootp" ]; then
+        echo "ERROR: planning_requires entry '$p' resolves to the repository root ($_abs) — that disables the gate rather than configuring it. Point it at the actual planning source (e.g. backlog/tasks)." >&2
+        exit 2
+      fi
+      case "$_abs" in
+        "$_rootp"/.git|"$_rootp"/.git/*)
+          echo "ERROR: planning_requires entry '$p' points inside .git — it would pass in ANY git repo and proves nothing about planning. Refusing." >&2
+          exit 2 ;;
+        "$_rootp"/*) : ;;   # inside the repo, as required
+        *)
+          echo "ERROR: planning_requires entry '$p' resolves outside the repository ($_abs) — refusing." >&2
+          exit 2 ;;
+      esac
+    fi
     REQ_LIST="${REQ_LIST:-} $p"
     IFS=','
   done
