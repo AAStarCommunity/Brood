@@ -16,7 +16,8 @@ pilot doctor   # 自检本地就绪度（config/docs/分支/gh/hook）——**�
 ## 为什么用它
 把「有经验程序员的默认」固化成流程，且**危险动作确定性可控**：
 
-- **安全清理**：只删「已合并进集成分支 + 干净」的分支/worktree；只 `git branch -d`（永不 `-D`）；默认 dry-run，`--apply` 才动手；护住主干/集成/当前/protected/脏 worktree。逻辑全在 `scripts/safe-cleanup.sh`，不靠模型临场判断。
+- **安全清理**：**唯一会执行的删除是 `git branch -d`**（git 自己拒绝未合并的、以及被 worktree 占用的）。**永不 `-D`、永不删远程、永不 `git worktree remove`**——最后这条是**文件系统删除**，会连 `.gitignore` 掉的文件（真实案例：`.env`）一起抹掉，而 `git status --porcelain` 根本不显示它们，所以 worktree 只**列出来**并给出命令。远程分支**完全不处理**，用 GitHub 的 auto-delete-on-merge。逻辑全在 `scripts/safe-cleanup.sh`，不靠模型临场判断。
+  **squash-merge 仓库**里 `git branch --merged` 通常返回 0（squash 重写补丁，原 commit 不是集成分支的祖先），于是上面那条 `-d` 在这类仓库里清不动任何东西。加 `--squash-merged`：它按 **commit** 向 GitHub 查「哪个已合并 PR 引入了这个提交」，把有证据的分支**列出来**（附 PR 号 + tip sha + 可粘贴的 `git branch -D` 命令）——**脚本自己不执行那一下**。难的那半（在 git 看不出来的仓库里逐条给出证据）自动做，不可逆的那半留给人。查不到证据、没装 gh、没登录 —— 一律不列，并明说「无法核实」。
 - **PR 纪律**：绝不 `git add -A`；绝不直推/直合主干；一个 task = 一个分支 = 一个 worktree = 一个 PR；PR 前必自测 + 对抗式 review。
 - **外部 review 回路（已生产验证）**：pilot **不自评 PR**——开好 PR 后只盯自己 PR 的状态（`scripts/pr-monitor.sh --pr <n> --wait-for-verdict`，内置 3–5 分钟轮询与 **30 分钟硬上限**；只有评审 commit == 当前 head 才算裁决）。裁决由**外部评审服务**给出，契约见 `reference/review-contract.md`：排队 5–10 分钟、评审 5–10 分钟，通常 20 分钟内出 `APPROVED`/`CHANGES_REQUESTED`（超大 PR 例外）。推新 commit 自动触发再评审。**那个服务是什么、装在哪、覆盖哪些仓库，pilot 一概不知也不启动**——只依赖这份契约。
 - **pilot 是入口，配套能力由它安排**：飞书 / Notion 等文档源是 pilot 的**配套 skill**——该不该装、装哪个、装到全局还是项目级、装完怎么验证，由 pilot 负责讲清楚和安排。**但「入口」是编排责任，不是运行时依赖**：pilot 自己不 import、不启动任何文档源，只探测能力是否存在，没有就说明缺什么、给出装法，然后降级继续干活。契约与实测过的安装命令见 `reference/doc-sources.md`。

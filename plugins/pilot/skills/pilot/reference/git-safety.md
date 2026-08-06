@@ -25,10 +25,36 @@
 - 一个 task = 一个分支 = 一个（可选）worktree = 一个 PR。分支命名 `<type>/<taskid>-<slug>`，如 `feat/T1.3.2-admin-init`。
 
 ## 删除（清理）
-- **删本地分支只用 `git branch -d`，永不 `-D`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
+- **删本地分支只用 `git branch -d`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
+  **脚本永远不执行 `-D`，不 `git push --delete`，也不 `git worktree remove`。**
+  最后那条尤其容易被漏掉：它是**文件系统删除**，而判断它「干净」用的 `git status --porcelain`
+  **不列 gitignore 的文件**，`git worktree remove` 不带 `--force` 时也容忍「只有 ignored 文件」的
+  工作树 —— 两层各自放行，结果是一个装着 `.env` 的目录被整个删掉、不可恢复。所以 worktree 只列出来
+  并附上移除命令和「先查 ignored 文件」的提示。
+- **squash-merge 仓库的处理方式：列出来，不删。** 那里 `git branch --merged` **通常返回 0** —— squash 重写补丁，
+  原 commit 不是集成分支的祖先。实测本仓库 28 个分支、`git branch --merged main` 返回 0，
+  于是这个脚本在自己家里**什么都清理不了**。
+  所以 `safe-cleanup.sh --squash-merged` 引入第二种**服务端**证据：GitHub 的
+  `/commits/{sha}/pulls` 告诉你「哪个 PR 把这个 commit 引入了仓库」，只有当它给出
+  `merged_at != null` 的 PR 时，这个分支才会被**列进清单**（附 PR 号、tip sha、可粘贴的命令）。
+  **按 commit 判、不按分支名判**，因为两个方向的错都真实发生过：
+  ① 漏报 —— `work-pr18` 这类分支名从没当过 PR head，但 tip 就是别的 PR 的已合并 head；
+  ② 错报 —— 分支名可复用，同名分支删掉重开后内容全不同，旧的 MERGED PR 仍然匹配名字。
+  没证据 / 没装 gh / 没登录 → **一律不列**，且明确报「无法核实」而不是「没有可清理的」。
+
+  **为什么只列不删。** 早先的版本是真删的（`-D` + `git push --delete`），六轮评审在这一个能力上
+  找出六个**实测复现**的缺陷：同名 tag 劫持证据、导致删掉一条**未合并**分支；恢复句柄打印**另一个**
+  分支的名字（bash 3.2 会在外层作用域展开 `local a=.. b=${a..}` 的右值）；丢掉了 git 自带的
+  「这个 ref 被 worktree 占用」拒绝；证据与删除之间的 TOCTOU 窗口；以及**拿本地分支当判据、
+  在服务端删掉同事没合并的工作**。没有一条是理论风险。
+  结论不是「防得更严」，而是：**自动执行不可逆删除、而判据又必须从服务端推断**，所需的把握程度
+  配不上它买到的东西——它买到的只是不用敲 `git branch -D <名字>`。那六个缺陷全都是「删」的属性，
+  不是「列」的属性。所以脚本做难的那半（在 git 自己看不出来的仓库里逐条给出合并证据），
+  不可逆的那半留给人。远程分支交给 GitHub 的 auto-delete-on-merge——它在**合并真正发生的那一侧**
+  判定，不会被一个还没 push 的本地分支骗到。
 - 只删「已合并进集成分支 + 干净」的分支/worktree。
 - 一切经 `scripts/safe-cleanup.sh`，默认 dry-run，`--apply` 才执行。**不要在对话里手工逐个删**，避免漏判保护分支。
-- 删远程分支（`--remote`）需 `.pilot.yml` 里 `allow_remote_cleanup: true` + 用户明确同意；无人值守默认不删远程。
+- **远程分支：脚本完全不处理**（既不删也不列）。用 GitHub 的 auto-delete-on-merge——它在合并真正发生的那一侧判定，而从 clone 里判断要依赖可能过期的 remote-tracking ref，且 bare 仓库不留 reflog，是所有删除里唯一完全没有后悔药的。`.pilot.yml` 的 `allow_remote_cleanup` 因此不再有作用。
 - 永不碰：当前分支、集成分支、主干、protected 前缀（release/hotfix…）、脏 worktree 及其远程分支。
 
 ## 危险操作一律先确认
