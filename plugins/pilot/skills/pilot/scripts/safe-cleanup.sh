@@ -199,7 +199,12 @@ merged_pr_for() {  # merged_pr_for <sha>
   [ "$rc" -ne 0 ] && { printf 'ERR'; return 0; }
   case "$out" in
     '') return 0 ;;            # 200 with no matching PR → genuinely no evidence
-    *[!0-9]*) printf 'ERR' ;;  # 200 but unparseable → treat as unknown, never as "no"
+    # ENUMERATED, not a range — the same convention PR#50 established for git-guard.sh. `[!0-9]` is
+    # a collation range whose membership depends on LC_COLLATE (under fa_IR/ar_SA the Eastern-Arabic
+    # digits fall inside it). Not exploitable here either — the value comes from jq's ASCII
+    # `.number` — but #50 made this a FILE-level convention precisely so no sibling script keeps a
+    # locale-dependent notion of "is this a number"; that skill ships both of these together.
+    *[!0123456789]*) printf 'ERR' ;;  # 200 but unparseable → treat as unknown, never as "no"
     *) printf '%s' "$out" ;;
   esac
 }
@@ -221,8 +226,51 @@ merged_pr_for() {  # merged_pr_for <sha>
 #      cost back at one API call per branch, as the docs claim.
 #   3. The sha it swaps against is the one the evidence was gathered for, printed as the recovery
 #      handle. Same object end to end.
+# Does any worktree have this ref checked out — including one stopped mid-operation?
+#
+# `git branch -D` refuses to delete a ref a worktree is using; `git update-ref -d` refuses NOTHING,
+# so switching to it dropped that protection silently. `git worktree list --porcelain` alone does
+# not restore it: a worktree paused in `git rebase -i` reports `detached` and omits its `branch`
+# line entirely, so the branch being rebased looks free. The in-progress operation records the real
+# branch in rebase-merge/head-name (rebase-apply/ for `git am`), which is what makes it findable.
+# Deleting there loses the rebase: `git rebase --continue` then dies on `cannot lock ref`, leaving
+# the result as an unreferenced object.
+ref_in_use_by_worktree() {  # ref_in_use_by_worktree <refs/heads/name>
+  local want="$1"
+  local wt cur p f
+  while IFS= read -r wt; do
+    [ -n "$wt" ] || continue
+    cur="$(git -C "$wt" symbolic-ref -q HEAD 2>/dev/null || true)"
+    [ "$cur" = "$want" ] && return 0
+    for p in rebase-merge/head-name rebase-apply/head-name; do
+      f="$(git -C "$wt" rev-parse --git-path "$p" 2>/dev/null || true)"
+      [ -n "$f" ] || continue
+      [ -f "$f" ] || continue
+      [ "$(cat "$f" 2>/dev/null || true)" = "$want" ] && return 0
+    done
+  done <<EOF
+$(git worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+EOF
+  return 1
+}
+
 destroy_branch() {  # destroy_branch <refs/heads/name> <expected-sha> <label>
-  local ref="$1" expect="$2" label="$3" short="${ref#refs/heads/}"
+  # SEPARATE `local` statements, deliberately. In bash 3.2 — the /bin/bash on macOS, which is what
+  # `#!/usr/bin/env bash` resolves to here — a single `local a="$1" b="${a#x}"` expands `$a` in the
+  # OUTER scope, not from the local just created. Measured on 3.2.57:
+  #   outer ref=refs/heads/GLOBAL-LEFTOVER
+  #   one-local:  ref=refs/heads/ARGUMENT  short=GLOBAL-LEFTOVER   ← wrong
+  #   two-local:  ref=refs/heads/ARGUMENT  short=ARGUMENT          ← right
+  # So `short` used to come from §1b's loop variable, and the ONE recovery handle for an
+  # irreversible delete printed a DIFFERENT branch's name next to this branch's sha.
+  local ref="$1"
+  local expect="$2"
+  local label="$3"
+  local short="${ref#refs/heads/}"
+  if ref_in_use_by_worktree "$ref"; then
+    printf '  SKIP (checked out by a worktree — or being rebased there)  %s\n' "$short"
+    return 1
+  fi
   if git update-ref -d "$ref" "$expect" 2>/dev/null; then
     # %q-quote the name in the restore hint: `feat/x$(id)` is a legal refname, and an unquoted
     # hint is a command substitution the moment someone pastes it.
@@ -266,17 +314,25 @@ is_in_worktree() { list_has "$wt_branches" "$1"; }
 # Computed ONCE, from the full integration ref, and reused by every "is this already merged?" test
 # below. Previously each test re-ran `git branch --merged | sed | grep -q` — three separate chances
 # to hit the SIGPIPE/pipefail bug and the bare-name ambiguity, per branch.
-git_merged_names="$(git branch --format='%(refname:short)' --merged "$integration_ref" 2>/dev/null || true)"
+#
+# FULL refs, not `%(refname:short)`. Short-form output is DISAMBIGUATED: with a tag of the same
+# name, `%(refname:short)` emits `heads/dup` rather than `dup`. That string then flowed into
+# `git branch -d -- heads/dup` (→ "branch not found" → reported as `SKIP (not safely merged)`, i.e.
+# a `-d`-safe branch declared unmerged) and into the §1b membership test (→ the branch was NOT
+# recognised as already handled, so it came back round on the `-D` evidence path). Full refs are
+# unambiguous by construction, and every consumer below strips the prefix for display/deletion.
+git_merged_refs="$(git branch --format='%(refname)' --merged "$integration_ref" 2>/dev/null || true)"
 
 # ---- 1. Merged local branches ------------------------------------------------
 echo "## Local merged branches"
 merged_list=()
-while IFS= read -r b; do
-  [ -z "$b" ] && continue
+while IFS= read -r mref; do
+  [ -z "$mref" ] && continue
+  b="${mref#refs/heads/}"
   if is_protected "$b"; then continue; fi
   if is_in_worktree "$b"; then continue; fi   # leave worktree branches to section 2
   merged_list+=("$b")
-done <<< "$git_merged_names"
+done <<< "$git_merged_refs"
 
 if [ "${#merged_list[@]}" -eq 0 ]; then
   echo "  (none)"
@@ -339,8 +395,10 @@ while IFS= read -r ref; do
     continue
   fi
   is_in_worktree "$b" && continue
-  # Anything git already calls merged was handled above.
-  list_has "$git_merged_names" "$b" && continue
+  # Anything git already calls merged was handled above. Compared as a FULL ref — see the note on
+  # git_merged_refs: the short form is disambiguated to `heads/x` under a same-named tag, so this
+  # test used to miss and the branch fell through to the `-D` evidence path.
+  list_has "$git_merged_refs" "$ref" && continue
   # Resolve the tip ONCE, from the full ref, and carry it: this sha is what the evidence is about
   # and what authorises the delete.
   sha="$(git rev-parse --verify --quiet "$ref^{commit}" 2>/dev/null || true)"
@@ -424,7 +482,7 @@ handle_wt() {
     return
   fi
   local wt_sha=""
-  if list_has "$git_merged_names" "$short"; then
+  if list_has "$git_merged_refs" "${branch:-refs/heads/$short}"; then
     via="git"
   elif [ "$squash_merged" != "1" ]; then
     # Same cost gate as section 1b: this ran BEFORE the flag check and was the bulk of the
@@ -485,6 +543,32 @@ if [ "$do_remote" = "1" ]; then
   echo "## Remote merged branches ($remote_name)"
   # Only mutate on --apply: even `fetch --prune` rewrites remote-tracking refs, so dry-run never fetches.
   if [ "$apply" = "1" ]; then git fetch --prune "$remote_name" >/dev/null 2>&1 || true; fi
+  # JUDGE BY THE SERVER'S integration branch, not the operator's local one.
+  #
+  # This section deletes on the SERVER, and it is the only destructive path here with no `-d` net
+  # and nothing to recover from — the other two at worst cost a reflog lookup. It used to take its
+  # criterion from `refs/heads/<integration>`, i.e. from whatever the operator happened to have
+  # checked out. `git fetch --prune` refreshes remote-tracking refs and never advances local `main`,
+  # so a perfectly normal state — merged locally, not pushed yet — made a colleague's unmerged
+  # branch look merged. Reproduced against a real bare remote:
+  #   origin/main contains colleague-precious : 0   ← the server had NOT merged it
+  #   local  main contains colleague-precious : 1
+  #   → `--remote --apply` printed `deleted origin/colleague-precious`; `git ls-remote` confirmed
+  #     it was gone from the server, with no reflog anywhere to get it back.
+  remote_integration="refs/remotes/$remote_name/$integration"
+  if ! git show-ref --verify --quiet "$remote_integration"; then
+    echo "  (skipped — $remote_name/$integration not found locally; refusing to judge server-side"
+    echo "   deletions by a local branch. Run: git fetch $remote_name)"
+  else
+    # Local ahead of the server means the local branch contains merges the server does not have —
+    # exactly the shape that produced the false positive above. Refuse rather than narrow the
+    # criterion silently, because the operator can fix it in one push and a wrong answer here is
+    # unrecoverable.
+    if ! git merge-base --is-ancestor "$integration_ref" "$remote_integration" 2>/dev/null; then
+      echo "  (skipped — local '$integration' is AHEAD of $remote_name/$integration; the server has"
+      echo "   not seen those merges. Push first, or the criterion would be your local state rather"
+      echo "   than the server's. Refusing: this section deletes server-side and cannot be undone.)"
+    else
   any=0
   while IFS= read -r rb; do
     rb="$(echo "$rb" | sed 's/^[* +] *//')"
@@ -498,11 +582,21 @@ if [ "$do_remote" = "1" ]; then
     if is_in_worktree "$short"; then continue; fi   # never delete the remote of a checked-out/dirty worktree branch
     any=1
     if [ "$apply" = "1" ]; then
-      if git push "$remote_name" --delete -- "$short" >/dev/null 2>&1; then echo "  deleted  $remote_name/$short"; else echo "  SKIP (delete failed)  $remote_name/$short"; fi
+      # CAS on the server too, for the same reason the local path has one: between listing and
+      # deleting, someone can push to that branch. `--force-with-lease=<ref>:<sha>` makes the delete
+      # fail instead of discarding what arrived in between. The sha is the one we listed.
+      rsha="$(git rev-parse --verify --quiet "refs/remotes/$remote_name/$short" 2>/dev/null || true)"
+      if [ -z "$rsha" ]; then
+        echo "  SKIP (cannot resolve $remote_name/$short — refusing to delete unverified)"
+      elif git push --force-with-lease="$short:$rsha" "$remote_name" --delete -- "$short" >/dev/null 2>&1; then
+        echo "  deleted  $remote_name/$short  was=$rsha"
+      else
+        echo "  SKIP (delete refused — the branch moved on the server since it was listed, or the push failed)  $remote_name/$short"
+      fi
     else
       echo "  would delete  $remote_name/$short"
     fi
-  done < <(git branch -r --merged "$integration_ref" 2>/dev/null)
+  done < <(git branch -r --merged "$remote_integration" 2>/dev/null)
   if [ "$any" = "0" ]; then
     echo "  (none)"
     # Say what this section can and cannot see. It uses ONLY the git-native predicate, which in a
@@ -516,6 +610,8 @@ if [ "$do_remote" = "1" ]; then
       echo "       return nothing. --squash-merged does NOT extend here — remote branches need manual"
     [ "$squash_merged" = "1" ] && \
       echo "       cleanup or GitHub's auto-delete-on-merge. This is 'not checked', not 'nothing found'."
+  fi
+    fi
   fi
   echo
 fi
