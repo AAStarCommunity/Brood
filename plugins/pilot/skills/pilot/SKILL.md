@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.3.0
+version: 1.4.0
 description: 仓库级开发操作系统。三阶段驱动一个仓库从「盘点 → 规划 → 持续开发」全流程。status=汇报进展+安全清理已合并分支/worktree；plan=建立/汇报 Milestone→Feature→Task 三级规划；run=先交出一条填好的 /goal 交付契约(说清怎么用 plan 的文档、怎么验证、PR 由外部评审服务裁决要怎么等、什么时候才算交付),再照它连续迭代做到交付;起跑前强制检查规划文档齐全。当用户说 pilot / 整理仓库 / 汇报进展 / 清理分支 / 规划里程碑 / 持续开发 / 跑通宵开发时使用。
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task, TodoWrite, Monitor, ScheduleWakeup
 ---
@@ -64,6 +64,7 @@ protect_patterns: [release, hotfix]   # 额外保护的分支前缀
 remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true
 docs_dir: docs/agent         # 规划/运行态文档目录
+planning_source: docs        # docs(默认)=查上面那七个文件 | external=规划在别处,门禁不查(见下)
 ```
 
 读取方式：用 Read 工具读该文件，把值作为 flag 传给脚本（脚本本身不解析 YAML，保持简单确定）。文件不存在时用上表默认值，并提示用户运行 `pilot doctor` 生成。
@@ -79,9 +80,14 @@ docs_dir: docs/agent         # 规划/运行态文档目录
 2b. **配置迁移硬检查**：若旧文件 `.repo-pilot.yml` 存在——
     - 只有旧文件、无 `.pilot.yml`：红字提示「`.repo-pilot.yml` 已弃用，运行 `git mv .repo-pilot.yml .pilot.yml`」；在迁移前 `run`/`status` 会读旧文件兜底。
     - **两个文件都在、且 `integration_branch` 不一致：`FAIL`（阻断）**——因为哪个生效不确定、错的那个可能把 PR 直合进主干。要求用户先删掉/合并旧文件再继续，`doctor` 不擅自改。
-3. **规划文档齐全度**（`run` 无人值守的硬前提）：`bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict`。
+3. **规划层齐全度**（`run` 无人值守的硬前提）：`bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict`。
    报 MISSING/EMPTY 就照实列出并建议 `pilot plan` 补齐——`run` 会在同一道门禁上 fail-closed 拒跑，
    在这里先看见比半夜被拦住强。（脚本会识别「文件在但还是原样模板」：占位符没填等于没答。）
+   **规划已经在 backlog.md / issue tracker / 别的工具里的仓库**：报 NOT ready 时**不要**建议把规划重抄进
+   七件套——那违反 plan.md §A.3(已有规划不要重复造)。正确做法是在 `.pilot.yml` 里写 `planning_source: external`。
+   之后门禁会打印 `source=external — NOTHING WAS CHECKED` 并放行：**它没有检查任何东西**。
+   汇报时必须照实说「本仓库声明规划在别处、门禁未核实」，**不能说成「规划已验证」或「就绪」**——
+   那句放行是人担保的，不是脚本核实的。
 4. **集成分支**（`git show-ref refs/heads/<integration>`）。**分支不存在时不要一律说「先建一个」**——先分清是哪一种，三种情况的正确答案完全不同：
    - **`.pilot.yml` 里 `integration_branch` == `base_branch`**（单主干仓库，PR 直接开向主干）→ **这是合法配置，什么都不缺**。不要建议建集成分支。提示：合并走 `git-guard.sh merge-pr <n> --integration <base> --allow-trunk`，并说明 `--allow-trunk` 不是绕过（仍要求分支保护要求审批、PR 已 `APPROVED`、且该分支开启了 stale-dismissal，读不到就 fail-closed）。
    - **没有 `.pilot.yml`**（于是 `integration_branch` 落到默认值 `preview`）**且默认分支存在** → **默认值对这个仓库很可能是错的**，别让用户去建一个 `preview` 来迁就默认值。先问：这个仓库是单主干（PR 直接进 `main`）还是双分支流（`preview` 汇总后再进 `main`）？单主干 → 写 `.pilot.yml` 把 `integration_branch` 设成主干名，合并加 `--allow-trunk`；确实要双分支流 → 才建 `preview`。
