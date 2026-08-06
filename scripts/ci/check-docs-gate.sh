@@ -92,14 +92,32 @@ check "planning_source: docs → checks docs" 1 "$(psrun 'planning_source: docs'
 check "planning_source: unknown → abort"    2 "$(psrun 'planning_source: backlog')"
 check "no planning_source → checks docs"    1 "$(psrun 'base_branch: main')"
 check "trailing comment tolerated"          0 "$(psrun 'planning_source: external   # 规划在 backlog/')"
+check "quoted value tolerated"              0 "$(psrun 'planning_source: "external"')"
+#    Malformed YAML must fall CLOSED, never open. The declaration removes the criterion but not the
+#    sed that reads it, and that sed had the same fail-open shape as the validator it replaced:
+#    each of these was read as `external` — i.e. gate off — and none is what it looks like.
+#      no space  → to YAML this is a plain scalar string; there is no key at all
+#      tab       → yaml.safe_load raises ScannerError (YAML does not accept a tab there)
+#      ex"ter"nal→ the value really is ex"ter"nal and must be REFUSED, not mangled into external
+check "no space after colon → checks docs"  1 "$(psrun 'planning_source:external')"
+check "tab after colon → checks docs"       1 "$(printf 'planning_source:\texternal\n' > "$ps/.pilot.yml"; (cd "$ps" && bash "$GATE_ABS" --strict >/dev/null 2>&1); echo $?)"
+check "inner quotes → abort, not guess"     2 "$(psrun 'planning_source: ex"ter"nal')"
 #    The external path MUST say it checked nothing — a "ready" here would be a lie the run report
 #    would then repeat.
+#    Capture to a variable and match in bash — NOT `… | grep -q`. `grep -q` exits at the first
+#    match while the gate still has 4 lines to print, so the gate takes SIGPIPE and exits 141;
+#    `set -o pipefail` (line 12) promotes that to the pipeline's status and the `if` takes the
+#    ELSE branch — the banner printed correctly and the assertion failed anyway. Measured on the
+#    previous commit: 5 red out of 15 full runs, each claiming "the planning-docs gate is not
+#    fail-closed" on a `docs-gate` job with no continue-on-error. This is the same SIGPIPE/pipefail
+#    trap safe-cleanup.sh has a helper (`list_has`) to avoid; I wrote that helper and then walked
+#    into it again here, in the same batch of PRs.
 printf 'planning_source: external\n' > "$ps/.pilot.yml"
-if (cd "$ps" && bash "$GATE_ABS" --strict 2>&1) | grep -q "NOTHING WAS CHECKED"; then
-  echo "  ok   external run states it verified nothing"
-else
-  echo "  FAIL external run does not say it verified nothing" >&2; fails=$((fails + 1))
-fi
+_psout="$(cd "$ps" && bash "$GATE_ABS" --strict 2>&1)"
+case "$_psout" in
+  *"NOTHING WAS CHECKED"*) echo "  ok   external run states it verified nothing" ;;
+  *) echo "  FAIL external run does not say it verified nothing" >&2; fails=$((fails + 1)) ;;
+esac
 #    And --no-config must ignore the declaration, or every assertion above this line is vacuous.
 check "--no-config ignores declaration" 1 \
   "$(cd "$ps" && bash "$GATE_ABS" --strict --no-config >/dev/null 2>&1; echo $?)"

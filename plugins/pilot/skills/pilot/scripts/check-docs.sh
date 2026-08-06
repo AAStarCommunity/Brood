@@ -101,8 +101,24 @@ if [ "$read_config" = "1" ]; then
   _top="$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
   for _f in "$_top/.pilot.yml" "$_top/.repo-pilot.yml"; do
     [ -f "$_f" ] || continue
-    planning_source="$(sed -n 's/^planning_source:[[:space:]]*//p' "$_f" | head -1 \
-      | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' | tr -d "\"'")"
+    # Require a REAL separating space, and strip only MATCHED quotes.
+    #
+    # The declaration removes the criterion, but not the 6 lines that read it — and those lines had
+    # the same fail-OPEN shape as the validator they replaced, one size smaller. All three of these
+    # were read as `external` (i.e. gate off), and none of them is what it looks like:
+    #   planning_source:external      → to YAML this is a plain SCALAR STRING; there is no key here
+    #   planning_source:<TAB>external → yaml.safe_load raises ScannerError
+    #   planning_source: ex"ter"nal   → the value IS `ex"ter"nal`; it must hit the `*)` refuse arm,
+    #                                   but `tr -d "\"'"` mangled it into `external`
+    # `[[:space:]]\{1,\}` makes the first two miss the pattern entirely, so they fall back to
+    # checking the docs (fail-CLOSED); the paired-quote strip leaves the third as `ex"ter"nal`,
+    # which the case below refuses instead of guessing.
+    # A literal SPACE, not `[[:space:]]` — that class includes TAB, and YAML does not: a tab after
+    # the colon is a ScannerError, not a value. Matching it would have accepted a file no YAML
+    # parser will read.
+    planning_source="$(sed -n 's/^planning_source: \{1,\}//p' "$_f" | head -1 \
+      | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+            -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/")"
     break
   done
 fi
