@@ -76,7 +76,7 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
   （git-guard 会先校验 PR base == `integration_branch`，base 是主干或其它分支会被拒绝；**不加 `--delete-branch`**——远程分支删除统一交给 §合并后的 safe-cleanup，受 `allow_remote_cleanup` 与 dirty-worktree 检查约束）。
   合并后：把对应 Task 在 `tasks.md` 标 `DONE`、更新 `progress.md`，运行
   `bash <skill>/scripts/safe-cleanup.sh --squash-merged --integration <integration_branch> [--protect "<protect_patterns>"] [--remote-name <remote>] --apply`
-  清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**做完回到主循环顶端,继续下一项。**
+  清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`，不要依赖脚本猜默认值**）。脚本只会 `git branch -d`；squash 合并的分支和 worktree 它**只列出来**，把清单原样报给用户，不要代劳删。**远程分支脚本不处理**——让用户在仓库设置里开 GitHub 的 auto-delete-on-merge。**做完回到主循环顶端,继续下一项。**
 - **`decision=CHANGES_REQUESTED`** → 读全部 review 意见（`gh pr view <n> --comments`），**先做中立 triage（见 `reference/review-triage.md`）**：装上本仓库业务上下文（CLAUDE.md / docs/agent / 领域文档），把每条意见分成 A 该修 / B 不重要 / C 缺业务上下文判错了 / D 过激 nitpick。外部评审是独立的、没有业务背景,你有——**既不盲改也不盲拒**。
   - **A（+trivial 的 D）** → 在该 PR 分支修复 → 自测 → 自审 → `git-guard.sh add <显式路径>` + commit + `git-guard.sh push <remote> <branch>`（推新 commit 自动触发再评审）。
   - **B（真问题但不阻塞）/ 非 trivial 的 D 里决定要做的** → **记进跟进账本,绝不丢**：

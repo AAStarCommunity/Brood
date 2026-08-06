@@ -2,14 +2,15 @@
 # safe-cleanup.sh — report what is safely cleanable; delete only what git itself will vouch for.
 #
 # Guarantees (do not weaken these):
-#   * NEVER `git branch -D`. NEVER `git push --delete`. This script does not do irreversible
-#     deletes at all — see "Why listing, not deleting" below.
-#   * Local branches: `git branch -d` only, and only with --apply. `-d` is git's own safety net:
-#     it refuses anything git cannot see as merged, so it cannot destroy unmerged work.
+#   * The ONLY thing this script deletes is a local branch via `git branch -d`, under --apply.
+#     `-d` is git's own safety net: it refuses anything git cannot see as merged, so it cannot
+#     destroy unmerged work, and it refuses a branch a worktree is using.
+#   * NEVER `git branch -D`. NEVER `git push --delete`. NEVER `git worktree remove` — that last one
+#     is a FILESYSTEM delete and took gitignored files (a real `.env`) with it; see below.
 #   * Never touch: the current branch, the integration branch, or any protected branch.
-#   * Worktrees: removed only if their working tree is CLEAN and their branch is merged.
-#   * Remote branches: LISTED only. Never deleted.
-#   * A dirty worktree — and its remote branch — is always left completely alone.
+#   * Worktrees: REPORTED only, with the command to remove them. Never removed.
+#   * Remote branches: NOT HANDLED AT ALL — not deleted, not listed. Use GitHub's
+#     auto-delete-on-merge, which judges server-side where the merge happened.
 #
 # Squash-merged branches (--squash-merged, opt-in):
 #   In a squash-merge repo `git branch --merged` returns NOTHING, ever — the squash rewrites the
@@ -50,6 +51,13 @@
 #   with per-branch evidence, in a repo where git itself cannot tell you) and leaves the part that
 #   is trivial-but-unrecoverable to you. For remote branches, GitHub's auto-delete-on-merge already
 #   does it server-side, where the merge happened — strictly better than inferring it from a clone.
+#
+#   That sweep had to be done TWICE. The first pass removed the ref writes (`-D`, `push --delete`)
+#   and declared victory — while `git worktree remove` was still there, newly wired to the same
+#   inferred evidence, deleting whole directories including gitignored files that `git status
+#   --porcelain` never shows. "No irreversible deletes" was written in this header while the
+#   filesystem delete four screens down was live. When auditing for destructive actions, ref writes
+#   are the ones you think of; the filesystem ones are the ones that actually lose data.
 #
 # Usage:
 #   safe-cleanup.sh [--integration <branch>] [--protect "a,b,c"] [--apply] [--squash-merged]
@@ -462,25 +470,28 @@ handle_wt() {
     fi
     via="squash-PR#$wt_pr"
   fi
-  if [ "$apply" = "1" ]; then
-    if git worktree remove "$path" 2>/dev/null; then
-      echo "  removed  $path  [$short]  ($via)"
-      # `-d` only, for git-native evidence — git itself refuses to delete anything it cannot see
-      # as merged, which is the safety net that makes this line acceptable without further proof.
-      # The squash-evidence path deletes NOTHING: it prints the branch and the command, same as
-      # §1b. That path is exactly where every one of the six rounds' defects lived.
-      if [ "$via" = "git" ]; then
-        git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
-      else
-        printf '    + branch %s NOT deleted (%s, tip=%s) — delete with:  git branch -D %q\n' \
-          "$short" "$via" "${wt_sha:0:12}" "$short"
-      fi
-    else
-      echo "  SKIP (remove failed)  $path  [$short]"
-    fi
-  else
-    echo "  would remove  $path  [$short]  ($via)  (+ delete branch $short)"
-  fi
+  # REPORT ONLY — this section removes nothing, in either mode.
+  #
+  # `git worktree remove` is a FILESYSTEM delete, and the previous pass stopped at ref writes and
+  # never got to it. Two layers each let the same case through: `git status --porcelain` does not
+  # list gitignored files, and `git worktree remove` without --force tolerates a tree that has only
+  # ignored files in it. Measured: a worktree holding `.env` (SECRET=abc) plus `ignored-stuff/` was
+  # deleted outright and the files were unrecoverable — while the header two screens up promised
+  # "does not do irreversible deletes at all".
+  #
+  # It is also newly reachable: on this PR's base, §2 only fired on git-native merge evidence, which
+  # a squash repo produces for nothing. Wiring it to GitHub-inferred squash evidence made it fire on
+  # every worktree whose PR was merged — and by this skill's own doctrine (one task = one worktree)
+  # that is the dominant unit. And run.md/status.md both invoke this unattended, with --apply.
+  #
+  # The same rule the rest of this file now follows applies here: the hard part (working out which
+  # worktrees are merged, with evidence) is automated; the unrecoverable part is printed for a human.
+  # This also disposes of the mid-bisect case (`git bisect start` with HEAD still on a branch reports
+  # porcelain-clean, and removing the worktree takes BISECT_LOG/BISECT_START with it).
+  printf '  %s  [%s]  (%s)\n' "$path" "$short" "$via"
+  printf '      remove with:  git worktree remove %q  &&  git branch -d %q\n' "$path" "$short"
+  printf '      (check for ignored files first — `git worktree remove` deletes the directory:\n'
+  printf '       git -C %q status --porcelain --ignored=matching)\n' "$path"
 }
 while IFS= read -r line; do
   case "$line" in
@@ -491,71 +502,31 @@ while IFS= read -r line; do
 done < <(git worktree list --porcelain 2>/dev/null; echo "")
 echo
 
-# ---- 3. Remote merged branches (opt-in) -------------------------------------
+# ---- 3. Remote branches: NOT handled ---------------------------------------------------------
+# This section used to delete on the server; then it was reduced to printing a pasteable
+# `git push --delete`. Both were wrong, and the second was wrong in a way that is easy to miss:
+# it went safe on the WRONG AXIS. `git fetch --prune` only ran under --apply, so the plain dry-run
+# — the mode that looks harmless — built its list from stale remote-tracking refs and printed a
+# delete command for a branch a colleague had since pushed to. Reproduced against a real bare
+# remote: dry-run printed the command, --apply (which fetches) correctly printed nothing. Pasting
+# the dry-run line removed the ref, and a bare repo keeps no reflog for it.
+#
+# The `|| true` on that fetch made --apply no cure either: with an unreachable remote the refresh
+# failed silently and the section printed the same command with no staleness warning.
+#
+# Once the printed command IS the destructive act, freshness matters MORE, not less. Making that
+# correct means refreshing outside --apply, checking the refresh succeeded, and re-verifying each
+# candidate rather than just the integration ref — i.e. rebuilding the whole thing this PR just
+# spent six rounds learning not to build. GitHub's auto-delete-on-merge already does this job on
+# the side where the merge happens. So: not handled here, and said out loud rather than silently
+# dropped.
 if [ "$do_remote" = "1" ]; then
-  echo "## Remote merged branches ($remote_name)"
-  # Only mutate on --apply: even `fetch --prune` rewrites remote-tracking refs, so dry-run never fetches.
-  if [ "$apply" = "1" ]; then git fetch --prune "$remote_name" >/dev/null 2>&1 || true; fi
-  # JUDGE BY THE SERVER'S integration branch, not the operator's local one.
-  #
-  # This section deletes on the SERVER, and it is the only destructive path here with no `-d` net
-  # and nothing to recover from — the other two at worst cost a reflog lookup. It used to take its
-  # criterion from `refs/heads/<integration>`, i.e. from whatever the operator happened to have
-  # checked out. `git fetch --prune` refreshes remote-tracking refs and never advances local `main`,
-  # so a perfectly normal state — merged locally, not pushed yet — made a colleague's unmerged
-  # branch look merged. Reproduced against a real bare remote:
-  #   origin/main contains colleague-precious : 0   ← the server had NOT merged it
-  #   local  main contains colleague-precious : 1
-  #   → `--remote --apply` printed `deleted origin/colleague-precious`; `git ls-remote` confirmed
-  #     it was gone from the server, with no reflog anywhere to get it back.
-  remote_integration="refs/remotes/$remote_name/$integration"
-  if ! git show-ref --verify --quiet "$remote_integration"; then
-    echo "  (skipped — $remote_name/$integration not found locally; refusing to judge server-side"
-    echo "   deletions by a local branch. Run: git fetch $remote_name)"
-  else
-    # Local ahead of the server means the local branch contains merges the server does not have —
-    # exactly the shape that produced the false positive above. Refuse rather than narrow the
-    # criterion silently, because the operator can fix it in one push and a wrong answer here is
-    # unrecoverable.
-    if ! git merge-base --is-ancestor "$integration_ref" "$remote_integration" 2>/dev/null; then
-      echo "  (skipped — local '$integration' is AHEAD of $remote_name/$integration; the server has"
-      echo "   not seen those merges. Push first. Listing against a local branch would name remote"
-      echo "   branches the server has NOT merged — and the commands printed here get pasted.)"
-    else
-  any=0
-  while IFS= read -r rb; do
-    rb="$(echo "$rb" | sed 's/^[* +] *//')"
-    case "$rb" in
-      "$remote_name/HEAD"*|"") continue ;;
-      "$remote_name/"*) : ;;   # this remote only
-      *) continue ;;           # skip other remotes entirely (e.g. upstream/*) — never delete cross-remote
-    esac
-    short="${rb#"$remote_name"/}"
-    if is_protected "$short"; then continue; fi
-    if is_in_worktree "$short"; then continue; fi   # never delete the remote of a checked-out/dirty worktree branch
-    any=1
-    # REPORT ONLY. Deleting on the server is the one action here with no undo of any kind — no
-    # reflog, and what is lost may not even be yours. GitHub's auto-delete-on-merge already does
-    # this, server-side, where the merge actually happened; that is strictly better than inferring
-    # it from a clone. So this section tells you what looks cleanable and hands you the command.
-    echo "  $remote_name/$short  — delete with:  git push $remote_name --delete $short"
-  done < <(git branch -r --merged "$remote_integration" 2>/dev/null)
-  if [ "$any" = "0" ]; then
-    echo "  (none)"
-    # Say what this section can and cannot see. It uses ONLY the git-native predicate, which in a
-    # squash-merge repo returns 0 rows by construction — the same dead-end that made §1 useless and
-    # is this feature's whole reason for existing. Printing a bare "(none)" here would repeat the
-    # original sin one section further down: a guard that reports "nothing to do" when what it means
-    # is "I cannot see anything from here". Remote squash-merged branches are NOT handled (FU-9).
-    [ "$squash_merged" = "1" ] && \
-      echo "   NB: this section uses only \`git branch -r --merged\`, which a squash-merge repo makes"
-    [ "$squash_merged" = "1" ] && \
-      echo "       return nothing. --squash-merged does NOT extend here — remote branches need manual"
-    [ "$squash_merged" = "1" ] && \
-      echo "       cleanup or GitHub's auto-delete-on-merge. This is 'not checked', not 'nothing found'."
-  fi
-    fi
-  fi
+  echo "## Remote branches ($remote_name)"
+  echo "  (not handled — safe-cleanup does not delete or list remote branches)"
+  echo "   Enable 'Automatically delete head branches' in the repo settings: GitHub deletes the"
+  echo "   head branch when a PR merges, judged server-side where the merge actually happened."
+  echo "   Doing it from a clone means judging by possibly-stale refs, and a bare remote keeps no"
+  echo "   reflog — the one delete here with no undo at all."
   echo
 fi
 

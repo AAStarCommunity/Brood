@@ -47,5 +47,5 @@
 ## 纪律
 
 - 清理的所有安全判断在 `safe-cleanup.sh` 里确定性执行（只删已合并+干净、护住 main/集成/当前/protected/脏 worktree）。**不要在对话里手工 `git branch -d`/`-D`** —— 走脚本，避免漏判。
-- **脚本永远不 `-D`、永远不删远程分支**。`--squash-merged` 拿到服务端证据后只把分支**列出来**（附 PR 号 + tip sha + 可粘贴的命令），删不删、什么时候删由人决定。把那份清单原样呈现给用户，不要代劳执行。远程分支交给 GitHub 的 auto-delete-on-merge——它在服务端判定，不会被「本地合了但没 push」骗到。
+- **脚本唯一会执行的删除是 `git branch -d`**（git 自己拒绝未合并的、以及被 worktree 占用的）。`-D`、`git push --delete`、`git worktree remove` **都不执行**——`--squash-merged` 拿到服务端证据后只把分支/worktree **列出来**（附 PR 号、tip sha、可粘贴的命令），删不删由人决定。把那份清单**原样**呈现给用户，不要代劳执行。远程分支脚本完全不处理，让用户去仓库设置里开 GitHub 的 auto-delete-on-merge。
 - 汇报前若对某个数字存疑，重跑 `repo-scan.sh` 核对，不要凭记忆报数。

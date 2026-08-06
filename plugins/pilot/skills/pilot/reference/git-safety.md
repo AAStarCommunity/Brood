@@ -26,7 +26,11 @@
 
 ## 删除（清理）
 - **删本地分支只用 `git branch -d`**。`-d` 会拒绝删除未合并分支，是安全网；`-D` 强删会丢未合并工作。
-  **脚本永远不执行 `-D`，也永远不 `git push --delete`。**
+  **脚本永远不执行 `-D`，不 `git push --delete`，也不 `git worktree remove`。**
+  最后那条尤其容易被漏掉：它是**文件系统删除**，而判断它「干净」用的 `git status --porcelain`
+  **不列 gitignore 的文件**，`git worktree remove` 不带 `--force` 时也容忍「只有 ignored 文件」的
+  工作树 —— 两层各自放行，结果是一个装着 `.env` 的目录被整个删掉、不可恢复。所以 worktree 只列出来
+  并附上移除命令和「先查 ignored 文件」的提示。
 - **squash-merge 仓库的处理方式：列出来，不删。** 那里 `git branch --merged` **通常返回 0** —— squash 重写补丁，
   原 commit 不是集成分支的祖先。实测本仓库 28 个分支、`git branch --merged main` 返回 0，
   于是这个脚本在自己家里**什么都清理不了**。
@@ -50,7 +54,7 @@
   判定，不会被一个还没 push 的本地分支骗到。
 - 只删「已合并进集成分支 + 干净」的分支/worktree。
 - 一切经 `scripts/safe-cleanup.sh`，默认 dry-run，`--apply` 才执行。**不要在对话里手工逐个删**，避免漏判保护分支。
-- 删远程分支（`--remote`）需 `.pilot.yml` 里 `allow_remote_cleanup: true` + 用户明确同意；无人值守默认不删远程。
+- **远程分支：脚本完全不处理**（既不删也不列）。用 GitHub 的 auto-delete-on-merge——它在合并真正发生的那一侧判定，而从 clone 里判断要依赖可能过期的 remote-tracking ref，且 bare 仓库不留 reflog，是所有删除里唯一完全没有后悔药的。`.pilot.yml` 的 `allow_remote_cleanup` 因此不再有作用。
 - 永不碰：当前分支、集成分支、主干、protected 前缀（release/hotfix…）、脏 worktree 及其远程分支。
 
 ## 危险操作一律先确认
