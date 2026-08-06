@@ -22,10 +22,22 @@
      bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--protect "<patterns>"]
      ```
      （**dry-run**，只打印 would-delete / would-remove / KEEP）。把结果原样呈现。
+     这条命令**不带** `--squash-merged`，所以「Squash-merged local branches」一节会打印
+     `(not checked — one gh API call per branch; pass --squash-merged to check)` ——
+     那是**没查**，不是**没有**，别当成「干净」。
+   - **本仓库用 squash 合并时必看**：`git branch --merged` 在 squash 仓库里**通常返回 0**（零提交的废弃分支仍会被它列出），
+     上面那条命令的「Local merged branches」会永远是 `(none)`。脚本会在
+     「Squash-merged local branches」一节把候选列出来（每条附已合并的 PR 号），
+     此时改用：
+     ```
+     bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> --squash-merged
+     ```
+     若该节打印 `(cannot verify …)`，说明 `gh` 没装/没登录 —— 那是**查不了**，不是**没有**，
+     照实说，不要报成「没有可清理的」。
 
 5. **征询清理**：把 dry-run 计划给用户，**问是否执行**。得到确认后才加 `--apply`：
    ```
-   bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> --apply
+   bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--squash-merged] --apply
    ```
    - 要连带删远程已合并分支：仅当 `.pilot.yml` 的 `allow_remote_cleanup: true`，且用户明确同意，才加 `--remote`。
    - 无人值守模式（由 /loop 调用且用户已预先授权清理）：可直接 `--apply`，但**永远不加 `--remote`** 除非配置显式开启。
@@ -34,6 +46,6 @@
 
 ## 纪律
 
-- 清理的所有安全判断在 `safe-cleanup.sh` 里确定性执行（只删已合并+干净、只 `-d`、护住 main/集成/当前/protected/脏 worktree）。**不要在对话里手工 `git branch -d`** —— 走脚本，避免漏判。
-- 绝不 `-D`，绝不删未合并分支，绝不碰脏 worktree 或其远程分支。
+- 清理的所有安全判断在 `safe-cleanup.sh` 里确定性执行（只删已合并+干净、护住 main/集成/当前/protected/脏 worktree）。**不要在对话里手工 `git branch -d`/`-D`** —— 走脚本，避免漏判。
+- **脚本唯一会执行的删除是 `git branch -d`**（git 自己拒绝未合并的、以及被 worktree 占用的）。`-D`、`git push --delete`、`git worktree remove` **都不执行**——`--squash-merged` 拿到服务端证据后只把分支/worktree **列出来**（附 PR 号、tip sha、可粘贴的命令），删不删由人决定。把那份清单**原样**呈现给用户，不要代劳执行。远程分支脚本完全不处理，让用户去仓库设置里开 GitHub 的 auto-delete-on-merge。
 - 汇报前若对某个数字存疑，重跑 `repo-scan.sh` 核对，不要凭记忆报数。
