@@ -125,10 +125,23 @@ if [ -z "$planning_requires" ] && [ "$read_config" = "1" ]; then
         for (i = 1; i <= n; i++) { t = clean(a[i]); if (t != "") printf "%s,", t }
         exit
       }
+      # Scalar form: `planning_requires: backlog/tasks`. Valid YAML, and the shape someone writes
+      # first when there is only one path. Must come after the inline-array rule (which matches `[`)
+      # and before the empty-key rule.
+      line ~ /^planning_requires:[[:space:]]*[^[:space:][]/ {
+        v = line; sub(/^planning_requires:[[:space:]]*/, "", v)
+        t = clean(v); if (t != "") printf "%s,", t
+        exit
+      }
       line ~ /^planning_requires:[[:space:]]*$/ { inlist = 1; next }
       inlist {
-        # A block list ends at the first line that is not an indented `- item`.
-        if (line ~ /^[[:space:]]+-[[:space:]]*[^[:space:]]/) {
+        # A block list ends at the first line that is not a `- item`. `[[:space:]]*`, NOT `+`:
+        # a ZERO-INDENT block sequence is valid YAML (yaml.safe_load reads it identically) and is
+        # what several formatters emit. Requiring indentation made those parse to nothing, which —
+        # once the "declared but unparseable" abort was added — turned a VALID config into a hard
+        # stop that told the operator their config was malformed. That is the mirror image of the
+        # bug being fixed, introduced by the fix for it.
+        if (line ~ /^[[:space:]]*-[[:space:]]*[^[:space:]]/) {
           item = line; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
           t = clean(item); if (t != "") printf "%s,", t
           next
@@ -217,6 +230,10 @@ if [ -n "$planning_requires" ]; then
   # ok=7/9 from a single declared entry). With globbing off, the entry arrives literal and the
   # check can refuse it. Restored right after the split.
   set -f
+  # Resolved ONCE, outside the loop: every entry is interpreted relative to the repository root, not
+  # to wherever the operator happens to be standing. See the note at the resolve step below.
+  _root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
+  _rootp="$(cd "$_root" 2>/dev/null && pwd -P || printf '%s' "$_root")"
   OLDIFS="$IFS"; IFS=','
   for p in $planning_requires; do
     IFS="$OLDIFS"
@@ -245,21 +262,46 @@ if [ -n "$planning_requires" ]; then
     #   planning_requires: [.//]  → rc=0  ok=1/1  "ready — safe to run unattended"
     # `.git` did the same in any git repo whatsoever. One resolve-and-compare closes that entire
     # family (including symlinks, which is why -P) instead of waiting for the next spelling.
-    _abs=""
-    if [ -d "$p" ]; then _abs="$(cd "$p" 2>/dev/null && pwd -P || true)"
-    elif [ -e "$p" ]; then _abs="$(cd "$(dirname "$p")" 2>/dev/null && pwd -P || true)/$(basename "$p")"
-    fi
+    # Resolve relative to the REPO ROOT, resolve the ENTRY ITSELF, then ASK GIT what it is.
+    # Each of those three was previously done by hand, and each hand-rolled version leaked:
+    #
+    #  1. `.git` was refused by STRING comparison, so `.GIT` walked straight in — macOS is
+    #     case-insensitive by default and bash's `pwd -P` preserves the spelling you typed
+    #     (`cd .GIT && pwd -P` → `…/.GIT`), so `_abs` never equalled the literal `<root>/.git`.
+    #     Measured: `--planning-requires .GIT` → rc=0 "ready — safe to run unattended". The commit
+    #     that added it said "don't enumerate spellings of `.`" while enumerating spellings of
+    #     `.git`. Now `git rev-parse --is-inside-git-dir` answers it — git knows its own directory.
+    #  2. Resolution used the CWD while the config is located from the toplevel, so ONE `.pilot.yml`
+    #     meant different things depending on where you stood: `- .` was refused from the root and
+    #     ACCEPTED from `sub/`, and a valid `- plan-src` was rc=0 from the root but rc=1 from `sub/`
+    #     — the same false NOT-ready this feature exists to remove.
+    #  3. The non-directory branch resolved only the PARENT, so a symlinked FILE pointing out of the
+    #     repo passed: `planfile -> /etc/passwd` → rc=0, and the content test then read through it.
+    #     Directory symlinks WERE caught, which is what "symlinks are handled" was based on — half true.
+    _abs="$(cd "$_rootp" 2>/dev/null && python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$p" 2>/dev/null || true)"
     if [ -n "$_abs" ]; then
-      _root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
-      _rootp="$(cd "$_root" 2>/dev/null && pwd -P || printf '%s' "$_root")"
       if [ "$_abs" = "$_rootp" ]; then
         echo "ERROR: planning_requires entry '$p' resolves to the repository root ($_abs) — that disables the gate rather than configuring it. Point it at the actual planning source (e.g. backlog/tasks)." >&2
         exit 2
       fi
+      # Ask git, don't match names. TWO questions, because `.git` has two shapes:
+      #   * `--resolve-git-dir` recognises both a real `.git` DIRECTORY and a `.git` FILE (the
+      #     `gitdir:` pointer a linked worktree gets — pilot's own one-task-one-worktree shape).
+      #     Without it the file form slipped through: realpath does not follow a gitfile, its parent
+      #     is the worktree (not a git dir), so `.git` was accepted and then merely counted as
+      #     "too small" — rc=1 for a size reason, not rc=2 for the real one.
+      #   * `--is-inside-git-dir` catches paths BELOW the git directory (`.GIT/config`).
+      _gitmeta=0
+      git rev-parse --resolve-git-dir "$_abs" >/dev/null 2>&1 && _gitmeta=1
+      if [ "$_gitmeta" = "0" ]; then
+        _chk="$_abs"; [ -d "$_chk" ] || _chk="$(dirname "$_abs")"
+        [ "$(cd "$_chk" 2>/dev/null && git rev-parse --is-inside-git-dir 2>/dev/null || true)" = "true" ] && _gitmeta=1
+      fi
+      if [ "$_gitmeta" = "1" ]; then
+        echo "ERROR: planning_requires entry '$p' points inside the git directory — it would pass in ANY git repo and proves nothing about planning. Refusing." >&2
+        exit 2
+      fi
       case "$_abs" in
-        "$_rootp"/.git|"$_rootp"/.git/*)
-          echo "ERROR: planning_requires entry '$p' points inside .git — it would pass in ANY git repo and proves nothing about planning. Refusing." >&2
-          exit 2 ;;
         "$_rootp"/*) : ;;   # inside the repo, as required
         *)
           echo "ERROR: planning_requires entry '$p' resolves outside the repository ($_abs) — refusing." >&2
@@ -274,9 +316,12 @@ if [ -n "$planning_requires" ]; then
   [ -n "${REQ_LIST:-}" ] || { echo "ERROR: planning_requires is set but resolved to an empty list — refusing (an empty list would pass unconditionally)." >&2; exit 2; }
 
   for p in $REQ_LIST; do
-    if [ ! -e "$p" ]; then
+    # Same repo-root anchoring as the validation above — checking these relative to the CWD is what
+    # made one config mean two different things depending on which directory the gate ran from.
+    _pabs="$(cd "$_rootp" 2>/dev/null && python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$p" 2>/dev/null || true)"
+    if [ -z "$_pabs" ] || [ ! -e "$_pabs" ]; then
       missing="$missing $p"
-    elif path_has_content "$p"; then
+    elif path_has_content "$_pabs"; then
       ok=$((ok + 1))
     else
       empty="$empty $p"
