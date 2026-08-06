@@ -408,7 +408,16 @@ echo
 
 # ---- 2. Worktrees: clean + merged only --------------------------------------
 echo "## Worktrees (clean + merged only)"
-main_root="$(git rev-parse --show-toplevel)"
+# The PRIMARY worktree, not "whichever worktree you are standing in". `--show-toplevel` returns
+# the CURRENT worktree, so running from a linked one — which this skill's own doctrine (one task =
+# one worktree) makes the normal case, and status.md runs on every `pilot status` — made §2 skip
+# the linked worktree it was standing in and instead print a command to remove the MAIN checkout:
+#   remove with:  git worktree remove /path/to/repo  &&  git branch -d primaryfeat
+# Harmless as printed output (git refuses both halves), but it is a wrong command handed to a human
+# to paste, and on the parent commit — where §2 still executed the removal — it was an attempt to
+# delete the main checkout. The first block of `git worktree list --porcelain` is always primary.
+main_root="$(git worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p' | head -1)"
+[ -n "$main_root" ] || main_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 # `git worktree list --porcelain` emits blocks separated by blank lines.
 wt_path=""; wt_branch=""
 handle_wt() {
@@ -489,7 +498,17 @@ handle_wt() {
   # This also disposes of the mid-bisect case (`git bisect start` with HEAD still on a branch reports
   # porcelain-clean, and removing the worktree takes BISECT_LOG/BISECT_START with it).
   printf '  %s  [%s]  (%s)\n' "$path" "$short" "$via"
-  printf '      remove with:  git worktree remove %q  &&  git branch -d %q\n' "$path" "$short"
+  # `-d` for git-native evidence, `-D` for squash evidence — the same split §1b uses, and for the
+  # same reason: after a squash the original tip is not an ancestor, so `git branch -d` CANNOT
+  # succeed. Printing `-d` for a squash-merged worktree produced a half-completed paste — the
+  # directory removed, then `error: the branch 'x' is not fully merged` — leaving an orphan branch.
+  # In a squash repo that was every single line of this section, i.e. the only repo shape this
+  # feature exists for.
+  if [ "$via" = "git" ]; then
+    printf '      remove with:  git worktree remove %q  &&  git branch -d %q\n' "$path" "$short"
+  else
+    printf '      remove with:  git worktree remove %q  &&  git branch -D %q\n' "$path" "$short"
+  fi
   printf '      (check for ignored files first — `git worktree remove` deletes the directory:\n'
   printf '       git -C %q status --porcelain --ignored=matching)\n' "$path"
 }
