@@ -7,7 +7,10 @@ protect_patterns:            # 额外保护的分支前缀（如 release/1.2 会
   - release
   - hotfix
 remote: origin
-allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true（无人值守默认不删远程）
+# allow_remote_cleanup 已废弃 —— 脚本不再删远程分支，没有任何代码读这个键。
+# 远程 head 分支请用 GitHub 的 auto-delete-on-merge（仓库设置里开），它在合并真正
+# 发生的那一侧判定；从 clone 里判断要靠可能过期的 remote-tracking ref，而且 bare
+# 仓库不留 reflog，是所有删除里唯一完全没有后悔药的。
 docs_dir: docs/agent         # 规划/运行态文档目录
 
 # 规划在哪里。docs（默认）= 起跑门禁检查 docs_dir 下那七个文件；

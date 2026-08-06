@@ -87,7 +87,6 @@ base_branch: main
 integration_branch: preview   # PR 合并进这里，不是主干
 protect_patterns: [release, hotfix]
 remote: origin
-allow_remote_cleanup: false
 docs_dir: docs/agent
 ```
 

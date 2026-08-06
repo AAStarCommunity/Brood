@@ -39,8 +39,11 @@
    ```
    bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--squash-merged] --apply
    ```
-   - 要连带删远程已合并分支：仅当 `.pilot.yml` 的 `allow_remote_cleanup: true`，且用户明确同意，才加 `--remote`。
-   - 无人值守模式（由 /loop 调用且用户已预先授权清理）：可直接 `--apply`，但**永远不加 `--remote`** 除非配置显式开启。
+   - **远程分支脚本不处理**（`--remote` 只会打印一段说明）。让用户去仓库设置里开 GitHub 的
+     **auto-delete-on-merge** —— 它在合并真正发生的那一侧判定，而从 clone 里判断要靠可能过期的
+     remote-tracking ref，且 bare 仓库不留 reflog。
+   - 无人值守模式（由 /loop 调用且用户已预先授权清理）：可直接 `--apply`。脚本此时唯一会执行的
+     删除仍是 `git branch -d`，其余照样只列。
 
 6. **建议下一步**：基于 progress.md 指出「下一个该做的 READY task」；若没有规划文档，建议 `pilot plan`。
 

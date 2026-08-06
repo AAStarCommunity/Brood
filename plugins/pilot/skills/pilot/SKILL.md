@@ -62,7 +62,7 @@ base_branch: main            # 主干，受保护，禁止直推
 integration_branch: preview  # PR 合并进这里；不存在则回退到 base_branch
 protect_patterns: [release, hotfix]   # 额外保护的分支前缀
 remote: origin
-allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true
+# allow_remote_cleanup 已废弃:脚本不再删远程分支,没有任何代码读这个键(用 GitHub auto-delete-on-merge)
 docs_dir: docs/agent         # 规划/运行态文档目录
 planning_source: docs        # docs(默认)=查上面那七个文件 | external=规划在别处,门禁不查(见下)
 ```
