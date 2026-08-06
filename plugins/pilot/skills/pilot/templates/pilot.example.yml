@@ -10,19 +10,10 @@ remote: origin
 allow_remote_cleanup: false  # 删除远程已合并分支需显式置 true（无人值守默认不删远程）
 docs_dir: docs/agent         # 规划/运行态文档目录
 
-# 规划已经在别处（backlog.md / issue tracker / 任何工具）时，在这里声明它的本地产物路径，
-# 起跑门禁就检查这些路径，而不是 docs_dir 下那七个固定文件名。不声明 = 老行为（查七件套）。
-#
-# 判据不变，只是换了查哪里：每条路径都要真有内容（目录 = 底下至少一个够实质的文件），
-# 空目录 / 只有占位符的文件照样判 NOT ready。指向仓库根（`.` 的任何拼法）/ `.git` / 绝对路径 /
-# 仓库外 / 通配符，都会被直接拒绝 —— 那是把门禁关掉，不是配置它。
-#
-# 运行态文档（progress.md 等）仍归 docs_dir，需要一并把关就也列进来。
-# 条目后面可以写 ` # 注释`，解析时会剥掉。
-#
-# planning_requires:
-#   - backlog/tasks
-#   - backlog/docs
-#   - docs/agent/progress.md
+# 规划在哪里。docs（默认）= 起跑门禁检查 docs_dir 下那七个文件；
+# external = 规划在别处（backlog.md / issue tracker / 任何工具），门禁【不做任何检查】直接放行。
+# external 是一句人做的担保，不是脚本核实的结论 —— 门禁会明确打印「NOTHING WAS CHECKED」，
+# 汇报时必须照实转述，不能说成「规划已验证」。
+planning_source: docs
 
 # PR 的裁决由外部评审服务给出，pilot 只负责盯状态（契约见 reference/review-contract.md）
