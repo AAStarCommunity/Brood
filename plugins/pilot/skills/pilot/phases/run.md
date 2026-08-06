@@ -67,6 +67,8 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
   ```bash
   #   bash <skill>/scripts/git-guard.sh push <remote> <branch>
   #   bash <skill>/scripts/git-guard.sh merge-pr <n> --integration <b> --squash
+  #   # 单主干仓库（integration_branch == base_branch）必须再加 --allow-trunk，否则被硬拒绝
+  #   bash <skill>/scripts/git-guard.sh merge-pr <n> --integration <b> --squash --allow-trunk
   ```
   （内置 main/master/develop/preview/integration/release/hotfix + .pilot.yml 实际值，前缀匹配。仅当要临时补充 .pilot.yml 之外的分支时，才可选加 `--protect "<csv>"`。）
 
@@ -74,7 +76,12 @@ bash <skill>/scripts/check-docs.sh --docs-dir <docs_dir> --strict
 运行 `bash <skill>/scripts/pr-monitor.sh`，对我的每个 open PR：
 - **`decision=APPROVED` 且 checks 通过** → 合并进**集成分支**（不是主干）：
   `bash <skill>/scripts/git-guard.sh merge-pr <n> --integration <integration_branch> --squash`
-  （git-guard 会先校验 PR base == `integration_branch`，base 是主干或其它分支会被拒绝；**不加 `--delete-branch`**——远程分支删除统一交给 §合并后的 safe-cleanup，受 `allow_remote_cleanup` 与 dirty-worktree 检查约束）。
+  **单主干仓库**（`.pilot.yml` 里 `integration_branch` == `base_branch`，PR 直接开向主干）**必须再加 `--allow-trunk`**：
+  `bash <skill>/scripts/git-guard.sh merge-pr <n> --integration <integration_branch> --squash --allow-trunk`
+  ——不加就会被 git-guard 硬拒绝（`integration '<b>' is a trunk branch`，rc=3），无人值守就停在这一步。
+  它**不是绕过**：仍要求该分支的保护规则要求审批、这个 PR 已 `APPROVED`、且该分支开启了 stale-dismissal，
+  三条任一读不到就 fail-closed 拒绝（见 SKILL.md §doctor 第 4 步）。
+  （git-guard 会先校验 PR base == `integration_branch`，base 是其它分支会被拒绝；**不加 `--delete-branch`**——分支清理统一交给 §合并后的 safe-cleanup。）
   合并后：把对应 Task 在 `tasks.md` 标 `DONE`、更新 `progress.md`，运行
   `bash <skill>/scripts/safe-cleanup.sh --integration <integration_branch> [--protect "<protect_patterns>"] [--remote-name <remote>] --apply`
   清掉本地已合并分支/worktree（**必须显式带上与 `.pilot.yml` 一致的 `--integration`/`--protect`/`--remote-name`，不要依赖脚本猜默认值**；要连带删远程，且 `allow_remote_cleanup: true` 时，再加 `--remote`）。**做完回到主循环顶端,继续下一项。**
