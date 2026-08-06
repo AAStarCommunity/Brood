@@ -1,41 +1,55 @@
 #!/usr/bin/env bash
-# safe-cleanup.sh — delete ONLY merged + clean branches/worktrees. Safe by design.
+# safe-cleanup.sh — report what is safely cleanable; delete only what git itself will vouch for.
 #
 # Guarantees (do not weaken these):
-#   * Dry-run by default. Nothing is deleted unless --apply is passed.
-#   * Local branches: `git branch -d` only (git itself refuses to delete unmerged work).
-#     The single exception is a branch with SERVER-SIDE proof it was squash-merged — see
-#     "Squash-merged branches" below. It needs --squash-merged, --apply, and the proof.
+#   * NEVER `git branch -D`. NEVER `git push --delete`. This script does not do irreversible
+#     deletes at all — see "Why listing, not deleting" below.
+#   * Local branches: `git branch -d` only, and only with --apply. `-d` is git's own safety net:
+#     it refuses anything git cannot see as merged, so it cannot destroy unmerged work.
 #   * Never touch: the current branch, the integration branch, or any protected branch.
 #   * Worktrees: removed only if their working tree is CLEAN and their branch is merged.
-#   * Remote branches: only deleted with --remote (opt-in) AND only if merged + not protected.
+#   * Remote branches: LISTED only. Never deleted.
 #   * A dirty worktree — and its remote branch — is always left completely alone.
 #
 # Squash-merged branches (--squash-merged, opt-in):
 #   In a squash-merge repo `git branch --merged` returns NOTHING, ever — the squash rewrites the
 #   patch so the original commits are not ancestors of the integration branch. Measured here:
-#   28 local branches, `git branch --merged main` → 0. That made this script unable to clean
-#   anything at all in its own home repo, and an unusable guard gets replaced by hand-run `-D`,
-#   which is strictly worse than the guard existing.
+#   28 local branches, `git branch --merged main` → 0. So `git branch -d` alone can never clean
+#   this repo, and the section that uses it is honest but useless here.
 #
-#   So `--squash-merged` adds a SECOND source of merge evidence, and it is a real one, not a
-#   loosening: GitHub's `/commits/{sha}/pulls` says which PR introduced a commit to the
-#   repository. A branch qualifies only when that endpoint names a PR with `merged_at != null`
-#   for the branch's tip commit.
+#   `--squash-merged` adds a SECOND source of merge evidence: GitHub's `/commits/{sha}/pulls`
+#   says which PR introduced a commit to the repository. A branch is reported only when that
+#   endpoint names a PR with `merged_at != null` for the branch's tip commit.
 #
 #   Why keyed on the COMMIT and not the branch name — both directions of the name-based mistake
 #   are real and were hit here:
 #     * miss  — `work-pr18` / `worktree-agent-*` were never any PR's head branch, yet their tips
 #               were the merged heads of #18 / #23. A name lookup calls them unmerged.
-#     * WRONG DELETE — branch names are reusable. Delete a branch, recreate it with unrelated
-#               work, and the old MERGED PR still matches the name. A name lookup deletes it.
+#     * WRONG  — branch names are reusable. Delete a branch, recreate it with unrelated work, and
+#               the old MERGED PR still matches the name. A name lookup would name it cleanable.
 #   The commit-keyed check has neither failure mode. Verified against all four shapes:
 #   squash-merged head ✓, mid-branch commit ✓, closed-but-unmerged → no evidence ✓,
 #   never-had-a-PR → no evidence ✓.
 #
-#   Deleting these needs `git branch -D` (`-d` refuses, correctly — git cannot see the merge).
-#   That is the ONLY place -D is ever used, it requires --squash-merged AND --apply, and it
-#   requires the evidence above. No evidence, no gh, no auth → the branch is KEPT.
+# Why listing, not deleting:
+#   Cleaning these needs `-D` (`-d` refuses — git cannot see the merge). An earlier version did
+#   exactly that, and six review rounds on that one capability found six real, reproduced defects:
+#   a same-named tag hijacking the evidence so an UNMERGED branch was deleted; a recovery handle
+#   printing a DIFFERENT branch's name (bash 3.2 expands the right-hand side of a multi-assignment
+#   `local` in the OUTER scope); the loss of git's own "that ref is checked out by a worktree"
+#   refusal; a TOCTOU window between evidence and delete; and a server-side delete judged by the
+#   operator's LOCAL branch, which removed a colleague's unmerged work from the remote.
+#
+#   None of those was theoretical and none was the reviewer being picky — each was reproduced end
+#   to end. The conclusion was not "defend harder". Automating an IRREVERSIBLE delete, on evidence
+#   inferred from a server, demands a level of assurance that what it buys — not typing
+#   `git branch -D <name>` — does not justify. Every one of those six defects was a property of
+#   DELETING, not of listing.
+#
+#   So: this script does the part that is genuinely hard (working out which branches are merged,
+#   with per-branch evidence, in a repo where git itself cannot tell you) and leaves the part that
+#   is trivial-but-unrecoverable to you. For remote branches, GitHub's auto-delete-on-merge already
+#   does it server-side, where the merge happened — strictly better than inferring it from a clone.
 #
 # Usage:
 #   safe-cleanup.sh [--integration <branch>] [--protect "a,b,c"] [--apply] [--squash-merged]
@@ -103,9 +117,10 @@ if ! git show-ref --verify --quiet "refs/heads/$integration"; then
 fi
 # Use the FULL ref everywhere the integration branch is resolved. As a bare name it is subject to
 # the same tag-beats-branch precedence as any other: with a tag also called `main`, `git branch -r
-# --merged main` answered about the TAG's commit and listed `origin/unmerged-precious` as merged —
-# and §3 (`--remote`) has no `-d` safety net, so `--apply` destroyed it server-side. The ambiguity
-# warning git prints was being swallowed by `2>/dev/null`, so nothing surfaced.
+# --merged main` answered about the TAG's commit and listed `origin/unmerged-precious` as merged.
+# Back when §3 still deleted, `--apply` destroyed that branch server-side; it only lists now, but a
+# wrong list is still a wrong instruction to paste. The ambiguity warning git prints was being
+# swallowed by `2>/dev/null`, so nothing surfaced.
 integration_ref="refs/heads/$integration"
 
 is_protected() {
@@ -209,80 +224,22 @@ merged_pr_for() {  # merged_pr_for <sha>
   esac
 }
 
-# ---- the ONE exit for `-D` ---------------------------------------------------------------------
-# Both destructive call sites (loose branches in §1b, worktree branches in §2) go through here.
-# They have now taken a HALF fix three rounds running — round 2 fixed the recovery handle only in
-# the branch loop, round 3 fixed ref resolution only in handle_wt, and round 4 found the branch loop
-# had meanwhile RE-INTRODUCED the very tag hijack round 3 fixed. One shared function is what makes
-# the next half-fix structurally impossible.
+# NO `-D` ANYWHERE. This script lists squash-merged branches; it never deletes them.
 #
-# `git update-ref -d <fullref> <expected-sha>` instead of `git branch -D <name>`:
-#   1. FULL REF, so git never applies its bare-name lookup rules — under those, `refs/tags/x` wins
-#      over `refs/heads/x`, which is how evidence gathered from a TAG came to authorise deleting a
-#      same-named unmerged BRANCH (measured: branch decoy=3661392 vs tag decoy=fece62f).
-#   2. EXPECTED-OLD-VALUE, making it an atomic compare-and-swap: if the tip moved between evidence
-#      and deletion, the delete FAILS instead of destroying newer work. That closes the TOCTOU
-#      window without the second `gh` round-trip the previous round added — so this also puts the
-#      cost back at one API call per branch, as the docs claim.
-#   3. The sha it swaps against is the one the evidence was gathered for, printed as the recovery
-#      handle. Same object end to end.
-# Does any worktree have this ref checked out — including one stopped mid-operation?
+# It used to. Six review rounds on that one capability found six real, reproduced defects — a tag
+# hijack that deleted an UNMERGED branch, a recovery handle naming a DIFFERENT branch (bash 3.2
+# expands the right-hand side of a multi-assignment `local` in the OUTER scope), a lost
+# "branch is checked out by a worktree" refusal, a TOCTOU window, and a server-side delete judged
+# by the operator's LOCAL branch. None was theoretical; each was reproduced end to end.
 #
-# `git branch -D` refuses to delete a ref a worktree is using; `git update-ref -d` refuses NOTHING,
-# so switching to it dropped that protection silently. `git worktree list --porcelain` alone does
-# not restore it: a worktree paused in `git rebase -i` reports `detached` and omits its `branch`
-# line entirely, so the branch being rebased looks free. The in-progress operation records the real
-# branch in rebase-merge/head-name (rebase-apply/ for `git am`), which is what makes it findable.
-# Deleting there loses the rebase: `git rebase --continue` then dies on `cannot lock ref`, leaving
-# the result as an unreferenced object.
-ref_in_use_by_worktree() {  # ref_in_use_by_worktree <refs/heads/name>
-  local want="$1"
-  local wt cur p f
-  while IFS= read -r wt; do
-    [ -n "$wt" ] || continue
-    cur="$(git -C "$wt" symbolic-ref -q HEAD 2>/dev/null || true)"
-    [ "$cur" = "$want" ] && return 0
-    for p in rebase-merge/head-name rebase-apply/head-name; do
-      f="$(git -C "$wt" rev-parse --git-path "$p" 2>/dev/null || true)"
-      [ -n "$f" ] || continue
-      [ -f "$f" ] || continue
-      [ "$(cat "$f" 2>/dev/null || true)" = "$want" ] && return 0
-    done
-  done <<EOF
-$(git worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
-EOF
-  return 1
-}
-
-destroy_branch() {  # destroy_branch <refs/heads/name> <expected-sha> <label>
-  # SEPARATE `local` statements, deliberately. In bash 3.2 — the /bin/bash on macOS, which is what
-  # `#!/usr/bin/env bash` resolves to here — a single `local a="$1" b="${a#x}"` expands `$a` in the
-  # OUTER scope, not from the local just created. Measured on 3.2.57:
-  #   outer ref=refs/heads/GLOBAL-LEFTOVER
-  #   one-local:  ref=refs/heads/ARGUMENT  short=GLOBAL-LEFTOVER   ← wrong
-  #   two-local:  ref=refs/heads/ARGUMENT  short=ARGUMENT          ← right
-  # So `short` used to come from §1b's loop variable, and the ONE recovery handle for an
-  # irreversible delete printed a DIFFERENT branch's name next to this branch's sha.
-  local ref="$1"
-  local expect="$2"
-  local label="$3"
-  local short="${ref#refs/heads/}"
-  if ref_in_use_by_worktree "$ref"; then
-    printf '  SKIP (checked out by a worktree — or being rebased there)  %s\n' "$short"
-    return 1
-  fi
-  if git update-ref -d "$ref" "$expect" 2>/dev/null; then
-    # %q-quote the name in the restore hint: `feat/x$(id)` is a legal refname, and an unquoted
-    # hint is a command substitution the moment someone pastes it.
-    printf '  deleted  %s  (%s)  was=%s  → restore: git branch %q %s\n' \
-      "$short" "$label" "$expect" "$short" "$expect"
-    return 0
-  fi
-  # Two ways to get here and both mean "do not delete": the CAS found a different tip (someone
-  # committed since the evidence was collected), or the ref is already gone.
-  printf '  SKIP (tip moved since evidence was collected, or ref already gone)  %s\n' "$short"
-  return 1
-}
+# The lesson was not "defend harder". It was that automating an IRREVERSIBLE delete, on evidence
+# that has to be inferred from a server, needs a level of assurance this feature's value does not
+# justify: what it buys is not typing `git branch -D <name>`. So the delete is gone and the
+# evidence-gathering stays — you get told exactly which branches are safe to remove and why, and
+# you run one command. Every one of those six defects was a property of deleting, not of listing.
+#
+# Remote branches: GitHub's auto-delete-on-merge already does that server-side, where the merge
+# actually happened, so it cannot be fooled by a local branch that has not been pushed.
 
 # Membership tests without a pipeline. `producer | grep -Fqx` looks harmless but `grep -q` exits at
 # the first match, the producer takes SIGPIPE, and with `set -o pipefail` the whole pipeline returns
@@ -424,21 +381,17 @@ if [ "${#sq_refs[@]}" -eq 0 ]; then
     echo "  (none)"
   fi
 else
+  # REPORT ONLY — identical output with or without --apply, because this section never deletes.
+  # The sha is printed so the command below is copy-pasteable and so you can see exactly which tip
+  # the evidence was gathered for; %q-quoted because `feat/x$(id)` is a legal refname.
   i=0
   while [ "$i" -lt "${#sq_refs[@]}" ]; do
     ref="${sq_refs[$i]}"; sha="${sq_shas[$i]}"; pr="${sq_prs[$i]}"
-    if [ "$apply" = "1" ]; then
-      # The CAS inside destroy_branch is the TOCTOU guard: evidence gathering costs ~0.8s per gh
-      # call, so a 25-branch run leaves a ~20s window for a concurrent agent to commit. Previously
-      # that was covered by re-calling `gh` per branch (doubling the cost and misreporting rate
-      # limits as "tip changed"); the expected-old-value does it atomically, for free, and cannot
-      # confuse a lookup failure with a moved tip.
-      destroy_branch "$ref" "$sha" "merged via PR #$pr" || true
-    else
-      echo "  would delete  ${ref#refs/heads/}  (merged via PR #$pr)"
-    fi
+    printf '  %s  (merged via PR #%s)  tip=%s\n' "${ref#refs/heads/}" "$pr" "${sha:0:12}"
+    printf '      delete with:  git branch -D %q\n' "${ref#refs/heads/}"
     i=$((i + 1))
   done
+  echo "  ── listed, NOT deleted. Read the PR numbers above, then run the commands you agree with."
   # A partial result must never read as a complete one.
   [ "$sq_errors" -gt 0 ] && echo "  ($sq_errors more branch(es) could not be verified — KEPT; this list is INCOMPLETE)"
 fi
@@ -512,15 +465,15 @@ handle_wt() {
   if [ "$apply" = "1" ]; then
     if git worktree remove "$path" 2>/dev/null; then
       echo "  removed  $path  [$short]  ($via)"
-      # -d for git-native evidence; the shared CAS destroy for the evidence-based path.
-      # `git worktree remove` refuses a DIRTY worktree but not a clean one whose tip advanced, so
-      # this path needs the same compare-and-swap the loose-branch path has — it is the identical
-      # destructive act on the identical kind of ref.
+      # `-d` only, for git-native evidence — git itself refuses to delete anything it cannot see
+      # as merged, which is the safety net that makes this line acceptable without further proof.
+      # The squash-evidence path deletes NOTHING: it prints the branch and the command, same as
+      # §1b. That path is exactly where every one of the six rounds' defects lived.
       if [ "$via" = "git" ]; then
         git branch -d -- "$short" 2>/dev/null && echo "    + deleted branch $short" || true
       else
-        printf '  '   # keep destroy_branch's line aligned under the worktree it belongs to
-        destroy_branch "${branch:-refs/heads/$short}" "$wt_sha" "$via" || true
+        printf '    + branch %s NOT deleted (%s, tip=%s) — delete with:  git branch -D %q\n' \
+          "$short" "$via" "${wt_sha:0:12}" "$short"
       fi
     else
       echo "  SKIP (remove failed)  $path  [$short]"
@@ -566,8 +519,8 @@ if [ "$do_remote" = "1" ]; then
     # unrecoverable.
     if ! git merge-base --is-ancestor "$integration_ref" "$remote_integration" 2>/dev/null; then
       echo "  (skipped — local '$integration' is AHEAD of $remote_name/$integration; the server has"
-      echo "   not seen those merges. Push first, or the criterion would be your local state rather"
-      echo "   than the server's. Refusing: this section deletes server-side and cannot be undone.)"
+      echo "   not seen those merges. Push first. Listing against a local branch would name remote"
+      echo "   branches the server has NOT merged — and the commands printed here get pasted.)"
     else
   any=0
   while IFS= read -r rb; do
@@ -581,21 +534,11 @@ if [ "$do_remote" = "1" ]; then
     if is_protected "$short"; then continue; fi
     if is_in_worktree "$short"; then continue; fi   # never delete the remote of a checked-out/dirty worktree branch
     any=1
-    if [ "$apply" = "1" ]; then
-      # CAS on the server too, for the same reason the local path has one: between listing and
-      # deleting, someone can push to that branch. `--force-with-lease=<ref>:<sha>` makes the delete
-      # fail instead of discarding what arrived in between. The sha is the one we listed.
-      rsha="$(git rev-parse --verify --quiet "refs/remotes/$remote_name/$short" 2>/dev/null || true)"
-      if [ -z "$rsha" ]; then
-        echo "  SKIP (cannot resolve $remote_name/$short — refusing to delete unverified)"
-      elif git push --force-with-lease="$short:$rsha" "$remote_name" --delete -- "$short" >/dev/null 2>&1; then
-        echo "  deleted  $remote_name/$short  was=$rsha"
-      else
-        echo "  SKIP (delete refused — the branch moved on the server since it was listed, or the push failed)  $remote_name/$short"
-      fi
-    else
-      echo "  would delete  $remote_name/$short"
-    fi
+    # REPORT ONLY. Deleting on the server is the one action here with no undo of any kind — no
+    # reflog, and what is lost may not even be yours. GitHub's auto-delete-on-merge already does
+    # this, server-side, where the merge actually happened; that is strictly better than inferring
+    # it from a clone. So this section tells you what looks cleanable and hands you the command.
+    echo "  $remote_name/$short  — delete with:  git push $remote_name --delete $short"
   done < <(git branch -r --merged "$remote_integration" 2>/dev/null)
   if [ "$any" = "0" ]; then
     echo "  (none)"
