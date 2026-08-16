@@ -1,0 +1,23 @@
+name: PR self-check
+
+# 为什么走 CI 而不是本地 pre-commit hook:
+#   pre-commit 一句 `--no-verify` 就绕过去了,而且要每个人各自装一次、装了也不会更新。
+#   CI 对每个 PR 强制执行一次,升级只需改这个仓库一处。
+#   要在本地提前跑同一套检查:bash scripts/pr-selfcheck.sh
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  selfcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # 必须:脚本要 merge-base 和 git cat-file 解析 commit
+
+      - name: Run mechanical self-check
+        run: |
+          bash scripts/pr-selfcheck.sh \
+            --base "$(git merge-base HEAD origin/${{ github.base_ref }})"
