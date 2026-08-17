@@ -28,9 +28,9 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 30%** | DSR-Research-Flow 本地未 clone；Paper7 JBBA 投稿包就绪待提交
+**🚀 预估进度: 30%** | DSR-Research-Flow 本地未 clone（本次 clone 超时）；Paper7 侧信号：SuperPaymaster 08-14 新增「链上可验证 reputation update 脚本」（feat(paper7)），实验侧仍在推进
 
 **✅ AC 完成情况**:
 - ✅ Paper7 第一版：CommunityFi DSR P1-P6 全部 Done，JBBA 投稿包就绪

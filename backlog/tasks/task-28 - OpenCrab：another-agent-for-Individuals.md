@@ -24,9 +24,9 @@ based on OpenFang Agent framework
 
 https://docs.google.com/presentation/d/1JurLiAwfaHeNdXaYZP_CdMltLfhCfn210Ebgk5o9a0g/edit?usp=sharing
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 15%** | iDoris-ai/OpenCrab 静默 ≥ 17 天（最近 2026-06-20 license 合规 #2）
+**🚀 预估进度: 15%** | iDoris-ai/OpenCrab 近30天 0 次提交，持续静默（最近实质提交为 2026-06-20 license 合规 #2）
 
 **✅ AC 完成情况**:
 - ⬜ Information→Decision→Action 循环 — 仓库已就位但无 feature 实现

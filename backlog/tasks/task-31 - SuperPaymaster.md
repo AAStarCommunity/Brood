@@ -30,9 +30,9 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 98%** | 近30天 22 次提交，最近一次 2026-07-07；**slash-threshold-evidence-unify (#329)** + BLS modules 全部 wired on Sepolia；aastar-sdk BLSAggregator ABI 已同步 (#285)
+**🚀 预估进度: 98%** | 近30天 19 次提交，最近一次 2026-08-16；**CC-89 guardian-collusion slash 协议 stage-1/2 落地**（executeGuardianSlash + A' signer-set commitment 归因）+ Sepolia E2E guardian-slash 工具链与 runbook (#370-#373)
 
 **✅ AC 完成情况**:
 - ✅ **Paper3: SuperPaymaster AOA in ERC-4337 — 已正式投稿 BRA 期刊**
@@ -44,11 +44,12 @@ https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 - 🔧 Mainnet GA 正式部署（仅余最后 2% — 等待 SP.applyBLSAggregator() 最终切换）
 
 **📝 近期动态** (AAStarCommunity/SuperPaymaster):
-- 2026-07-07: deploy(sepolia): BLS modules migration wiring 完整 (SP+Registry+staking)
-- 2026-07-06: fix(slash): slash-threshold-evidence-unify (#329) + xpnts H-2 kill switch
-- 2026-07-06: docs(security): 2026-07-03 multi-agent audit report + slash design
-- 2026-07-03: fix(p0): CEI order in PaymasterFactory + Registry unchecked call (#319)
-- 2026-07-03: chore(goutou): pin repoId for Cooperation-Center label
+- 2026-08-16: test(cc89): Sepolia E2E guardian-slash 工具链 + runbook (#373)
+- 2026-08-15: test(bls): CC-89 stage-2 Phase-2 E2E harness（SP 半真实 + verifier mocked）(#372)
+- 2026-08-14: feat(bls): A' signer-set commitment — guardian-collusion 归因 (CC-89 stage-2, #371)
+- 2026-08-14: feat(bls): executeGuardianSlash thin entry — CC-89 Protocol B stage-1 (#370)
+- 2026-08-14: feat(paper7): 链上可验证的 reputation update 脚本
+- 其余为 deps 例行维护（dependabot）
 
-💡 #329 slash 机制统一完成，BLS modules Sepolia fully wired。SDK ABI 已同步。剩余 2%：SP.applyBLSAggregator() 最终切换 + mainnet GA。
+💡 slash 防护从 threshold 统一（#329）推进到 guardian-collusion 归因闭环（CC-89 Protocol B）。剩余 2%：SP.applyBLSAggregator() 最终切换 + mainnet GA。
 <!-- SECTION:DESCRIPTION:END -->

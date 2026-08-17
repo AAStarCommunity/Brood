@@ -27,9 +27,9 @@ A meta-task to group all Genesis Launch activities.
 
 ...
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 95%** | 近30天 13 次提交，最近一次 2026-06-24；本期主要变化：**relayer 日购买上限移除**（审计修复 #8）+ sale open/close ops 脚本完整落地；无新功能，sale 合约已就绪等待主网部署
+**🚀 预估进度: 95%** | MushroomDAO/launch 近30天 0 次提交（本地最近 2026-07-10），静默 ≥ 38 天；sale 合约审计修复与 ops 工具链已就绪，等待主网 GA 部署
 
 **✅ AC 完成情况**:
 - ✅ Shop contract and web interface — MushroomDAO/MyShop M1 全量完成

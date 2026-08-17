@@ -25,9 +25,9 @@ Provide users with free ENS subdomains (e.g., user.comet.eth) and internet domai
 1. ENS项目完成OP解析，完成自动授予某个地址一个ENS+开源的解析显示页面.
 2. mushroom.cv, forest.mushroom.cv: 自动授予二级域名给注册的社区，基于cloudflare，页面由sdk自动生成，缓存加刷新机制；来自于IPFS和链上配置等
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 85%** | 近30天 0 次新提交（最近一次 2026-06-18）；**v0.7.0 testnet GA** 稳定运行中，暂无新功能发布
+**🚀 预估进度: 85%** | 近30天 0 次新提交（最近一次 2026-06-18，静默 ≥ 60 天）；**v0.7.0 testnet GA** 稳定运行中，暂无新功能发布
 
 **✅ AC 完成情况**:
 - ✅ Deploy ENS resolver on Sepolia/OP — HybridResolver + OPFaultVerifier 已部署（OP Sepolia）
