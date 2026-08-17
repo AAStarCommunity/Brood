@@ -1,6 +1,6 @@
 # Mycelium Protocol — 生态地图 / Ecosystem Map
 
-> 最后更新: 2026-07-07
+> 最后更新: 2026-08-17
 > 路径约定：相对于 `~/Dev/Brood/`（本仓库）
 > 数据来源：与 GitHub 三个 org（AAStarCommunity / iDoris-ai / MushroomDAO）的线上 repo 完成同步
 > **不追踪**：jhfnetboy 个人仓库（个人 fork/草稿不进生态地图）
@@ -123,6 +123,9 @@
 | AI_Beginner_Courses | auraai/AI_Beginner_Courses | 2026-07-05 | 入门课程（Agent Loop 讲义新增）|
 | infoCrab | auraai/infoCrab | 2026-04-15 | 信息爬虫 |
 | AgentSocial | auraai/AgentSocial | 2026-05-29 | 🆕 Paper3 设计决策 + milestone（Codex 协作） |
+| Self-FDE-WorkBench | auraai/Self-FDE-WorkBench | 2026-08-02 | 🆕（待补充定位描述）|
+| ai-atlas | auraai/ai-atlas | 2026-07-22 | 🆕（待补充定位描述）|
+| iDoris-website | auraai/iDoris-website | 2026-08-08 | 🆕 iDoris 官网 |
 
 ---
 
@@ -161,6 +164,7 @@
 | whitelist | mycelium/whitelist | 2026-04-15 | 白名单 |
 | .github | mycelium/.github | 2026-04-15 | Org profile |
 | demo-repository | mycelium/demo-repository | 2026-04-15 | 模板 |
+| hack5-net | mycelium/hack5-net | 2026-07-26 | 🆕（待补充定位描述）|
 
 ### 基础协议 repos
 

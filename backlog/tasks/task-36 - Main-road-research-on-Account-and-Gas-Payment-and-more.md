@@ -10,6 +10,7 @@ milestone: m-r
 dependencies: []
 references:
   - 'https://github.com/zeroclaw-labs/zeroclaw'
+  - 'https://github.com/MushroomDAO/blog'
 priority: low
 ---
 
@@ -20,16 +21,20 @@ Keep on tracing the Ethereum roadmap and techs.
 
 May use this: https://github.com/zeroclaw-labs/zeroclaw
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 25%** | zeroclaw-labs/zeroclaw 本地未 clone；MushroomDAO/blog 近9天 12 commits（AI 工具系列文章）
+**🚀 预估进度: 30%** | zeroclaw 本地已 clone（~/Dev/tmp/zeroclaw）：近30天 390 commits 高速迭代；MushroomDAO/blog 近30天 222 commits — 🤖 本次扫描起 blog 正式纳入本任务 references（用户裁决）
 
 **✅ AC 完成情况**:
-- 🔧 追踪 Ethereum roadmap — zeroclaw 上游持续迭代，外部研究观察价值上升
-- 🔧 zeroclaw 上期已高频活跃，本期无法获取本地 diff
+- 🔧 追踪 Ethereum roadmap — blog 已产出主线研究文章（ethereum-post-quantum-roadmap：Poseidon / exit / hash-friendly SNARK）
+- ✅ 研究产出渠道落地 — blog 保持日更节奏（AI/Web3/工具系列），发布管线含 analytics 快照与自动部署
+- 🔧 zeroclaw 上游追踪 — 本地 clone 完成，390 commits/30d（security hardening + providers + governance RFC）
 
 **📝 近期动态**:
-- 本期无法获取（zeroclaw-labs/zeroclaw 不在本地三大 org 目录）
+- 08-15: blog — 发布 ethereum-post-quantum-roadmap-poseidon-exit-hash-friendly-snark（主线研究）
+- 08-13/14: blog — MiniMax H3 / dots-tts / agent evaluation / browser-harness 等 AI 前沿系列
+- 08-14: blog analytics — GraphQL 半坏响应防护 + commit/push 挪至本地部署前
+- zeroclaw 上游: HTTP egress 加固、provider 矩阵、RFC 治理协议等 390 commits/30d
 
-💡 研究类任务建议明确产出形式（research note / blog），以便量化进度而非持续"观察中"状态。
+💡 blog 归入本任务后研究产出可量化（日更文章流）。建议给「主线研究」文章打独立 tag，与日常资讯区分，便于下次扫描按 tag 统计。
 <!-- SECTION:DESCRIPTION:END -->

@@ -29,16 +29,16 @@ DSR repo；
 
 https://github.com/jhfnetboy/DSR-Research-Flow/blob/main/writing/progress.md
 
-### 📊 进度报告 (2026-07-07 扫描)
+### 📊 进度报告 (2026-08-17 扫描)
 
-**🚀 预估进度: 20%** | DSR-Research-Flow 本地未 clone；Paper6 仍 Not started
+**🚀 预估进度: 20%** | DSR-Research-Flow 本地未 clone（本次尝试 clone 超时，网络不通）；Paper6 仍 Not started
 
 **✅ AC 完成情况**:
 - ⬜ Paper6: Gasless EOA Bridge (7702) — DSR P1-P6 均未开始
 - 🔧 DSR repo 写作工具链（awesome-ai-research-writing skill）在上期已接入
 
 **📝 近期动态**:
-- 本期无法获取（DSR-Research-Flow 不在本地三大 org 目录）
+- 本期无法获取（DSR-Research-Flow clone 超时，建议网络恢复后手动 `git clone git@github.com:jhfnetboy/DSR-Research-Flow.git ~/Dev/tmp/DSR-Research-Flow`）
 
 💡 Paper6 仍排队，建议 SuperPaymaster v5.4 mainnet 落地后启动 Paper6 P1（EIP-7702 gasless bridge）。
 <!-- SECTION:DESCRIPTION:END -->
